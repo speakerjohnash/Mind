@@ -1,0 +1,58 @@
+{
+	"Posting" : {
+		"Public" : {
+			"State" : "The mind speaks",
+			"Ask" : "The mind seeks",
+			"Predict" : "The mind dreams"
+		},
+		"Private" : {
+			"State" : "The mind mutters in whispers",
+			"Ask" : "The mind seeks truth from within",
+			"Predict" : "The mind sees a hidden future"
+		}	
+	},
+	"Rating" : {
+		"Truth" : {
+			"10" : "The mind passionately disagrees",
+			"20" : "The mind dissents with emphasis",
+			"30" : "The mind calmly disagrees",
+			"40" : "The mind has reasonable doubts",
+			"50" : "The mind recognizes uncertainty",
+			"60" : "The mind sways slightly towards the truth",
+			"70" : "The mind cautiously endorses the truth",
+			"80" : "The mind recognizes truth",
+			"90" : "The mind observes a near perfect truth",
+			"100" : "The mind perceives an absolute truth",
+		},
+		"Value" : {
+			"Good" : "The mind reflects positively upon this thought",
+			"Bad" : "The mind reflects negatively upon this thought"
+		}
+		"Truth_and_Value" : {
+			"Good" : {
+				"10" : "The mind dreams an impossible dream",
+				"20" : "The mind strongly reflects false positivity",
+				"30" : "The mind reflects an unlikely dream",
+				"40" : "The mind doubts but reflects positively",
+				"50" : "The mind recognizes uncertain positivity",
+				"60" : "The perceives a shimmer of possibility",
+				"70" : "The mind realizes positivity",
+				"80" : "The mind observes goodness with clarity",
+				"90" : "The mind glowingly observes this truth",
+				"100" : "The mind radiates brilliant positivity upon this thought"
+			},
+			"Bad" : {
+				"10" : "The mind rejects absolute falsity",
+				"20" : "The mind cautions against known negativity",
+				"30" : "The mind obscures this unlikely reality",
+				"40" : "The mind hesitates with negativity",
+				"50" : "The mind recognizes uncertain negativity",
+				"60" : "The mind sees a potential negativity",
+				"70" : "The mind is apprehensive with acceptance",
+				"80" : "The mind resonates a negative reality",
+				"90" : "The mind reflects shadows upon an unpleasant truth",
+				"100" : "The mind fears a known thought"
+			}
+		}
+ 	}
+}
