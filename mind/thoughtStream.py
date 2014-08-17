@@ -39,18 +39,18 @@ def progress(i, list, message=""):
 	sys.stdout.write(progress)
 	sys.stdout.flush()
 
-def vectorize(corpus):
+def vectorize(corpus, min_df=1):
 	"""Vectorize text corpus"""
 
-	vectorizer = CountVectorizer(min_df=5, ngram_range=(1,1), stop_words='english')
+	vectorizer = CountVectorizer(min_df=min_df, ngram_range=(1,1), stop_words='english')
 	countVector = vectorizer.fit_transform(corpus).toarray()
 	num_samples, num_features = countVector.shape
 	vocab = vectorizer.get_feature_names()
 
 	termWeighting(vocab, countVector, corpus)
-	distribution_dict = wordCount(vocab, countVector, num_samples)
+	word_count = wordCount(vocab, countVector, num_samples)
 
-	return distribution_dict
+	return word_count
 
 def wordCount(vocab, countVector, num_samples):
 	"""Count words"""
@@ -59,12 +59,13 @@ def wordCount(vocab, countVector, num_samples):
 	dist = numpy.sum(countVector, axis=0)
 	dist = dist.tolist()
 
-	safe_print("Word Count")
-	safe_print(dict(zip(vocab, dist)), "\n")
+	#safe_print("Word Count")
+	word_count = dict(zip(vocab, dist))
+	#safe_print(dict(zip(vocab, dist)), "\n")
 
-	distribution_dict = wordFrequency(vocab, dist, num_samples)
+	#distribution_dict = wordFrequency(vocab, dist, num_samples)
 
-	return distribution_dict
+	return word_count
 
 def wordFrequency(vocab, dist, num_samples):
 
@@ -72,8 +73,8 @@ def wordFrequency(vocab, dist, num_samples):
 	dist = numpy.around(dist, decimals=5).tolist()
 	distribution_dict = dict(zip(vocab, dist))
 
-	safe_print("Word Frequency")
-	safe_print(distribution_dict, "\n")
+	#safe_print("Word Frequency")
+	#safe_print(distribution_dict, "\n")
 
 	return distribution_dict
 
@@ -83,8 +84,8 @@ def termWeighting(vocab, countVector, corpus):
 	transformer = TfidfTransformer()
 	tfidf = transformer.fit_transform(countVector)
 
-	safe_print("Weights Per Word:")
-	safe_print(dict(zip(vocab, numpy.around(transformer.idf_, decimals=5).tolist())), "\n")
+	#safe_print("Weights Per Word:")
+	#safe_print(dict(zip(vocab, numpy.around(transformer.idf_, decimals=5).tolist())), "\n")
 
 def compareMinds(data_a, data_b):
 	"""Compares available words"""
@@ -110,11 +111,36 @@ def collectThoughts(thoughts):
 
 	return thinkers
 
+def groupByDay(thoughts):
+	"""Bucket a users thoughts by day"""
+
+	days = collections.defaultdict(list)
+
+	# Split by day
+	for thought in thoughts:
+		day = thought.get("Post date", "")[:10]
+		days[day].append(thought)
+
+	return days
+
+def processByDay(days, total_count):
+	"""Run the vectorizing tool on many days"""
+
+	for day, thoughts in days.items():
+		thoughts = [thought['Thought'] for thought in thoughts]
+		word_count = vectorize(thoughts)
+		important_words = []
+	
+		for word, count in word_count.items():
+			if word in total_count and count > 1:
+				important_words.append({word:count})
+
+		safe_print(important_words)
+		user_input = input()
+
 # TODO: 
-# 1) import from drupal file DONE
-# 2) Sort by user DONE
-# 3) run countVectorizer on each day
-# 4) Output and connect to thought stream code
+# 1) run countVectorizer on each day
+# 2) Output and connect to thought stream code
 
 def run_from_command():             
 	"""Run if file invoked from command line"""
@@ -126,8 +152,12 @@ def run_from_command():
 	pat_thoughts = thinkers['patch615']
 	matt_thoughts = thinkers['msevrens']
 
-	matt_thoughts = [thought['Thought'] for thought in matt_thoughts]
-	matts_mind = vectorize(matt_thoughts)
+	thoughts = [thought['Thought'] for thought in matt_thoughts]
+	total_count = vectorize(thoughts, min_df=5)
+	days = groupByDay(matt_thoughts)
+	processByDay(days, total_count)
+
+	#matts_mind = vectorize(matt_thoughts)
 
 if __name__ == "__main__":
 	run_from_command()
