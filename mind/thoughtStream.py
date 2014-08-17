@@ -4,7 +4,7 @@ import re
 import math
 import csv
 import random
-from collections import OrderedDict
+import collections
 
 import numpy
 
@@ -22,11 +22,13 @@ def safe_print(*objs, errors="replace"):
 
 	print(*(to_stdout(str(o), errors) for o in objs))
 
-def load_dict_list(filename):
+def load_dict_list(file_name):
 	"""Loads a dictoinary of input from a file into a list"""
-	input_file = open(file_name, encoding=encoding, errors='replace')
-	dict_list = list(csv.DictReader(input_file, delimiter=",", quoting=csv.QUOTE_NONE))
-	input_file.close()
+
+	with open(file_name, 'r', encoding="utf-8", errors='replace') as input_file:
+		dict_list = list(csv.DictReader(input_file, delimiter=","))
+
+	return dict_list
 
 def progress(i, list, message=""):
 	"""Display progress percent in a loop"""
@@ -94,7 +96,19 @@ def compareTokens(data_a, data_b):
 		b_frq = data_b.get(key, 0)
 		deltas[key] = a_freq - b_freq
 
-	safe_print(OrderedDict(sorted(deltas.items(), key=lambda t: t[1])))
+	safe_print(collections.OrderedDict(sorted(deltas.items(), key=lambda t: t[1])))
+
+def collectThoughts(thoughts):
+	"""Bucket data by user for easy access"""
+
+	thinkers = collections.defaultdict(list)
+
+	# Split into user buckets
+	for thought in thoughts:
+		thinker = thought.get("Seer", "")
+		thinkers[thinker].append(thought)
+
+	return thinkers
 
 # TODO: 
 # 1) import from drupal file
@@ -105,9 +119,16 @@ def compareTokens(data_a, data_b):
 def run_from_command():             
 	"""Run if file invoked from command line"""
 	
-	input_file = open("mattThoughts.txt", encoding='utf-8', errors='replace')
-	thoughts = [i.strip() for i in input_file.readlines()]
-	input_file.close()
+	params = {}
+	thoughts = load_dict_list("data/input/Thoughts_August_17.csv")
+	thinkers = collectThoughts(thoughts)
+
+	pats_thoughts = thinkers['patch615']
+
+	thoughts = [thought['Thought'] for thought in pats_thoughts]
+	safe_print(thoughts)
+	sys.exit()
+
 	vectorize(thoughts)
 
 if __name__ == "__main__":
