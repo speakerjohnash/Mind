@@ -48,52 +48,52 @@ def vectorize(corpus):
 	vocab = vectorizer.get_feature_names()
 
 	termWeighting(vocab, countVector, corpus)
-	distribution_dict = tokenCount(vocab, countVector, num_samples)
+	distribution_dict = wordCount(vocab, countVector, num_samples)
 
 	return distribution_dict
 
-def tokenCount(vocab, countVector, num_samples):
-	"""Count tokens"""
+def wordCount(vocab, countVector, num_samples):
+	"""Count words"""
 
 	numpy.clip(countVector, 0, 1, out=countVector)
 	dist = numpy.sum(countVector, axis=0)
 	dist = dist.tolist()
 
-	safe_print("Token Count")
+	safe_print("Word Count")
 	safe_print(dict(zip(vocab, dist)), "\n")
 
-	distribution_dict = tokenFrequency(vocab, dist, num_samples)
+	distribution_dict = wordFrequency(vocab, dist, num_samples)
 
 	return distribution_dict
 
-def tokenFrequency(vocab, dist, num_samples):
+def wordFrequency(vocab, dist, num_samples):
 
 	dist[:] = [x / num_samples for x in dist]
 	dist = numpy.around(dist, decimals=5).tolist()
 	distribution_dict = dict(zip(vocab, dist))
 
-	safe_print("Token Frequency")
+	safe_print("Word Frequency")
 	safe_print(distribution_dict, "\n")
 
 	return distribution_dict
 
 def termWeighting(vocab, countVector, corpus):
-	"""Gives intution to token importance"""
+	"""Gives intution to word importance"""
 
 	transformer = TfidfTransformer()
 	tfidf = transformer.fit_transform(countVector)
 
-	safe_print("Weights Per Token:")
+	safe_print("Weights Per Word:")
 	safe_print(dict(zip(vocab, numpy.around(transformer.idf_, decimals=5).tolist())), "\n")
 
-def compareTokens(data_a, data_b):
-	"""Compares available tokens"""
+def compareMinds(data_a, data_b):
+	"""Compares available words"""
 
 	deltas = {}
 
 	for key in data_a:
 		a_freq = data_a[key]
-		b_frq = data_b.get(key, 0)
+		b_freq = data_b.get(key, 0)
 		deltas[key] = a_freq - b_freq
 
 	safe_print(collections.OrderedDict(sorted(deltas.items(), key=lambda t: t[1])))
@@ -111,8 +111,8 @@ def collectThoughts(thoughts):
 	return thinkers
 
 # TODO: 
-# 1) import from drupal file
-# 2) Sort by user
+# 1) import from drupal file DONE
+# 2) Sort by user DONE
 # 3) run countVectorizer on each day
 # 4) Output and connect to thought stream code
 
@@ -123,13 +123,11 @@ def run_from_command():
 	thoughts = load_dict_list("data/input/Thoughts_August_17.csv")
 	thinkers = collectThoughts(thoughts)
 
-	pats_thoughts = thinkers['patch615']
+	pat_thoughts = thinkers['patch615']
+	matt_thoughts = thinkers['msevrens']
 
-	thoughts = [thought['Thought'] for thought in pats_thoughts]
-	safe_print(thoughts)
-	sys.exit()
-
-	vectorize(thoughts)
+	matt_thoughts = [thought['Thought'] for thought in matt_thoughts]
+	matts_mind = vectorize(matt_thoughts)
 
 if __name__ == "__main__":
 	run_from_command()
