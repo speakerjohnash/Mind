@@ -30,6 +30,16 @@ def load_dict_list(file_name):
 
 	return dict_list
 
+def write_dict_list(dict_list, file_name, encoding="utf-8", delimiter=","):
+	""" Saves a lists of dicts with uniform keys to file """
+
+	column_order = sorted(dict_list[0])
+
+	with open(file_name, 'w', encoding=encoding, errors='replace') as output_file:
+		dict_w = csv.DictWriter(output_file, delimiter=delimiter, fieldnames=column_order, extrasaction='ignore')
+		dict_w.writeheader()
+		dict_w.writerows(dict_list)
+
 def progress(i, list, message=""):
 	"""Display progress percent in a loop"""
 
@@ -123,20 +133,29 @@ def groupByDay(thoughts):
 
 	return days
 
-def processByDay(days, total_count):
+def processByDay(days, ken):
 	"""Run the vectorizing tool on many days"""
+
+	stream = []
 
 	for day, thoughts in days.items():
 		thoughts = [thought['Thought'] for thought in thoughts]
 		word_count = vectorize(thoughts)
-		important_words = []
+		daily_ken = {'Post Date' : day}
 	
+		# Get Daily Words
 		for word, count in word_count.items():
-			if word in total_count and count > 1:
-				important_words.append({word:count})
+			if word in ken:
+				daily_ken[word] = count
 
-		safe_print(important_words)
-		user_input = input()
+		# Add Missing Words
+		for word in ken:
+			if word not in daily_ken:
+				daily_ken[word] = 0
+
+		stream.append(daily_ken)
+
+	return stream
 
 # TODO: 
 # 1) run countVectorizer on each day
@@ -153,11 +172,10 @@ def run_from_command():
 	matt_thoughts = thinkers['msevrens']
 
 	thoughts = [thought['Thought'] for thought in matt_thoughts]
-	total_count = vectorize(thoughts, min_df=5)
+	ken = vectorize(thoughts, min_df=5)
 	days = groupByDay(matt_thoughts)
-	processByDay(days, total_count)
-
-	#matts_mind = vectorize(matt_thoughts)
+	stream = processByDay(days, sorted(ken))
+	write_dict_list(stream, "data/output/thought_stream_data.csv")
 
 if __name__ == "__main__":
 	run_from_command()
