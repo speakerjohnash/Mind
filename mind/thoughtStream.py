@@ -157,9 +157,41 @@ def processByDay(days, ken):
 
 	return stream
 
+def buildWordStream(days, ken):
+	"""Build out a word stream from daily thoughts"""
+
+	stream = processByDay(days, sorted(ken))
+	write_dict_list(stream, "data/output/thought_stream_data.csv")
+
+def buildTypeStream(days):
+	"""Build stream data from thought type count"""
+
+	type_stream = []
+
+	for day, thoughts in days.items():
+
+		day_type_counts = {
+			"State" : 0,
+			"Ask" : 0,
+			"Predict" : 0,
+			"NULL" : 0
+		}
+
+		for thought in thoughts:
+			thought_type = thought['Type']
+			if thought_type == "":
+				thought_type = "NULL"
+			day_type_counts[thought_type] += 1
+
+		day_type_counts['Post Date'] = day
+		type_stream.append(day_type_counts)
+
+	write_dict_list(type_stream, "data/output/type_stream_data.csv")
+
 # TODO: 
 # 1) run countVectorizer on each day
 # 2) Output and connect to thought stream code
+# if item has truth or good, maybe a multiplier?
 
 def run_from_command():             
 	"""Run if file invoked from command line"""
@@ -174,8 +206,8 @@ def run_from_command():
 	thoughts = [thought['Thought'] for thought in matt_thoughts]
 	ken = vectorize(thoughts, min_df=5)
 	days = groupByDay(matt_thoughts)
-	stream = processByDay(days, sorted(ken))
-	write_dict_list(stream, "data/output/thought_stream_data.csv")
+
+	buildTypeStream(days)
 
 if __name__ == "__main__":
 	run_from_command()
