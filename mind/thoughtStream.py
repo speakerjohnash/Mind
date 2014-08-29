@@ -161,7 +161,7 @@ def buildWordStream(days, ken):
 	"""Build out a word stream from daily thoughts"""
 
 	stream = processByDay(days, sorted(ken))
-	write_dict_list(stream, "data/output/thought_stream_data.csv")
+	write_dict_list(stream, "data/output/collective_stream.csv")
 
 def buildTypeStream(days):
 	"""Build stream data from thought type count"""
@@ -197,17 +197,20 @@ def run_from_command():
 	"""Run if file invoked from command line"""
 	
 	params = {}
-	thoughts = load_dict_list("data/input/Thoughts_August_17.csv")
+	thoughts = load_dict_list("data/output/Aug22_Thoughts.csv")
 	thinkers = collectThoughts(thoughts)
 
 	pat_thoughts = thinkers['patch615']
 	matt_thoughts = thinkers['msevrens']
+	prophet_thoughts = thinkers['prophet']
+	collective_thoughts = pat_thoughts + matt_thoughts + prophet_thoughts
 
-	thoughts = [thought['Thought'] for thought in matt_thoughts]
+	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=5)
-	days = groupByDay(matt_thoughts)
+	days = groupByDay(collective_thoughts)
 
-	buildTypeStream(days)
+	#buildTypeStream(days)
+	buildWordStream(days, ken)
 
 if __name__ == "__main__":
 	run_from_command()

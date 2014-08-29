@@ -38,7 +38,7 @@ button {
 
 <script>
 
-chart("./data.csv");
+chart("../data/output/type_stream_data_tri.csv");
 
 var datearray = [];
 var colorrange = [];
@@ -50,7 +50,7 @@ function chart(csvpath) {
   var colorrange = ["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"],
       strokecolor = colorrange[0];
 
-  var format = d3.time.format("%m/%d/%y");
+  var format = d3.time.format("%m/%d/%Y");
 
   var margin = {top: 20, right: 40, bottom: 30, left: 30},
       width = document.body.clientWidth - margin.left - margin.right,
@@ -65,8 +65,8 @@ function chart(csvpath) {
       .style("top", "30px")
       .style("left", "55px");
 
-  var x = d3.time.scale().range([0, width]),
-      y = d3.scale.linear().range([height-10, 0]),
+  var x = d3.time.scale().domain([format.parse("6/24/14"), format.parse("8/22/14")]).range([0, width]),
+      y = d3.scale.linear().domain([0, 52]).range([height-10, 0]),
       z = d3.scale.ordinal().range(colorrange);
 
   var xAxis = d3.svg.axis()
@@ -81,7 +81,7 @@ function chart(csvpath) {
       .scale(y);
 
   var stack = d3.layout.stack()
-      .offset("silhouette")
+      .offset("wiggle")
       .values(function(d) { return d.values; })
       .x(function(d) { return d.date; })
       .y(function(d) { return d.value; });
@@ -102,10 +102,26 @@ function chart(csvpath) {
 
   var graph = d3.csv(csvpath, function(data) {
     
+    var formatted = [],
+        row = "";
+
     data.forEach(function(d) {
-      d.date = format.parse(d.date);
-      d.value = +d.value;
+
+      var rows = [d["NULL"], d["Ask"], d["State"], d["Predict"]],
+          keys = ["NULL", "Ask", "State", "Predict"];
+
+      for (var i=0; i < 4; i++) {
+        row = {
+          "value" : parseInt(rows[i], 10), 
+          "key" : keys[i], 
+          "date" : format.parse(d.date)
+        }
+        formatted.push(row)
+      }
+
     });
+
+    data = formatted
 
     var layers = stack(nest.entries(data));
 
@@ -123,15 +139,6 @@ function chart(csvpath) {
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
-
-    svg.append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate(" + width + ", 0)")
-      .call(yAxis.orient("right"));
-
-    svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis.orient("left"));
 
     svg.selectAll(".layer")
       .attr("opacity", 1)
