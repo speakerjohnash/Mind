@@ -1,0 +1,29 @@
+text {
+  font: 10px sans-serif;
+}
+
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+#chart {
+  width: 960px;
+  height: 380px;
+  border: solid 1px #ccc;
+}
+
+#chart line {
+  fill: none;
+  stroke: #333;
+}
+
+#chart line {
+  shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
