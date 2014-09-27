@@ -9,11 +9,12 @@ text {
 
 #chart {
   width: 960px;
-  height: 380px;
+  height: 60px;
+  padding: 15px;
   border: solid 1px #ccc;
 }
 
-#chart line {
+#chart line{
   fill: none;
   stroke: #333;
 }
@@ -24,6 +25,26 @@ text {
 
 .axis path, .axis line {
   fill: none;
-  stroke: #fff;
   shape-rendering: crispEdges;
+}
+
+#chart .axis line {
+  stroke: none;
+}
+
+#chart4 {
+  margin-left: -25px;
+  height: 506px;
+}
+
+#chart4 .background {
+  fill: #ddd;
+}
+
+#chart4 .dot {
+  stroke: #000;
+}
+
+#chart4 line {
+  stroke: white;
 }

@@ -22,3 +22,7 @@ button {
   stroke-width: 2px;
   shape-rendering: crispEdges;
 }
+
+.widget {
+  padding-left: 60px;
+}

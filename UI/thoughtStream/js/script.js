@@ -1,9 +1,7 @@
-chart("../data/output/collective_stream.csv");
+chart("../../data/output/collective_stream.csv");
 
 var datearray = [];
 var colorrange = [];
-
-//python -m SimpleHTTPServer 8888 &
 
 function chart(csvpath) {
 
@@ -20,7 +18,7 @@ function chart(csvpath) {
 
   var margin = {top: 20, right: 40, bottom: 30, left: 30},
       width = document.body.clientWidth - margin.left - margin.right,
-      height = 700 - margin.top - margin.bottom;
+      height = 350 - margin.top - margin.bottom;
 
   var tooltip = d3.select("body")
       .append("div")
@@ -45,7 +43,7 @@ function chart(csvpath) {
   var yAxisr = d3.svg.axis().scale(y);
 
   var stack = d3.layout.stack()
-      .offset("silhouette")
+      .offset("wiggle")
       .values(function(d) { return d.values; })
       .x(function(d) { return d.date; })
       .y(function(d) { return d.value; });
@@ -71,10 +69,10 @@ function chart(csvpath) {
 
     data.forEach(function(d) {
 
-      var rows = [d["present"], d["past"], d["future"]]
-          keys = ["Present", "Past", "Future"];
+      var rows = [d["present"], d["past"], d["future"], d["time"], d["truth"], d["currency"], d["prophet"]]
+          keys = ["Present", "Past", "Future", "Time", "truth", "currency", "prophet"];
 
-      for (var i=0; i < 3; i++) {
+      for (var i=0; i < 7; i++) {
         row = {
           "value" : parseInt(rows[i], 10), 
           "key" : keys[i], 
