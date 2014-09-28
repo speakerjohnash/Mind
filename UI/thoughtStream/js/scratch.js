@@ -4,19 +4,23 @@ thought stream visualization*/
 function thoughtStream(data) {
 
 	var words = Object.keys(data[0]),
-		totals = {},
-		select = multiSelect(data, words);
+		totals = {};
 
-	var max = d3.max(data, function(row) { return d3.max(d3.values(row))}) 
+	var max = d3.max(data, function(row) { return d3.max(d3.values(row))})
 
 	console.log(max)
+
+	// Create Multiselect
+	multiSelect(data, words)
 
 }
 
 /* Produces the SVG components that 
 make up the thought stream */
 
-function chart(data) {
+function stream(data, selected) {
+
+	formatted = formatData(data, selected)
 
 }
 
@@ -24,6 +28,23 @@ function chart(data) {
 visualization */
 
 function formatData(data, selected) {
+
+    var formatted = [],
+    	format = d3.time.format("%m/%d/%Y"),
+        row = "";
+
+	data.forEach(function(day) {
+		for (var i=0, l=selected.length; i<l; i++) {
+			row = {
+				"value" : parseInt(day[selected[i]], 10), 
+          		"key" : selected[i], 
+          		"date" : format.parse(day["Post Date"])
+			}
+			formatted.push(row)
+		}
+	})
+
+	return formatted
 
 }
 
@@ -55,10 +76,9 @@ function multiSelect(data, words) {
 		maxHeight : 250,
 		onChange : function (element, checked) {
 			selected = $("select.multiselect").val()
+			stream(data, selected)
 		}
     });
-
-    return select
 
 }
 
