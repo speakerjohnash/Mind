@@ -81,6 +81,8 @@ function chart(csvpath) {
 
     });
 
+    /* Begin Chart Draw */
+
     data = formatted
 
     var layers = stack(nest.entries(data));
@@ -94,6 +96,8 @@ function chart(csvpath) {
       .attr("class", "layer")
       .attr("d", function(d) { return area(d.values); })
       .style("fill", function(d, i) { return z(2 * Math.random())});
+
+    /* End Chart Draw */
 
     svg.append("g")
       .attr("class", "x axis")

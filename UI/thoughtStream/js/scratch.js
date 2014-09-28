@@ -3,24 +3,60 @@ thought stream visualization*/
 
 function thoughtStream(data) {
 
+	// Canvas
+	var margin = {top: 20, right: 40, bottom: 30, left: 30},
+    	width = document.body.clientWidth - margin.left - margin.right,
+     	height = 350 - margin.top - margin.bottom;
+
+	// Data
 	var words = Object.keys(data[0]),
-		totals = {};
+		totals = {},
+		max = d3.max(data, function(row) { return d3.max(d3.values(row))});
 
-	var max = d3.max(data, function(row) { return d3.max(d3.values(row))})
-
-	console.log(max)
+	// D3
+	var tools = {
+		"width" : width,
+		"height" : height
+	}
 
 	// Create Multiselect
-	multiSelect(data, words)
+	multiSelect(data, words, tools)
+
+	// Create SVG
+	var svg = d3.select(".chart").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 }
 
 /* Produces the SVG components that 
 make up the thought stream */
 
-function stream(data, selected) {
+function stream(data, selected, tools) {
 
-	formatted = formatData(data, selected)
+	// SVG
+	var svg = d3.select(".chart svg"),
+		width = tools["width"],
+		height = tools["height"];
+
+	// Stack
+	var stack = d3.layout.stack()
+		.offset("wiggle")
+		.values(function(d) { return d.values; })
+		.x(function(d) { return d.date; })
+		.y(function(d) { return d.value; });
+
+	// Nest
+  	var nest = d3.nest().key(function(d) { return d.key; });
+
+	// Format Data
+	var formatted = formatData(data, selected),
+		layers = stack(nest.entries(formatted));
+
+	// Draw Stream
+
 
 }
 
@@ -51,7 +87,7 @@ function formatData(data, selected) {
 /* Creates a multiple selection widget
 for selection of ideas to display */
 
-function multiSelect(data, words) {
+function multiSelect(data, words, tools) {
 
 	// Create Multiselect
 	var widget = d3.select("body").append("div").classed("widget", true),
@@ -76,7 +112,7 @@ function multiSelect(data, words) {
 		maxHeight : 250,
 		onChange : function (element, checked) {
 			selected = $("select.multiselect").val()
-			stream(data, selected)
+			stream(data, selected, tools)
 		}
     });
 
