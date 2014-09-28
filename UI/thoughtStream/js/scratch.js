@@ -16,7 +16,8 @@ function thoughtStream(data) {
 	// D3
 	var tools = {
 		"width" : width,
-		"height" : height
+		"height" : height,
+		"max" : max
 	}
 
 	// Create Multiselect
@@ -39,7 +40,8 @@ function stream(data, selected, tools) {
 	// SVG
 	var svg = d3.select(".chart svg"),
 		width = tools["width"],
-		height = tools["height"];
+		height = tools["height"],
+		max = tools["max"];
 
 	// Stack
 	var stack = d3.layout.stack()
@@ -55,8 +57,27 @@ function stream(data, selected, tools) {
 	var formatted = formatData(data, selected),
 		layers = stack(nest.entries(formatted));
 
-	// Draw Stream
+	// Scales
+	var timeRange = d3.extent(formatted, function(d) { return d.date; }),
+		x = d3.time.scale().domain(timeRange).range([0, width]),
+      	y = d3.scale.linear().domain([0, max]).range([height-10, 0]);
 
+    y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+
+    // Area
+    var area = d3.svg.area()
+	    .interpolate("cardinal")
+	    .x(function(d) { return x(d.date); })
+	    .y0(function(d) { return y(d.y0); })
+	    .y1(function(d) { return y(d.y0 + d.y); });
+
+	// Draw Stream
+	svg.selectAll(".layer")
+		.data(layers)
+		.enter().append("path")
+		.attr("class", "layer")
+		.attr("d", function(d) { return area(d.values); })
+		.style("fill", function(d, i) { return "#cccccc"});
 
 }
 
