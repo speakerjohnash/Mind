@@ -50,9 +50,12 @@ function multiSelect(data, words) {
 
 	// Construct Widget
 	$('.multiselect').multiselect({
-		"enableFiltering" : true,
-		"includeSelectAllOption" : true,
-		"maxHeight" : 250
+		enableFiltering : true,
+		includeSelectAllOption : true,
+		maxHeight : 250,
+		onChange : function (element, checked) {
+			selected = $("select.multiselect").val()
+		}
     });
 
     return select

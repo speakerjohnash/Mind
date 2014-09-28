@@ -30,7 +30,7 @@ function chart(csvpath) {
       .style("left", "55px");
 
   var x = d3.time.scale().domain([format.parse("6/24/14"), format.parse("8/22/14")]).range([0, width]),
-      y = d3.scale.linear().domain([0, 29]).range([height-10, 0]),
+      y = d3.scale.linear().domain([0, 9]).range([height-10, 0]),
       z = d3.scale.linear().domain([0, 1]).range(["#455a8b", "#457a8b"]);
 
   var xAxis = d3.svg.axis()
@@ -39,8 +39,6 @@ function chart(csvpath) {
       .ticks(d3.time.weeks);
 
   var yAxis = d3.svg.axis().scale(y);
-
-  var yAxisr = d3.svg.axis().scale(y);
 
   var stack = d3.layout.stack()
       .offset("wiggle")
@@ -95,7 +93,7 @@ function chart(csvpath) {
       .enter().append("path")
       .attr("class", "layer")
       .attr("d", function(d) { return area(d.values); })
-      .style("fill", function(d, i) { console.log(d); return z(2 * Math.random())});
+      .style("fill", function(d, i) { return z(2 * Math.random())});
 
     svg.append("g")
       .attr("class", "x axis")
@@ -148,7 +146,7 @@ function chart(csvpath) {
         .style("position", "absolute")
         .style("z-index", "19")
         .style("width", "1px")
-        .style("height", "380px")
+        .style("height", "300px")
         .style("top", "10px")
         .style("bottom", "30px")
         .style("left", "0px")
