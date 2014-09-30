@@ -10,18 +10,10 @@ function thoughtStream(data) {
 
 	// Data
 	var words = Object.keys(data[0]),
-		totals = {},
-		max = d3.max(data, function(row) { return d3.max(d3.values(row))});
-
-	// D3
-	var tools = {
-		"width" : width,
-		"height" : height,
-		"max" : max
-	}
+		totals = {};
 
 	// Create Multiselect
-	multiSelect(data, words, tools)
+	multiSelect(data, words)
 
 	// Create SVG
 	var svg = d3.select(".chart").append("svg")
@@ -30,18 +22,29 @@ function thoughtStream(data) {
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	// Stream
+	stream(data, ["prophet", "truth", "light", "free"])
+
 }
 
 /* Produces the SVG components that 
 make up the thought stream */
 
-function stream(data, selected, tools) {
+function stream(data, selected) {
+
+	if (selected == null) {
+		d3.selectAll("path").data(function() {return []}).exit().remove()
+		return
+	}
 
 	// SVG
-	var svg = d3.select(".chart svg"),
-		width = tools["width"],
-		height = tools["height"],
-		max = tools["max"];
+	var svg = d3.select(".chart svg");
+
+	// Canvas
+	var margin = {top: 20, right: 40, bottom: 30, left: 30},
+    	width = document.body.clientWidth - margin.left - margin.right,
+     	height = 350 - margin.top - margin.bottom,
+     	max = d3.max(data, function(row) { return d3.max(d3.values(row))});
 
 	// Stack
 	var stack = d3.layout.stack()
@@ -59,6 +62,7 @@ function stream(data, selected, tools) {
 
 	// Scales
 	var timeRange = d3.extent(formatted, function(d) { return d.date; }),
+		color = d3.scale.linear().range(["#aad", "#556"]),
 		x = d3.time.scale().domain(timeRange).range([0, width]),
       	y = d3.scale.linear().domain([0, max]).range([height-10, 0]);
 
@@ -72,12 +76,20 @@ function stream(data, selected, tools) {
 	    .y1(function(d) { return y(d.y0 + d.y); });
 
 	// Draw Stream
-	svg.selectAll(".layer")
-		.data(layers)
-		.enter().append("path")
+	var flows = svg.selectAll("path").data(layers)
+
+	// Enter
+	flows.enter()
+		.append("path")
 		.attr("class", "layer")
 		.attr("d", function(d) { return area(d.values); })
-		.style("fill", function(d, i) { return "#cccccc"});
+		.style("fill", function() { return color(Math.random()); });
+
+	// Exit
+	flows.exit().remove();
+
+    // Works!
+    //d3.selectAll("path").data(function() {return []}).exit().remove()
 
 }
 
@@ -108,7 +120,7 @@ function formatData(data, selected) {
 /* Creates a multiple selection widget
 for selection of ideas to display */
 
-function multiSelect(data, words, tools) {
+function multiSelect(data, words) {
 
 	// Create Multiselect
 	var widget = d3.select("body").append("div").classed("widget", true),
@@ -133,7 +145,7 @@ function multiSelect(data, words, tools) {
 		maxHeight : 250,
 		onChange : function (element, checked) {
 			selected = $("select.multiselect").val()
-			stream(data, selected, tools)
+			stream(data, selected)
 		}
     });
 
