@@ -12,7 +12,7 @@ function thoughtStream(data) {
 	var words = Object.keys(data[0]),
 		totals = calculateTotals(data, words);
 
-	console.log(totals)
+	console.log(sortObject(totals))
 
 	// Create Multiselect
 	multiSelect(data, words)
@@ -28,6 +28,25 @@ function thoughtStream(data) {
 	stream(data, ["truth", "context", "know", "mind"])
 
 }
+
+function sortObject(obj) {
+
+    var arr = [];
+
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            arr.push({
+                'key': prop,
+                'value': obj[prop]
+            });
+        }
+    }
+
+    arr.sort(function(a, b) { return b.value - a.value; });
+
+    return arr;
+}
+
 
 /* Calculate the total usage
 of a word over a give time period */
