@@ -10,7 +10,9 @@ function thoughtStream(data) {
 
 	// Data
 	var words = Object.keys(data[0]),
-		totals = {};
+		totals = calculateTotals(data, words);
+
+	console.log(totals)
 
 	// Create Multiselect
 	multiSelect(data, words)
@@ -23,7 +25,31 @@ function thoughtStream(data) {
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	// Stream
-	stream(data, ["prophet", "truth", "light", "free"])
+	stream(data, ["truth", "context", "know", "mind"])
+
+}
+
+/* Calculate the total usage
+of a word over a give time period */
+
+function calculateTotals(data, words) {
+
+	var totals = {}
+
+	for (var k=0; k<words.length; k++) {
+		totals[words[k]] = 0
+	}
+
+	for (var i=0; i<data.length; i++) {
+		for (var ii=0; ii<words.length; ii++) {
+			var word = words[ii]
+			if (word != "Post Date") {
+				totals[word] += parseInt(data[i][word], 10)
+			}
+		}
+	}
+
+	return totals
 
 }
 
