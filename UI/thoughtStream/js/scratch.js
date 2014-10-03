@@ -12,7 +12,13 @@ function thoughtStream(data) {
 	var words = Object.keys(data[0]),
 		totals = calculateTotals(data, words);
 
-	console.log(sortObject(totals))
+	// Top 10
+	var sorted = sortObject(totals),
+		topTen = []; 
+
+	for (var i=0; i<10; i++) {
+		topTen.push(sorted[i]["key"])
+	}
 
 	// Create Multiselect
 	multiSelect(data, words)
@@ -25,7 +31,7 @@ function thoughtStream(data) {
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	// Stream
-	stream(data, ["truth", "context", "know", "mind"])
+	stream(data, topTen)
 
 }
 
