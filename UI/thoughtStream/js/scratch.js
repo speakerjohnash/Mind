@@ -16,12 +16,12 @@ function thoughtStream(data) {
 	var sorted = sortObject(totals),
 		topTen = []; 
 
-	for (var i=0; i<10; i++) {
+	for (var i=0; i<15; i++) {
 		topTen.push(sorted[i]["key"])
 	}
 
 	// Create Multiselect
-	multiSelect(data, words)
+	multiSelect(data, topTen)
 
 	// Create SVG
 	var svg = d3.select(".chart").append("svg")
@@ -113,7 +113,7 @@ function stream(data, selected) {
 
 	// Scales
 	var timeRange = d3.extent(formatted, function(d) { return d.date; }),
-		color = d3.scale.linear().range(["#aad", "#556"]),
+		color = d3.scale.linear().domain([0, selected.length]).range(["#457a8b", "#455a8b"]),
 		x = d3.time.scale().domain(timeRange).range([0, width]),
       	y = d3.scale.linear().domain([0, max]).range([height-10, 0]);
 
@@ -134,12 +134,15 @@ function stream(data, selected) {
 		.append("path")
 		.attr("class", "layer")
 		.attr("d", function(d) { return area(d.values); })
-		.style("fill", function() { return color(Math.random()); });
+		.style("fill", function(d, i) { return color(i); });
 
 	// Exit
 	flows.exit().remove();
 
     // Works!
+    flows.transition()
+      .duration(2500)
+	  .attr("d", function(d) { return area(d.values); })     
     //d3.selectAll("path").data(function() {return []}).exit().remove()
 
 }
@@ -192,7 +195,6 @@ function multiSelect(data, words) {
 	// Construct Widget
 	$('.multiselect').multiselect({
 		enableFiltering : true,
-		includeSelectAllOption : true,
 		maxHeight : 250,
 		onChange : function (element, checked) {
 			selected = $("select.multiselect").val()
