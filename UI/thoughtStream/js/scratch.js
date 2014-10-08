@@ -12,7 +12,7 @@ function thoughtStream(data) {
 	var words = Object.keys(data[0]),
 		totals = calculateTotals(data, words);
 
-	// Top 10
+	// Top Words
 	var sorted = sortObject(totals),
 		topWords = []; 
 
@@ -153,7 +153,17 @@ function stream(data, selected) {
     // Transition
     flows.transition()
       .duration(1000)
-	  .attr("d", function(d) { return area(d.values); })     
+	  .attr("d", function(d) { return area(d.values); })
+
+	// Hover
+	svg.selectAll("path")
+      .attr("opacity", 1)
+      .on("mouseover", function(d, i) {
+        svg.selectAll(".layer").transition()
+        .duration(250)
+        .attr("opacity", function(d, j) {
+          return j != i ? 0.6 : 1;
+    })})
 
 }
 
