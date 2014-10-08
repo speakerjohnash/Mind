@@ -30,6 +30,21 @@ function thoughtStream(data) {
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	// Axis
+	var format = d3.time.format("%m/%d/%Y"),
+		timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
+		x = d3.time.scale().domain(timeRange).range([0, width]);
+
+  	var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .ticks(d3.time.weeks);
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
 	// Select Top Words
 	$("#multiselect").multiselect('select', topWords.slice(0, 5));
 
@@ -121,9 +136,6 @@ function stream(data, selected) {
 		x = d3.time.scale().domain(timeRange).range([0, width]),
       	y = d3.scale.linear().range([height-10, 0]);
 
-      	console.log(timeRange)
-      	console.log(d3.max(formatted, function(d) { return d.y0 + d.y; }))
-
     // Change Scale
     //y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
 
@@ -155,7 +167,7 @@ function stream(data, selected) {
       .duration(1000)
 	  .attr("d", function(d) { return area(d.values); })
 
-	// Hover
+	// Hover On
 	svg.selectAll("path")
       .attr("opacity", 1)
       .on("mouseover", function(d, i) {
@@ -164,6 +176,16 @@ function stream(data, selected) {
         .attr("opacity", function(d, j) {
           return j != i ? 0.6 : 1;
     })})
+
+    // Hover Off
+    flows.on("mouseout", function(d, i) {
+     svg.selectAll("path")
+      .transition()
+      .duration(250)
+      .attr("opacity", "1");
+      d3.select(this)
+      .classed("hover", false);
+  	})
 
 }
 
