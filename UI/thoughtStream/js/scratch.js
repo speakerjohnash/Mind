@@ -14,14 +14,14 @@ function thoughtStream(data) {
 
 	// Top 10
 	var sorted = sortObject(totals),
-		topTen = []; 
+		topWords = []; 
 
-	for (var i=0; i<15; i++) {
-		topTen.push(sorted[i]["key"])
+	for (var i=0; i<20; i++) {
+		topWords.push(sorted[i]["key"])
 	}
 
 	// Create Multiselect
-	multiSelect(data, topTen)
+	multiSelect(data, topWords, true)
 
 	// Create SVG
 	var svg = d3.select(".chart").append("svg")
@@ -30,8 +30,11 @@ function thoughtStream(data) {
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	// Select Top Words
+	$("#multiselect").multiselect('select', topWords.slice(0, 10));
+
 	// Stream
-	stream(data, topTen)
+	stream(data, topWords)
 
 }
 
@@ -83,6 +86,7 @@ make up the thought stream */
 
 function stream(data, selected) {
 
+	// Return if nothing selected
 	if (selected == null) {
 		d3.selectAll("path").data(function() {return []}).exit().remove()
 		return
@@ -139,11 +143,10 @@ function stream(data, selected) {
 	// Exit
 	flows.exit().remove();
 
-    // Works!
+    // Transition
     flows.transition()
-      .duration(2500)
+      .duration(1000)
 	  .attr("d", function(d) { return area(d.values); })     
-    //d3.selectAll("path").data(function() {return []}).exit().remove()
 
 }
 
@@ -181,7 +184,8 @@ function multiSelect(data, words) {
 		select = widget.append("select").classed("multiselect", true),
 		params = {
 			"multiple" : "multiple",
-	 		"data-placeholder" : "Add thoughts"
+	 		"data-placeholder" : "Add thoughts",
+	 		"id" : "multiselect"
 		}
 
 	// Create Basic Markup
