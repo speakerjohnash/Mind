@@ -1,3 +1,11 @@
+#################### USAGE ####################################
+
+# python3.4 -m mind.thoughtStream [input_file]
+# python3.4 -m mind.thoughtStream data/input/stream_update.csv
+
+###############################################################
+
+
 import os
 import sys
 import re
@@ -128,7 +136,7 @@ def groupByDay(thoughts):
 
 	# Split by day
 	for thought in thoughts:
-		day = thought.get("Post date", "")[:10]
+		day = thought.get("Post date", "")[:8]
 		days[day].append(thought)
 
 	return days
@@ -161,7 +169,7 @@ def buildWordStream(days, ken):
 	"""Build out a word stream from daily thoughts"""
 
 	stream = processByDay(days, sorted(ken))
-	write_dict_list(stream, "data/output/terry_stream.csv")
+	write_dict_list(stream, "data/output/processed_stream.csv")
 
 def buildTypeStream(days):
 	"""Build stream data from thought type count"""
@@ -197,7 +205,7 @@ def run_from_command():
 	"""Run if file invoked from command line"""
 	
 	params = {}
-	thoughts = load_dict_list("data/input/Thoughts_September_8.csv")
+	thoughts = load_dict_list(sys.argv[1])
 	thinkers = collectThoughts(thoughts)
 
 	pat_thoughts = thinkers['patch615']
@@ -206,7 +214,7 @@ def run_from_command():
 	collective_thoughts = matt_thoughts + prophet_thoughts
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
-	ken = vectorize(thoughts, min_df=5)
+	ken = vectorize(thoughts, min_df=10)
 	days = groupByDay(collective_thoughts)
 
 	#buildTypeStream(days)

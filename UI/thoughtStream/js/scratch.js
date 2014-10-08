@@ -16,7 +16,7 @@ function thoughtStream(data) {
 	var sorted = sortObject(totals),
 		topWords = []; 
 
-	for (var i=0; i<20; i++) {
+	for (var i=0; i<50; i++) {
 		topWords.push(sorted[i]["key"])
 	}
 
@@ -31,10 +31,10 @@ function thoughtStream(data) {
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	// Select Top Words
-	$("#multiselect").multiselect('select', topWords.slice(0, 10));
+	$("#multiselect").multiselect('select', topWords.slice(0, 5));
 
 	// Stream
-	stream(data, topWords)
+	stream(data, topWords.slice(0, 5))
 
 }
 
@@ -121,11 +121,14 @@ function stream(data, selected) {
 		x = d3.time.scale().domain(timeRange).range([0, width]),
       	y = d3.scale.linear().range([height-10, 0]);
 
+      	console.log(timeRange)
+      	console.log(d3.max(formatted, function(d) { return d.y0 + d.y; }))
+
     // Change Scale
-    y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+    //y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
 
     // Same Scale
-    //y.domain([height+10, 0]);
+    y.domain([0, 150]);
 
     // Area
     var area = d3.svg.area()
@@ -214,7 +217,7 @@ function multiSelect(data, words) {
 
 $(document).ready(function() {
     
-    var csvpath = "../../data/output/collective_stream.csv";
+    var csvpath = "../../data/output/processed_stream.csv";
 	
 	d3.csv(csvpath, thoughtStream);
 
