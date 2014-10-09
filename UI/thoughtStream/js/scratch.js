@@ -118,7 +118,7 @@ function stream(data, selected) {
 
 	// Stack
 	var stack = d3.layout.stack()
-		.offset("wiggle")
+		.offset("silhouette")
 		.values(function(d) { return d.values; })
 		.x(function(d) { return d.date; })
 		.y(function(d) { return d.value; });
@@ -137,10 +137,10 @@ function stream(data, selected) {
       	y = d3.scale.linear().range([height-10, 0]);
 
     // Change Scale
-    //y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+    y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
 
     // Same Scale
-    y.domain([0, 150]);
+    //y.domain([0, 150]);
 
     // Area
     var area = d3.svg.area()
@@ -239,6 +239,7 @@ function multiSelect(data, words) {
 	$('.multiselect').multiselect({
 		enableFiltering : true,
 		maxHeight : 250,
+		includeSelectAllOption: true,
 		onChange : function (element, checked) {
 			selected = $("select.multiselect").val()
 			stream(data, selected)
@@ -249,7 +250,7 @@ function multiSelect(data, words) {
 
 $(document).ready(function() {
     
-    var csvpath = "../../data/output/processed_stream.csv";
+    var csvpath = "../../data/output/all_stream.csv";
 	
 	d3.csv(csvpath, thoughtStream);
 
