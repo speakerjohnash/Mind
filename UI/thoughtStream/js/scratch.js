@@ -6,7 +6,7 @@ function thoughtStream(data) {
 	// Canvas
 	var margin = {top: 20, right: 40, bottom: 30, left: 30},
     	width = document.body.clientWidth - margin.left - margin.right,
-     	height = 350 - margin.top - margin.bottom;
+     	height = 550 - margin.top - margin.bottom;
 
 	// Data
 	var words = Object.keys(data[0]),
@@ -14,10 +14,13 @@ function thoughtStream(data) {
 
 	// Top Words
 	var sorted = sortObject(totals),
-		topWords = []; 
+		topWords = [],
+		sLen = sorted.length; 
 
 	for (var i=0; i<50; i++) {
-		topWords.push(sorted[i]["key"])
+		if (sorted[i]["key"] != "Post Date") {
+			topWords.push(sorted[i]["key"])
+		}
 	}
 
 	// Create Multiselect
@@ -47,6 +50,16 @@ function thoughtStream(data) {
 
 	// Select Top Words
 	$("#multiselect").multiselect('select', topWords.slice(0, 5));
+
+	// Tooltip
+	var tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "remove tooltip")
+      .style("position", "absolute")
+      .style("z-index", "20")
+      .style("visibility", "hidden")
+      .style("top", "30px")
+      .style("left", "55px");
 
 	// Stream
 	stream(data, topWords.slice(0, 5))
@@ -113,7 +126,7 @@ function stream(data, selected) {
 	// Canvas
 	var margin = {top: 20, right: 40, bottom: 30, left: 30},
     	width = document.body.clientWidth - margin.left - margin.right,
-     	height = 350 - margin.top - margin.bottom,
+     	height = 550 - margin.top - margin.bottom,
      	max = d3.max(data, function(row) { return d3.max(d3.values(row))});
 
 	// Stack
@@ -137,10 +150,10 @@ function stream(data, selected) {
       	y = d3.scale.linear().range([height-10, 0]);
 
     // Change Scale
-    y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+    //y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
 
     // Same Scale
-    //y.domain([0, 150]);
+    y.domain([0, 600]);
 
     // Area
     var area = d3.svg.area()
@@ -150,7 +163,7 @@ function stream(data, selected) {
 	    .y1(function(d) { return y(d.y0 + d.y); });
 
 	// Draw Stream
-	var flows = svg.selectAll("path").data(layers)
+	var flows = svg.selectAll("path.layer").data(layers)
 
 	// Enter
 	flows.enter()
@@ -185,6 +198,13 @@ function stream(data, selected) {
       .attr("opacity", "1");
       d3.select(this)
       .classed("hover", false);
+  	})
+
+  	// Tooltip
+  	flows.on("mousemove", function(d, i) { 
+  		d3.select(".tooltip").html("<p>" + d.key + "</p>")
+  			.style("visibility", "visible")
+  			.style("opacity", "1");
   	})
 
 }

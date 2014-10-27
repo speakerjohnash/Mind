@@ -1,4 +1,4 @@
-chart("../../data/output/collective_stream.csv");
+chart("../../data/output/all_stream.csv");
 
 var datearray = [];
 var colorrange = [];

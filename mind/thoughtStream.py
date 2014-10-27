@@ -194,7 +194,7 @@ def buildTypeStream(days):
 		day_type_counts['Post Date'] = day
 		type_stream.append(day_type_counts)
 
-	write_dict_list(type_stream, "data/output/type_stream_data.csv")
+	write_dict_list(type_stream, "data/output/type_stream_data_0.csv")
 
 # TODO: 
 # 1) run countVectorizer on each day
