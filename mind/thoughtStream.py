@@ -182,19 +182,19 @@ def buildTypeStream(days):
 			"State" : 0,
 			"Ask" : 0,
 			"Predict" : 0,
-			"NULL" : 0
+			"Thought" : 0
 		}
 
 		for thought in thoughts:
 			thought_type = thought['Type']
 			if thought_type == "":
-				thought_type = "NULL"
+				thought_type = "Thought"
 			day_type_counts[thought_type] += 1
 
 		day_type_counts['Post Date'] = day
 		type_stream.append(day_type_counts)
 
-	write_dict_list(type_stream, "data/output/type_stream_data_0.csv")
+	write_dict_list(type_stream, "data/output/type_stream.csv")
 
 # TODO: 
 # 1) run countVectorizer on each day
@@ -222,8 +222,8 @@ def run_from_command():
 	ken = vectorize(thoughts, min_df=10)
 	days = groupByDay(collective_thoughts)
 
-	#buildTypeStream(days)
-	buildWordStream(days, ken)
+	buildTypeStream(days)
+	#buildWordStream(days, ken)
 
 if __name__ == "__main__":
 	run_from_command()

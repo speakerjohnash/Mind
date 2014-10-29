@@ -22,8 +22,7 @@
       timeFisheye = d3.fisheye.scale(d3.time.scale).domain([now, then]).range([0, width]).focus(0),
       timeIntervalScale = d3.fisheye.scale(d3.time.scale).domain(timeDomains).range(timeRanges);
 
-  var xFisheye = d3.fisheye.scale(d3.scale.identity).domain([0, width]).focus(0),
-      yFisheye = d3.fisheye.scale(d3.scale.identity).domain([0, height]).focus(90);
+  var xFisheye = d3.fisheye.scale(d3.scale.identity).domain([0, width]).focus(0);
 
   var svg = d3.select("#chart").append("svg")
       .attr("width", width)
@@ -50,15 +49,20 @@
 
   var timeLine = d3.svg.axis().scale(timeFisheye).ticks(10).orient("bottom")
 
-  redraw();
+  // Brush
+  var brush = d3.svg.brush().x(xFisheye);
+
+  var gBrush = svg.append("g")
+    .attr("class", "brush")
+    .call(brush);
+
+  gBrush.selectAll("rect")
+    .attr("height", 45);
 
   svg.on("mousemove", function() {
     var mouse = d3.mouse(this);
-    //console.log(timeScale.invert(mouse[0]))
     xFisheye.focus(mouse[0]);
-    yFisheye.focus(mouse[1]);
     timeFisheye.focus(mouse[0]);
-    //timeIntervalScale.focus(mouse[0])
     redraw();
   });
 
@@ -67,11 +71,13 @@
     .attr("transform", "translate(0, 44)")
     .call(timeLine);
 
+  redraw();
+
   function redraw() {
     svg.select(".x.axis").call(timeLine);
     xLine.attr("x1", xFisheye).attr("x2", xFisheye);
-    yLine.attr("y1", yFisheye).attr("y2", yFisheye);
   }
+
 })();
 
 /*

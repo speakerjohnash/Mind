@@ -15,7 +15,7 @@ function thoughtStream(data) {
 	// Top Words
 	var sorted = sortObject(totals),
 		topWords = [],
-		sLen = sorted.length; 
+		sLen = sorted.length;
 
 	for (var i=0; i<50; i++) {
 		if (sorted[i]["key"] != "Post Date") {
@@ -164,6 +164,13 @@ function stream(data, selected) {
 
 	// Draw Stream
 	var flows = svg.selectAll("path.layer").data(layers)
+
+	var colors = {
+        "Predict": "#5A4E8C",
+        "Ask": "#5CB85C",
+        "Thought": "#C4C4C4",
+        "State": "#428BCA"
+    };
 
 	// Enter
 	flows.enter()
