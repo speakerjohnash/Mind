@@ -1,0 +1,285 @@
+/**
+ * This file should get overwritten if Method 1 is used. If Method 2 is chosen,
+ * remove this comment and start adding your styles to this file.
+ */
+
+@import url(http://fonts.googleapis.com/css?family=Quicksand:400,700);
+
+/* New Front Page Design */
+
+.front #block-predict-prediction-block {
+	margin: 75px auto;
+	width: 450px;
+	margin-bottom: 35px;
+}
+
+.front h1.page-header {
+  display: none;
+}
+
+.front .view-front-page-redesign {
+	font-family: 'Quicksand', sans-serif;
+}
+
+.front .view-front-page-redesign .views-field-title {
+	font-size: 22px;
+}
+
+.front #block-views-notification-stream-block {
+	width: 655px;
+	margin: 0 auto;
+}
+
+.front .view-notification-stream {
+	padding-left: 55px;
+	background-image: url("./2x2_black.gif");
+	background-repeat: repeat-y;
+	background-position: 20px 0px;
+}
+
+.front .region-content h2 {
+	margin-top: 10px;
+	font-size: 27px;
+}
+
+.front #edit-thought-type-wrapper {
+	background: white;
+	padding: 10px;
+	position: relative;
+	top: -65px;
+	margin: 10px;
+	left: 15px;
+}
+
+.view-front-page-redesign .view-filters {
+	width: 190px;
+	margin-left: 20px;
+	border-left: solid 2px black;
+	border-top: solid 2px black;
+	height: 50px;
+}
+
+/* Thought Bubbles */
+a.logo img {
+	display: none;
+}
+
+.navbar a.logo {
+	background: #A33333;
+	height: 30px;
+	width: 30px;
+	display: block;
+	border-radius: 100px;
+	margin-right: 11px;
+	margin-top: 10px;
+}
+
+.color-state {
+	background: #428bca;
+}
+
+.color-ask {
+	background: #5cb85c;
+}
+
+.color-predict {
+	background: #5a4e8c;
+}
+
+.color-reflect {
+	background: #A33333;
+}
+
+.thought-bubble div {
+	height: 40px;
+	width: 40px;
+	border-radius: 100px;
+	margin: 15px;
+	margin-left: 0px;
+}
+
+.thought-bubble, .thought-content {
+	float: left;
+	background: white;
+}
+
+.thought-content .views-field-title {
+	max-width: 600px;
+	min-width: 320px;
+	margin: 7px 0;
+}
+
+.thought-content .views-label {
+	font-size: 13px;
+}
+
+.thought-content .views-field-name {
+	float: left;
+	margin-left: 65px;
+	font-size: 20px;
+	line-height: 15px;
+}
+
+.thought-content .views-field-value, 
+.thought-content .views-field-value-1 {
+	float: left;	
+}
+
+#block-views-front-page-redesign-block {
+	width: 655px;
+	margin: 0 auto;
+}
+
+#block-views-front-page-redesign-block .form-control {
+	height: auto;
+}
+
+#block-views-front-page-redesign-block .views-row {
+	margin-bottom: 15px;
+}
+
+#block-views-front-page-redesign-block .view-content {
+	 background-image: url("./2x2_black.gif");
+	 background-repeat: repeat-y;
+	 background-position: 20px 0px;
+}
+
+#block-views-front-page-redesign-block .views-field-title a {
+	color: #222;
+}
+
+#block-views-front-page-redesign-block div.rate-widget-2 ul li {
+	float: left;
+	margin-right: 10px;
+}
+
+#block-views-front-page-redesign-block div.rate-widget-2 ul {
+	margin-bottom: 0;
+}
+
+#block-views-front-page-redesign-block .rate-widget-fivestar ul {
+	padding-left: 0px;
+}
+
+#block-views-front-page-redesign-block .block-title {
+	width: 200px;
+	margin: 0 auto;
+	text-align: center;
+	overflow: visible;
+	height: 25px;
+}
+
+/* Misc */
+
+#navbar {
+	font-family: 'Quicksand', sans-serif;
+}
+
+a:visited {
+	color: rgb(117, 108, 122);	
+}
+
+.form-item-private {
+	font-family: 'Quicksand', sans-serif;
+}
+
+.rate-widget-fivestar .rate-fivestar-btn-empty {
+	border-radius: 15px;
+	margin-right: 2px;
+	background: #f2f2f2;
+}
+
+.rate-widget-fivestar .rate-fivestar-btn-filled {
+	border-radius: 15px;
+	margin-right: 2px;
+	background: #f1e886;
+}
+
+.form-item-thought-type {
+	font-family: 'Quicksand', sans-serif;
+}
+
+.navbar-brand {
+	font-size: 25px;
+}
+
+.btn-ask {
+	color: #fff;
+	background-color: #585A5A;
+	border-color: #585A5A;
+}
+
+.btn-ask:hover {
+	color: #fff;
+	background-color: #474747;
+	border-color: #474747;
+}
+
+.btn-predict {
+	color: #fff;
+	background-color: #5a4e8c;
+	border-color: #5a4e8c;
+}
+
+.btn-predict:hover {
+	color: #fff;
+	background-color: #50457b;	
+	border-color: #50457b;
+}
+
+.btn-reflect {
+	color: #fff;
+	background-color: #A33333;
+	border-color: #A33333;
+}
+
+.btn-reflect:hover {
+	color: #fff;
+	background-color: #8E2B2B;	
+	border-color: #8E2B2B;
+}
+
+.btn {
+	font-family: 'Quicksand', sans-serif;
+}
+
+.rate-widget-2 .rate-button {
+	width: 23px;	
+	height: 23px;
+	border-radius: 100px;
+	padding-left: 6px;
+}
+
+.rate-widget-2 ul {
+	padding-left: 5px;
+}
+
+.rate-widget-2 li.first {
+	padding-bottom: 4px;
+}
+
+.rate-widget-2 li.last a {
+	padding-left: 8px;
+	background: #C7C7C7;
+}
+
+div.rate-widget-2 ul li {
+	float: none;
+	height: 27px;
+}
+
+.views-exposed-form .views-exposed-widget button.form-submit {
+	margin-top: 0px;
+}
+
+.front h1.page-header {
+  display: none;
+}
+
+h1, h2, h3, th {
+	font-family: 'Quicksand', sans-serif;
+}
+
+nav {
+	font-size: 16px;
+}
