@@ -17,7 +17,7 @@ function thoughtStream(data) {
 		topWords = [],
 		sLen = sorted.length;
 
-	for (var i=0; i<50; i++) {
+	for (var i=0; i<75; i++) {
 		if (sorted[i]["key"] != "Post Date") {
 			topWords.push(sorted[i]["key"])
 		}
@@ -147,7 +147,14 @@ function stream(data, selected) {
 	var timeRange = d3.extent(formatted, function(d) { return d.date; }),
 		color = d3.scale.linear().domain([0, selected.length]).range(["#457a8b", "#455a8b"]),
 		x = d3.time.scale().domain(timeRange).range([0, width]),
-      	y = d3.scale.linear().range([height-10, 0]);
+      	y = d3.scale.linear().range([height-10, 0]),
+      	type_colors = {
+        	"Predict": "#5A4E8C",
+        	"Ask": "#5CB85C",
+        	"Thought": "#C4C4C4",
+        	"State": "#428BCA",
+        	"Reflect" : "#A33333"
+      	};
 
     // Change Scale
     //y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);

@@ -182,6 +182,7 @@ def buildTypeStream(days):
 			"State" : 0,
 			"Ask" : 0,
 			"Predict" : 0,
+			"Reflect" : 0,
 			"Thought" : 0
 		}
 
@@ -212,18 +213,21 @@ def run_from_command():
 	pat_thoughts = thinkers['patch615']
 	matt_thoughts = thinkers['msevrens']
 	prophet_thoughts = thinkers['prophet']
-	#collective_thoughts = matt_thoughts + prophet_thoughts
 
 	# All Thoughts
 	for thinker, thoughts in thinkers.items():
 		collective_thoughts += thoughts
+
+	# TEMP
+	collective_thoughts = matt_thoughts + prophet_thoughts
+	#collective_thoughts = pat_thoughts
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=10)
 	days = groupByDay(collective_thoughts)
 
 	buildTypeStream(days)
-	#buildWordStream(days, ken)
+	buildWordStream(days, ken)
 
 if __name__ == "__main__":
 	run_from_command()
