@@ -16,7 +16,6 @@ Created on Nov 26, 2014
 import csv
 import sys
 
-import pandas as pd
 from gensim.models import Word2Vec
 from gensim.utils import tokenize
 
@@ -24,7 +23,7 @@ class documentGenerator(object):
 	"""A memory efficient document loader"""
 
 	def __init__(self, file_name, doc_column):
-		df = pd.read_csv(file_name, na_filter=False, quoting=csv.QUOTE_NONE, encoding="ISO-8859-1", sep=',', error_bad_lines=False)
+		df = pd.read_csv(file_name, na_filter=False, quoting=csv.QUOTE_NONE, encoding="utf-8", sep=',', error_bad_lines=False)
 		self.docs = df[doc_column]
 
 	def __iter__(self):
@@ -34,8 +33,15 @@ class documentGenerator(object):
 def run_from_command_line(command_line_arguments):
 	"""Runs the module when invoked from the command line."""
 
-	documents = documentGenerator(sys.argv[1], "Thought")
-	model = Word2Vec(documents)
+	#documents = documentGenerator(sys.argv[1], "Thought")
+
+	input_file = open(sys.argv[1], encoding='utf-8', errors='replace')
+	thoughts = list(csv.DictReader(input_file, delimiter=',', quoting=csv.QUOTE_NONE))
+	input_file.close()
+
+	thoughts = [t['Thought'].split() for t in thoughts]
+	print(thoughts[0])
+	model = Word2Vec(thoughts)
 	model.save('./models/word2vec_thoughts')
 
 if __name__ == "__main__":
