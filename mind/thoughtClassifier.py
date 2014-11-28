@@ -108,7 +108,7 @@ def build_model(trans_train, trans_test, labels_train, labels_test):
 	#test_model("data/input/ThoughtsNov28.txt", grid_search)
 
 	# Save Model
-	joblib.dump(grid_search, 'model_' + str(score) + '.pkl', compress=3)
+	joblib.dump(grid_search, 'thought_classifier_' + str(score) + '.pkl', compress=3)
 
 def test_model(file_to_test, model):
 	"""Tests our classifier."""
