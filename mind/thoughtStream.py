@@ -11,8 +11,10 @@ import sys
 import re
 import math
 import csv
+import json
 import random
 import collections
+import datetime
 
 import numpy
 
@@ -169,7 +171,8 @@ def buildWordStream(days, ken):
 	"""Build out a word stream from daily thoughts"""
 
 	stream = processByDay(days, sorted(ken))
-	write_dict_list(stream, "data/output/all_stream.csv")
+	sorted_stream = sorted(stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
+	write_dict_list(sorted_stream, "data/output/all_stream.csv")
 
 def buildTypeStream(days):
 	"""Build stream data from thought type count"""
@@ -215,15 +218,15 @@ def run_from_command():
 	prophet_thoughts = thinkers['prophet']
 
 	# All Thoughts
-	for thinker, thoughts in thinkers.items():
-		collective_thoughts += thoughts
+	#for thinker, thoughts in thinkers.items():
+	#	collective_thoughts += thoughts
 
 	# TEMP
 	collective_thoughts = matt_thoughts + prophet_thoughts
 	#collective_thoughts = pat_thoughts
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
-	ken = vectorize(thoughts, min_df=10)
+	ken = vectorize(thoughts, min_df=7)
 	days = groupByDay(collective_thoughts)
 
 	buildTypeStream(days)
