@@ -22,3 +22,8 @@ p {
   margin-left: 25px;
   margin-top: 15px;
 }
+
+.brush .extent {
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}

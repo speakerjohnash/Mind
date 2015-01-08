@@ -41,7 +41,7 @@ function chart(csvpath) {
   var yAxis = d3.svg.axis().scale(y);
 
   var stack = d3.layout.stack()
-      .offset("wiggle")
+      .offset("silhouette")
       .values(function(d) { return d.values; })
       .x(function(d) { return d.date; })
       .y(function(d) { return d.value; });

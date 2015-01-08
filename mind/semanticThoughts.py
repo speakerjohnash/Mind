@@ -9,7 +9,7 @@ Created on Nov 26, 2014
 
 #################### USAGE ##########################
 
-# python3.3 semantic_vectors.py [file_name]
+# python3.4 -m mind.semanticThoughts [file_name]
 
 #####################################################
 

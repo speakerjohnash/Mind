@@ -79,10 +79,7 @@ def wordCount(vocab, countVector, num_samples):
 	dist = numpy.sum(countVector, axis=0)
 	dist = dist.tolist()
 
-	#safe_print("Word Count")
 	word_count = dict(zip(vocab, dist))
-	#safe_print(dict(zip(vocab, dist)), "\n")
-
 	#distribution_dict = wordFrequency(vocab, dist, num_samples)
 
 	return word_count
@@ -198,7 +195,8 @@ def buildTypeStream(days):
 		day_type_counts['Post Date'] = day
 		type_stream.append(day_type_counts)
 
-	write_dict_list(type_stream, "data/output/type_stream.csv")
+	sorted_stream = sorted(type_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
+	write_dict_list(sorted_stream, "data/output/type_stream.csv")
 
 # TODO: 
 # 1) run countVectorizer on each day

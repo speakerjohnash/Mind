@@ -17,7 +17,7 @@ function thoughtStream(data) {
 		topWords = [],
 		sLen = sorted.length;
 
-	for (var i=0; i<75; i++) {
+	for (var i=0; i<200; i++) {
 		if (sorted[i]["key"] != "Post Date") {
 			topWords.push(sorted[i]["key"])
 		}
@@ -31,7 +31,7 @@ function thoughtStream(data) {
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		//.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	// Axis
 	var format = d3.time.format("%m/%d/%Y"),
@@ -49,7 +49,7 @@ function thoughtStream(data) {
       .call(xAxis);
 
 	// Select Top Words
-	$("#multiselect").multiselect('select', topWords.slice(0, 5));
+	$("#multiselect").multiselect('select', topWords.slice(0, 25));
 
 	// Tooltip
 	var tooltip = d3.select("body")
@@ -62,7 +62,7 @@ function thoughtStream(data) {
       .style("left", "55px");
 
 	// Stream
-	stream(data, topWords.slice(0, 5))
+	stream(data, topWords.slice(0, 25))
 
 }
 
@@ -156,6 +156,18 @@ function stream(data, selected) {
         	"Reflect" : "#A33333"
       	};
 
+    // Brush
+
+    /*
+  	var brush = d3.svg.brush().x(x);
+
+  	var gBrush = svg.append("g")
+    	.attr("class", "brush")
+    	.call(brush);
+
+    gBrush.selectAll("rect")
+    	.attr("height", height); */
+
     // Change Scale
     //y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
 
@@ -176,7 +188,8 @@ function stream(data, selected) {
         "Predict": "#5A4E8C",
         "Ask": "#5CB85C",
         "Thought": "#C4C4C4",
-        "State": "#428BCA"
+        "State": "#428BCA",
+        "Reflect": "#A33333"
     };
 
 	// Enter
