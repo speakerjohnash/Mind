@@ -12,8 +12,8 @@
 
   // Set Defaults
 
-  wake.value = "07:00:00";
-  sleep.value = "23:00:00";
+  wake.value = "09:00:00";
+  sleep.value = "00:00:00";
 
   // Draw Arc Clock
 
@@ -36,8 +36,11 @@
 
   var wakeParts = wake.value.split(":"),
       sleepParts = sleep.value.split(":"),
-      wakeAngle = time2Radians(moment().startOf('day').hour(wakeParts[0]).minute(wakeParts[1])._d),
-      sleepAngle = time2Radians(moment().startOf('day').hour(sleepParts[0]).minute(sleepParts[1])._d),
+      wakeTime = moment().startOf('day').hour(wakeParts[0]).minute(wakeParts[1]),
+      sleepTime = moment().startOf('day').hour(sleepParts[0]).minute(sleepParts[1]),
+      sleepTime = (sleepTime.isBefore(wakeTime)) ? sleepTime.add('day', 1) : sleepTime,
+      wakeAngle = time2Radians(wakeTime._d),
+      sleepAngle = time2Radians(sleepTime._d),
       dayLength = sleepAngle - wakeAngle,
       wakeAngleCentered = -(dayLength / 2),
       sleepAngleCentered = wakeAngleCentered + dayLength;
