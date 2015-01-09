@@ -30,7 +30,8 @@
   var rise = moment().startOf('day');
   var fall = moment().endOf('day');
 
-  // Construct the Proper scale
+  // Construct the Proper Scale
+
   var time2Radians = d3.time.scale().domain([rise._d, fall._d]).range([0, p]);
 
   var wakeParts = wake.value.split(":"),
@@ -43,23 +44,25 @@
 
   time2Radians.range([(0 - wakeAngleCentered), (p - wakeAngleCentered)])
 
+  // Construct and Draw Arcs
+
   var dayArc = d3.svg.arc()
     .innerRadius(80 - 5)
     .outerRadius(80)
     .startAngle(wakeAngleCentered)
     .endAngle(sleepAngleCentered);
 
-  group.append("path")
-    .attr("d", dayArc)
-
-  var arc = d3.svg.arc()
+  var now = d3.svg.arc()
     .innerRadius(80 - 5)
     .outerRadius(80)
     .startAngle(time2Radians(moment()._d))
     .endAngle(time2Radians(moment().add('minutes', 15)._d));
 
   group.append("path")
-    .attr("d", arc)
-    .attr("class", "this-hour")
+    .attr("d", dayArc)
+
+  group.append("path")
+    .attr("d", now)
+    .attr("class", "now")
 
 })();
