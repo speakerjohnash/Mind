@@ -13,7 +13,7 @@
   // Set Defaults
 
   wake.value = "09:00:00";
-  sleep.value = "00:00:00";
+  sleep.value = "01:00:00";
 
   // Draw Arc Clock
 
@@ -24,7 +24,7 @@
   var group = canvas.append("g")
     .attr("transform", "translate(100, 100)");
 
-  var r = 100;
+  var r = 85;
   var p = Math.PI * 2;
 
   var rise = moment().startOf('day');
@@ -38,31 +38,43 @@
       sleepParts = sleep.value.split(":"),
       wakeTime = moment().startOf('day').hour(wakeParts[0]).minute(wakeParts[1]),
       sleepTime = moment().startOf('day').hour(sleepParts[0]).minute(sleepParts[1]),
-      sleepTime = (sleepTime.isBefore(wakeTime)) ? sleepTime.add('day', 1) : sleepTime,
+      sleepTime = (sleepTime.isBefore(wakeTime)) ? sleepTime.add(1, 'day') : sleepTime,
       wakeAngle = time2Radians(wakeTime._d),
       sleepAngle = time2Radians(sleepTime._d),
       dayLength = sleepAngle - wakeAngle,
       wakeAngleCentered = -(dayLength / 2),
-      sleepAngleCentered = wakeAngleCentered + dayLength;
+      sleepAngleCentered = wakeAngleCentered + dayLength,
+      zeroAngle = wakeAngleCentered - wakeAngle;
 
-  time2Radians.range([(0 - wakeAngleCentered), (p - wakeAngleCentered)])
+  // The Magic Scale that Converts between Linear Time and Arc Time
+
+  time2Radians.range([zeroAngle, zeroAngle + p])
 
   // Construct and Draw Arcs
 
   var dayArc = d3.svg.arc()
-    .innerRadius(80 - 5)
-    .outerRadius(80)
+    .innerRadius(r - 5)
+    .outerRadius(r)
     .startAngle(wakeAngleCentered)
     .endAngle(sleepAngleCentered);
 
   var now = d3.svg.arc()
-    .innerRadius(80 - 5)
-    .outerRadius(80)
+    .innerRadius(r - 5)
+    .outerRadius(r)
     .startAngle(time2Radians(moment()._d))
-    .endAngle(time2Radians(moment().add('minutes', 15)._d));
+    .endAngle(time2Radians(moment().add(15, 'minutes')._d));
+
+  var midnight = d3.svg.arc()
+    .innerRadius(0)
+    .outerRadius(r)
+    .startAngle(time2Radians(moment().startOf('day')._d))
+    .endAngle(time2Radians(moment().startOf('day').add(5, 'minutes')._d));
 
   group.append("path")
     .attr("d", dayArc)
+
+  group.append("path")
+    .attr("d", midnight)
 
   group.append("path")
     .attr("d", now)
