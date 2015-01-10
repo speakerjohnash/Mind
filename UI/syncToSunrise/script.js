@@ -64,30 +64,53 @@ Math.toDegrees = function(radians) {
 
   // Construct and Draw Arcs
 
-  var back = d3.svg.arc()
+  var lineWidth = 10;
+
+  var backInner = d3.svg.arc()
     .innerRadius(0)
+    .outerRadius(r - lineWidth)
+    .startAngle(0)
+    .endAngle(p);
+
+  var backOuter = d3.svg.arc()
+    .innerRadius(r)
     .outerRadius(r + 20)
     .startAngle(0)
     .endAngle(p);
 
   var dayArc = d3.svg.arc()
-    .innerRadius(r - 5)
+    .innerRadius(r - lineWidth)
     .outerRadius(r)
     .startAngle(wakeAngleCentered)
     .endAngle(sleepAngleCentered);
 
+  var sleepArc = d3.svg.arc()
+    .innerRadius(r - lineWidth)
+    .outerRadius(r)
+    .startAngle(sleepAngleCentered)
+    .endAngle(wakeAngleCentered + p);
+
   var now = d3.svg.arc()
-    .innerRadius(r - 5)
+    .innerRadius(r - lineWidth)
     .outerRadius(r)
     .startAngle(time2Radians(moment()._d))
     .endAngle(time2Radians(moment().add(15, 'minutes')._d));
 
   group.append("path")
-    .attr("d", back)
+    .attr("d", backInner)
+    .attr("class", "back")
+
+  group.append("path")
+    .attr("d", backOuter)
     .attr("class", "back")
 
   group.append("path")
     .attr("d", dayArc)
+    .attr("class", "day-arc")
+
+  group.append("path")
+    .attr("d", sleepArc)
+    .attr("class", "sleep-arc")
 
   group.append("path")
     .attr("d", now)
@@ -114,7 +137,7 @@ Math.toDegrees = function(radians) {
         sunset = moment(times['sunset'])._d;
 
     var sunArc = d3.svg.arc()
-      .innerRadius(r - 10)
+      .innerRadius(r - 15)
       .outerRadius(r + 5)
       .startAngle(time2Radians(sunrise))
       .endAngle(time2Radians(sunset));

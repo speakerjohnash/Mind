@@ -1,9 +1,17 @@
 .now {
-  fill: yellow;
+  fill: #e3dc29;
 }
 
 .sun-arc {
   fill: rgba(219, 219, 49, 0.4)
+}
+
+.sleep-arc {
+  fill: rgb(81, 85, 165);
+}
+
+.day-arc {
+	fill: #70a6d5;
 }
 
 .back {
