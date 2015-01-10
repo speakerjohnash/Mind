@@ -15,11 +15,15 @@
   wake.value = "09:00:00";
   sleep.value = "01:00:00";
 
-  // Draw Arc Clock
+  // Get Geolocation
+
+  navigator.geolocation.getCurrentPosition(drawSun);
+
+  // Prepare Canvas
 
   var canvas = d3.select("body").append("svg")
-    .attr("width", 500)
-    .attr("height", 500);
+  .attr("width", 500)
+  .attr("height", 500);
 
   var group = canvas.append("g")
     .attr("transform", "translate(100, 100)");
@@ -79,5 +83,11 @@
   group.append("path")
     .attr("d", now)
     .attr("class", "now")
+
+  // Draw Sun Arc
+
+  function drawSun(geo) {
+    console.log(geo)
+  }
 
 })();
