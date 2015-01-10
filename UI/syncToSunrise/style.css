@@ -1,3 +1,7 @@
 .now {
   fill: yellow;
 }
+
+.sun-arc {
+  fill: rgba(219, 219, 49, 0.4)
+}

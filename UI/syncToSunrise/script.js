@@ -1,3 +1,15 @@
+// Converts from degrees to radians
+
+Math.toRadians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+
+// Converts from radians to degrees
+
+Math.toDegrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
+ 
 (function syncToSunrise() {
 
   // Create Input Controls
@@ -77,8 +89,8 @@
   group.append("path")
     .attr("d", dayArc)
 
-  group.append("path")
-    .attr("d", midnight)
+  //group.append("path")
+  //  .attr("d", midnight)
 
   group.append("path")
     .attr("d", now)
@@ -86,8 +98,38 @@
 
   // Draw Sun Arc
 
+  function threeSixty(number) {
+
+    if (number > 360){
+      number -= 360;
+    }
+    else if (number < 0){
+      number += 360;
+    }
+    return number;
+  }
+
   function drawSun(geo) {
-    console.log(geo)
+
+    var lat = geo["coords"]["latitude"],
+        lon = geo["coords"]["latitude"];
+
+    var times = SunCalc.getTimes(new Date(), lat, lon),
+        sunrise = moment(times['sunrise'])._d,
+        sunset = moment(times['sunset']).subtract(1, 'day')._d;
+
+    var sunArc = d3.svg.arc()
+      .innerRadius(r - 10)
+      .outerRadius(r + 5)
+      .startAngle(time2Radians(sunrise))
+      .endAngle(time2Radians(sunset));
+
+    group.append("path")
+      .attr("d", sunArc)
+      .attr("class", "sun-arc")
+
+    console.log(time2Radians(sunset))
+
   }
 
 })();
