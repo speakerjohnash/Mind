@@ -5,3 +5,19 @@
 .sun-arc {
   fill: rgba(219, 219, 49, 0.4)
 }
+
+.back {
+  fill: rgba(0, 0, 0, 0.13);
+}
+
+html {
+  background: url(background.jpeg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+svg {
+	padding: 135px;
+}

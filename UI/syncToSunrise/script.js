@@ -36,7 +36,7 @@ Math.toDegrees = function(radians) {
   var group = canvas.append("g")
     .attr("transform", "translate(100, 100)");
 
-  var r = 85;
+  var r = 115;
   var p = Math.PI * 2;
 
   var rise = moment().startOf('day');
@@ -64,6 +64,12 @@ Math.toDegrees = function(radians) {
 
   // Construct and Draw Arcs
 
+  var back = d3.svg.arc()
+    .innerRadius(0)
+    .outerRadius(r + 20)
+    .startAngle(0)
+    .endAngle(p);
+
   var dayArc = d3.svg.arc()
     .innerRadius(r - 5)
     .outerRadius(r)
@@ -75,6 +81,10 @@ Math.toDegrees = function(radians) {
     .outerRadius(r)
     .startAngle(time2Radians(moment()._d))
     .endAngle(time2Radians(moment().add(15, 'minutes')._d));
+
+  group.append("path")
+    .attr("d", back)
+    .attr("class", "back")
 
   group.append("path")
     .attr("d", dayArc)
@@ -102,9 +112,6 @@ Math.toDegrees = function(radians) {
     var times = SunCalc.getTimes(new Date(), lat, lon),
         sunrise = moment(times['sunrise'])._d,
         sunset = moment(times['sunset'])._d;
-
-    console.log(sunset)
-    console.log(sunrise)
 
     var sunArc = d3.svg.arc()
       .innerRadius(r - 10)
