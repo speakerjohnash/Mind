@@ -33,6 +33,12 @@ Math.toDegrees = function(radians) {
   .attr("width", 500)
   .attr("height", 500);
 
+  var filter = canvas.append("defs")
+    .append("filter")
+    .attr("id", "blur")
+    .append("feGaussianBlur")
+    .attr("stdDeviation", 1.5);
+
   var group = canvas.append("g")
     .attr("transform", "translate(100, 100)");
 
@@ -145,6 +151,7 @@ Math.toDegrees = function(radians) {
     group.append("path")
       .attr("d", sunArc)
       .attr("class", "sun-arc")
+      .attr("filter", "url(#blur)");
 
     Cookies.set("latitude", lat);
     Cookies.set("longitude", lon)
