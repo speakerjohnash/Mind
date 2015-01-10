@@ -27,10 +27,6 @@ Math.toDegrees = function(radians) {
   wake.value = "09:00:00";
   sleep.value = "01:00:00";
 
-  // Get Geolocation
-
-  navigator.geolocation.getCurrentPosition(drawSun);
-
   // Prepare Canvas
 
   var canvas = d3.select("body").append("svg")
@@ -80,43 +76,35 @@ Math.toDegrees = function(radians) {
     .startAngle(time2Radians(moment()._d))
     .endAngle(time2Radians(moment().add(15, 'minutes')._d));
 
-  var midnight = d3.svg.arc()
-    .innerRadius(0)
-    .outerRadius(r)
-    .startAngle(time2Radians(moment().startOf('day')._d))
-    .endAngle(time2Radians(moment().startOf('day').add(5, 'minutes')._d));
-
   group.append("path")
     .attr("d", dayArc)
-
-  //group.append("path")
-  //  .attr("d", midnight)
 
   group.append("path")
     .attr("d", now)
     .attr("class", "now")
 
-  // Draw Sun Arc
+  // Get Geolocation and Draw Sun Arc
 
-  function threeSixty(number) {
+  var lat = Cookies.get("latitude"),
+      lon = Cookies.get("longitude");
 
-    if (number > 360){
-      number -= 360;
-    }
-    else if (number < 0){
-      number += 360;
-    }
-    return number;
+  if (typeof(lat) == "undefined" || typeof(lon) == "undefined") {
+    navigator.geolocation.getCurrentPosition(drawSun);
+  } else {
+    drawSun({"coords":{"latitude": lat, "longitude": lon}})
   }
 
   function drawSun(geo) {
 
     var lat = geo["coords"]["latitude"],
-        lon = geo["coords"]["latitude"];
+        lon = geo["coords"]["longitude"];
 
     var times = SunCalc.getTimes(new Date(), lat, lon),
         sunrise = moment(times['sunrise'])._d,
-        sunset = moment(times['sunset']).subtract(1, 'day')._d;
+        sunset = moment(times['sunset'])._d;
+
+    console.log(sunset)
+    console.log(sunrise)
 
     var sunArc = d3.svg.arc()
       .innerRadius(r - 10)
@@ -128,7 +116,8 @@ Math.toDegrees = function(radians) {
       .attr("d", sunArc)
       .attr("class", "sun-arc")
 
-    console.log(time2Radians(sunset))
+    Cookies.set("latitude", lat);
+    Cookies.set("longitude", lon)
 
   }
 
