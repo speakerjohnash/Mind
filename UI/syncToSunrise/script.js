@@ -82,18 +82,6 @@ Math.toDegrees = function(radians) {
 
     var lineWidth = 10;
 
-    var backInner = d3.svg.arc()
-      .innerRadius(0)
-      .outerRadius(r - lineWidth)
-      .startAngle(0)
-      .endAngle(p);
-
-    var backOuter = d3.svg.arc()
-      .innerRadius(r)
-      .outerRadius(r + 20)
-      .startAngle(0)
-      .endAngle(p);
-
     var dayArc = d3.svg.arc()
       .innerRadius(r - lineWidth)
       .outerRadius(r)
@@ -112,15 +100,17 @@ Math.toDegrees = function(radians) {
       .startAngle(time2Radians(moment()._d))
       .endAngle(time2Radians(moment().add(15, 'minutes')._d));
 
-    group.append("circle")
+    var backing = group.append("g")
+    
+    backing.append("circle")
       .attr("class", "back")
       .attr("r", r + 20)
     
-    group.append("text")
+    backing.append("text")
       .attr("text-anchor", "middle")
       .attr("class", "quicksand digital-time")
-      .text(moment().format("h:mm a"));      
-
+      .text(moment().format("h:mm a")); 
+    
     group.append("path")
       .attr("d", dayArc)
       .attr("class", "day-arc")
