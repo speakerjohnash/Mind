@@ -16,16 +16,18 @@ Math.toDegrees = function(radians) {
 
   var wake = d3.select(".day-bookend").append("input")
     .attr("type", "time")
-    .attr("class", "wake")[0][0];
+    .attr("class", "wake")
+    .on("change", drawClock)[0][0];
 
   var sleep = d3.select(".day-bookend").append("input")
     .attr("type", "time")
-    .attr("class", "sleep")[0][0];
+    .attr("class", "sleep")
+    .on("change", drawClock)[0][0];
 
   // Set Defaults
 
-  wake.value = "09:00:00";
-  sleep.value = "01:00:00";
+  wake.value = "08:30:00";
+  sleep.value = "01:30:00";
 
   // Prepare Canvas
 
@@ -48,11 +50,18 @@ Math.toDegrees = function(radians) {
   var rise = moment().startOf('day');
   var fall = moment().endOf('day');
 
-  // Construct the Proper Scale
+  // Draw a Clock
+  drawClock();
 
-  var time2Radians = d3.time.scale().domain([rise._d, fall._d]).range([0, p]);
+  function drawClock() {
 
-  var wakeParts = wake.value.split(":"),
+    // Construct the Proper Scale
+
+    var time2Radians = d3.time.scale().domain([rise._d, fall._d]).range([0, p]);
+
+    group.selectAll("*").remove();
+
+    var wakeParts = wake.value.split(":"),
       sleepParts = sleep.value.split(":"),
       wakeTime = moment().startOf('day').hour(wakeParts[0]).minute(wakeParts[1]),
       sleepTime = moment().startOf('day').hour(sleepParts[0]).minute(sleepParts[1]),
@@ -64,97 +73,99 @@ Math.toDegrees = function(radians) {
       sleepAngleCentered = wakeAngleCentered + dayLength,
       zeroAngle = wakeAngleCentered - wakeAngle;
 
-  // The Magic Scale that Converts between Linear Time and Arc Time
+    // The Magic Scale that Converts between Linear Time and Arc Time
 
-  time2Radians.range([zeroAngle, zeroAngle + p])
+    time2Radians.range([zeroAngle, zeroAngle + p])
 
-  // Construct and Draw Arcs
+    // Construct and Draw Arcs
 
-  var lineWidth = 10;
+    var lineWidth = 10;
 
-  var backInner = d3.svg.arc()
-    .innerRadius(0)
-    .outerRadius(r - lineWidth)
-    .startAngle(0)
-    .endAngle(p);
+    var backInner = d3.svg.arc()
+      .innerRadius(0)
+      .outerRadius(r - lineWidth)
+      .startAngle(0)
+      .endAngle(p);
 
-  var backOuter = d3.svg.arc()
-    .innerRadius(r)
-    .outerRadius(r + 20)
-    .startAngle(0)
-    .endAngle(p);
+    var backOuter = d3.svg.arc()
+      .innerRadius(r)
+      .outerRadius(r + 20)
+      .startAngle(0)
+      .endAngle(p);
 
-  var dayArc = d3.svg.arc()
-    .innerRadius(r - lineWidth)
-    .outerRadius(r)
-    .startAngle(wakeAngleCentered)
-    .endAngle(sleepAngleCentered);
+    var dayArc = d3.svg.arc()
+      .innerRadius(r - lineWidth)
+      .outerRadius(r)
+      .startAngle(wakeAngleCentered)
+      .endAngle(sleepAngleCentered);
 
-  var sleepArc = d3.svg.arc()
-    .innerRadius(r - lineWidth)
-    .outerRadius(r)
-    .startAngle(sleepAngleCentered)
-    .endAngle(wakeAngleCentered + p);
+    var sleepArc = d3.svg.arc()
+      .innerRadius(r - lineWidth)
+      .outerRadius(r)
+      .startAngle(sleepAngleCentered)
+      .endAngle(wakeAngleCentered + p);
 
-  var now = d3.svg.arc()
-    .innerRadius(r - lineWidth)
-    .outerRadius(r)
-    .startAngle(time2Radians(moment()._d))
-    .endAngle(time2Radians(moment().add(15, 'minutes')._d));
-
-  group.append("path")
-    .attr("d", backInner)
-    .attr("class", "back")
-
-  group.append("path")
-    .attr("d", backOuter)
-    .attr("class", "back")
-
-  group.append("path")
-    .attr("d", dayArc)
-    .attr("class", "day-arc")
-
-  group.append("path")
-    .attr("d", sleepArc)
-    .attr("class", "sleep-arc")
-
-  group.append("path")
-    .attr("d", now)
-    .attr("class", "now")
-
-  // Get Geolocation and Draw Sun Arc
-
-  var lat = Cookies.get("latitude"),
-      lon = Cookies.get("longitude");
-
-  if (typeof(lat) == "undefined" || typeof(lon) == "undefined") {
-    navigator.geolocation.getCurrentPosition(drawSun);
-  } else {
-    drawSun({"coords":{"latitude": lat, "longitude": lon}})
-  }
-
-  function drawSun(geo) {
-
-    var lat = geo["coords"]["latitude"],
-        lon = geo["coords"]["longitude"];
-
-    var times = SunCalc.getTimes(new Date(), lat, lon),
-        sunrise = moment(times['sunrise'])._d,
-        sunset = moment(times['sunset'])._d;
-
-    var sunArc = d3.svg.arc()
-      .innerRadius(r - 15)
-      .outerRadius(r + 5)
-      .startAngle(time2Radians(sunrise))
-      .endAngle(time2Radians(sunset));
+    var now = d3.svg.arc()
+      .innerRadius(r - lineWidth)
+      .outerRadius(r)
+      .startAngle(time2Radians(moment()._d))
+      .endAngle(time2Radians(moment().add(15, 'minutes')._d));
 
     group.append("path")
-      .attr("d", sunArc)
-      .attr("class", "sun-arc")
-      .attr("filter", "url(#blur)");
+      .attr("d", backInner)
+      .attr("class", "back")
 
-    Cookies.set("latitude", lat);
-    Cookies.set("longitude", lon)
+    group.append("path")
+      .attr("d", backOuter)
+      .attr("class", "back")
+
+    group.append("path")
+      .attr("d", dayArc)
+      .attr("class", "day-arc")
+
+    group.append("path")
+      .attr("d", sleepArc)
+      .attr("class", "sleep-arc")
+
+    group.append("path")
+      .attr("d", now)
+      .attr("class", "now")
+
+    // Get Geolocation and Draw Sun Arc
+
+    var lat = Cookies.get("latitude"),
+        lon = Cookies.get("longitude");
+
+    if (typeof(lat) == "undefined" || typeof(lon) == "undefined") {
+      navigator.geolocation.getCurrentPosition(drawSun);
+    } else {
+      drawSun({"coords":{"latitude": lat, "longitude": lon}})
+    }
+
+    function drawSun(geo) {
+
+      var lat = geo["coords"]["latitude"],
+          lon = geo["coords"]["longitude"];
+
+      var times = SunCalc.getTimes(new Date(), lat, lon),
+          sunrise = moment(times['sunrise'])._d,
+          sunset = moment(times['sunset'])._d;
+
+      var sunArc = d3.svg.arc()
+        .innerRadius(r - 15)
+        .outerRadius(r + 5)
+        .startAngle(time2Radians(sunrise))
+        .endAngle(time2Radians(sunset));
+
+      group.append("path")
+        .attr("d", sunArc)
+        .attr("class", "sun-arc")
+        .attr("filter", "url(#blur)");
+
+      Cookies.set("latitude", lat);
+      Cookies.set("longitude", lon)
+
+    }
 
   }
 
