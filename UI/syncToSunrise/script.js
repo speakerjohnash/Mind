@@ -51,7 +51,7 @@ Math.toDegrees = function(radians) {
   var fall = moment().endOf('day');
 
   // Draw a Clock
-  drawClock();
+  setInterval(drawClock, 10000);
 
   function drawClock() {
 
