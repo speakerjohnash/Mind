@@ -39,12 +39,12 @@ Math.toDegrees = function(radians) {
     .append("filter")
     .attr("id", "blur")
     .append("feGaussianBlur")
-    .attr("stdDeviation", 1.5);
+    .attr("stdDeviation", 2);
 
   var group = canvas.append("g")
     .attr("transform", "translate(100, 100)");
 
-  var r = 115;
+  var r = 120;
   var p = Math.PI * 2;
 
   var rise = moment().startOf('day');
@@ -52,7 +52,7 @@ Math.toDegrees = function(radians) {
 
   // Draw a Clock
   drawClock()
-  setInterval(drawClock, 5000);
+  setInterval(drawClock, 1000);
 
   function drawClock() {
 
@@ -80,7 +80,7 @@ Math.toDegrees = function(radians) {
 
     // Construct and Draw Arcs
 
-    var lineWidth = 10;
+    var lineWidth = r * 0.0833;
 
     var dayArc = d3.svg.arc()
       .innerRadius(r - lineWidth)
@@ -104,11 +104,12 @@ Math.toDegrees = function(radians) {
     
     backing.append("circle")
       .attr("class", "back")
-      .attr("r", r + 20)
+      .attr("r", r + (2 * lineWidth))
     
     backing.append("text")
       .attr("text-anchor", "middle")
       .attr("class", "quicksand digital-time")
+      .style("font-size", (r / 3) + "px")
       .text(moment().format("h:mm a")); 
     
     group.append("path")
@@ -144,8 +145,8 @@ Math.toDegrees = function(radians) {
           sunset = moment(times['sunset'])._d;
 
       var sunArc = d3.svg.arc()
-        .innerRadius(r - 15)
-        .outerRadius(r + 5)
+        .innerRadius(r - (1.5 * lineWidth))
+        .outerRadius(r + (.5 * lineWidth))
         .startAngle(time2Radians(sunrise))
         .endAngle(time2Radians(sunset));
 
