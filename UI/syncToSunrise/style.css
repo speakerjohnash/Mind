@@ -36,6 +36,6 @@ html {
   background-size: cover;
 }
 
-svg {
-	padding: 135px;
+.clock-wrapper {
+  margin: 0 auto;
 }

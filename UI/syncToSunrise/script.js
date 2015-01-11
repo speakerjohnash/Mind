@@ -31,9 +31,13 @@ Math.toDegrees = function(radians) {
 
   // Prepare Canvas
 
-  var canvas = d3.select("body").append("svg")
-  .attr("width", 500)
-  .attr("height", 500);
+  var px_diameter = 650;
+
+  var canvas = d3.select(".clock-wrapper")
+    .style("width", px_diameter + "px")
+    .append("svg")
+    .attr("width", px_diameter)
+    .attr("height", px_diameter);
 
   var filter = canvas.append("defs")
     .append("filter")
@@ -42,9 +46,9 @@ Math.toDegrees = function(radians) {
     .attr("stdDeviation", 2);
 
   var group = canvas.append("g")
-    .attr("transform", "translate(100, 100)");
+    .attr("transform", "translate(" + (px_diameter / 2) + "," + (px_diameter / 2) + ")");
 
-  var r = 120;
+  var r = 3/7 * px_diameter;
   var p = Math.PI * 2;
 
   var rise = moment().startOf('day');
@@ -52,7 +56,7 @@ Math.toDegrees = function(radians) {
 
   // Draw a Clock
   drawClock()
-  setInterval(drawClock, 1000);
+  //setInterval(drawClock, 1000);
 
   function drawClock() {
 
