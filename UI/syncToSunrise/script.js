@@ -51,7 +51,8 @@ Math.toDegrees = function(radians) {
   var fall = moment().endOf('day');
 
   // Draw a Clock
-  setInterval(drawClock, 10000);
+  drawClock()
+  //setInterval(drawClock, 5000);
 
   function drawClock() {
 
@@ -111,13 +112,14 @@ Math.toDegrees = function(radians) {
       .startAngle(time2Radians(moment()._d))
       .endAngle(time2Radians(moment().add(15, 'minutes')._d));
 
-    group.append("path")
-      .attr("d", backInner)
+    group.append("circle")
       .attr("class", "back")
-
-    group.append("path")
-      .attr("d", backOuter)
-      .attr("class", "back")
+      .attr("r", r + 20)
+    
+    group.append("text")
+      .attr("text-anchor", "middle")
+      .attr("class", "quicksand digital-time")
+      .text(moment().format("h:mm a"));      
 
     group.append("path")
       .attr("d", dayArc)
