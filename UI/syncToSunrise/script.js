@@ -56,7 +56,7 @@ Math.toDegrees = function(radians) {
 
   // Draw a Clock
   drawClock()
-  //setInterval(drawClock, 1000);
+  setInterval(drawClock, 1000);
 
   function drawClock() {
 
