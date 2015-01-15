@@ -1,7 +1,7 @@
 #################### USAGE ####################################
 
-# python3.4 -m mind.thoughtStream [input_file]
-# python3.4 -m mind.thoughtStream data/input/stream_update.csv
+# python3.4 -m mind.thoughtStream [input_file] [user]
+# python3.4 -m mind.thoughtStream data/input/stream_update.csv matt
 
 ###############################################################
 
@@ -214,14 +214,16 @@ def run_from_command():
 	pat_thoughts = thinkers['patch615']
 	matt_thoughts = thinkers['msevrens']
 	prophet_thoughts = thinkers['prophet']
+	work_thoughts = thinkers['msevrens@yodlee.com']
 
-	# All Thoughts
-	#for thinker, thoughts in thinkers.items():
-	#	collective_thoughts += thoughts
-
-	# TEMP
-	collective_thoughts = matt_thoughts + prophet_thoughts
-	#collective_thoughts = pat_thoughts
+	# Automate User Selection
+	if sys.argv[2] == "all":
+		for thinker, thoughts in thinkers.items():
+			collective_thoughts += thoughts
+	elif sys.argv[2] == "pat":
+		collective_thoughts = pat_thoughts
+	elif sys.argv[2] == "matt":
+		collective_thoughts = matt_thoughts + prophet_thoughts + work_thoughts	
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=7)
