@@ -17,7 +17,7 @@ function thoughtStream(data) {
 		topWords = [],
 		sLen = sorted.length;
 
-	for (var i=0; i<200; i++) {
+	for (var i=0; i<5; i++) {
 		if (sorted[i]["key"] != "Post Date") {
 			topWords.push(sorted[i]["key"])
 		}
@@ -147,7 +147,7 @@ function stream(data, selected) {
 	var timeRange = d3.extent(formatted, function(d) { return d.date; }),
 		color = d3.scale.linear().domain([0, selected.length]).range(["#457a8b", "#455a8b"]),
 		x = d3.time.scale().domain(timeRange).range([0, width]),
-      	y = d3.scale.linear().range([0, height-10]),
+      	y = d3.scale.linear().range([height-10, 0]),
       	type_colors = {
         	"Predict": "#5A4E8C",
         	"Ask": "#5CB85C",
@@ -157,6 +157,7 @@ function stream(data, selected) {
       	};
 
     // Brush
+
     /*
   	var brush = d3.svg.brush().x(x);
 
@@ -196,7 +197,7 @@ function stream(data, selected) {
 		.append("path")
 		.attr("class", "layer")
 		.attr("d", function(d) { return area(d.values); })
-		.style("fill", function(d, i) { return color(i); });
+		.style("fill", function(d, i) { return colors[d.key]; });
 
 	// Exit
 	flows.exit().remove();
@@ -296,7 +297,7 @@ function multiSelect(data, words) {
 
 $(document).ready(function() {
     
-    var csvpath = "../../data/output/all_stream.csv";
+    var csvpath = "../../data/output/type_stream.csv";
 	
 	d3.csv(csvpath, thoughtStream);
 
