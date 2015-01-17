@@ -168,14 +168,14 @@ function stream(data, selected) {
     	.attr("height", height); */
 
     // Change Scale
-    //y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+    y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
 
     // Same Scale
-    y.domain([0, 600]);
+    //y.domain([0, 600]);
 
     // Area
     var area = d3.svg.area()
-	    .interpolate("cardinal")
+	    .interpolate("basis")
 	    .x(function(d) { return x(d.date); })
 	    .y0(function(d) { return y(d.y0); })
 	    .y1(function(d) { return y(d.y0 + d.y); });
