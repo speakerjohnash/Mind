@@ -31,7 +31,7 @@ function thoughtStream(data) {
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
-		//.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		.attr("transform", "translate(" + margin.left + "," + 0 + ")");
 
 	// Axis
 	var format = d3.time.format("%m/%d/%Y"),
@@ -196,6 +196,7 @@ function stream(data, selected) {
 		.append("path")
 		.attr("class", "layer")
 		.attr("d", function(d) { return area(d.values); })
+		.attr("transform", "translate(" + margin.left + ", 0)")
 		.style("fill", function(d, i) { return color(i); });
 
 	// Exit
