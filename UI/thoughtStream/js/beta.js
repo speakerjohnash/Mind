@@ -44,6 +44,28 @@
 
 	}
 
+	/* Calculate the total usage
+	of all words per day */
+
+	function calculateDayTotals(data, words) {
+
+		var totals = []
+
+		for (var i=0, l=data.length; i<l; i++) {
+			var date = data[i]["Post Date"]
+			dayTotal = 0
+			for (var ii=0, k=words.length; ii<k; ii++) {
+				dayTotal += parseInt(data[i][words[ii]])
+			}
+			totals.push({"Post Date": date, "Total": dayTotal})
+		}
+
+		console.log(totals)
+
+		return totals
+
+	}
+
 	/* Prepare data after loading from csv 
 	and draw necessary UI elements */
 
@@ -63,6 +85,8 @@
 		var sorted = sortObject(totals),
 			topWords = [],
 			sLen = sorted.length;
+
+		var contextData = calculateDayTotals(data, words);
 
 	}
     
