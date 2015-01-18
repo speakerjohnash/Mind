@@ -1,40 +1,5 @@
 (function() {
 
-	/* Creates a multiple selection widget
-	for selection of ideas to display */
-
-	function multiSelect(data, words) {
-
-		// Create Multiselect
-		var widget = d3.select("body").append("div").classed("widget", true),
-			select = widget.append("select").classed("multiselect", true),
-			params = {
-				"multiple" : "multiple",
-		 		"data-placeholder" : "Add thoughts",
-		 		"id" : "multiselect"
-			}
-
-		// Create Basic Markup
-		select.attr(params)
-			.selectAll("option")
-			.data(words)
-			.enter()
-			.append("option")
-			.text(function(d){return d});
-
-		// Construct Widget
-		$('.multiselect').multiselect({
-			enableFiltering : true,
-			maxHeight : 250,
-			includeSelectAllOption: true,
-			onChange : function (element, checked) {
-				selected = $("select.multiselect").val()
-				stream(data, selected)
-			}
-	    });
-
-	}
-
 	/* Sort an Object's keys and values
 	into an array */
 
@@ -54,6 +19,30 @@
 	    arr.sort(function(a, b) { return b.value - a.value; });
 
 	    return arr;
+	}
+
+
+	/* Prepare data for visualization */
+
+	function formatData(data, wordList) {
+
+	    var formatted = [],
+	    	format = d3.time.format("%m/%d/%Y"),
+	        row = "";
+
+		data.forEach(function(day) {
+			for (var i=0, l=wordList.length; i<l; i++) {
+				row = {
+					"value" : parseInt(day[wordList[i]], 10), 
+	          		"key" : selected[i], 
+	          		"date" : format.parse(day["Post Date"])
+				}
+				formatted.push(row)
+			}
+		})
+
+		return formatted
+
 	}
 
 	/* Calculate the total usage
@@ -133,11 +122,12 @@
 		// Scales and Conversions
 		var format = d3.time.format("%m/%d/%Y"),
 			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
-			x = d3.time.scale().domain(timeRange).range([0, width]);
+			focusScale = d3.time.scale().domain(timeRange).range([0, width]),
+			contextScale = d3.time.scale().domain(timeRange).range([0, width]);
 
 		// Selection and Brushing
 		var brush = d3.svg.brush()
-    		.x(x)
+    		.x(contextScale)
     		.on("brush", brushed);
 
     	multiSelect(data, topWords, true)
@@ -159,10 +149,56 @@
     		.attr("transform", "translate(" + contextMargin.left + "," + contextMargin.top + ")");
 
 		// Axes
+		var focusXAxis = d3.svg.axis().scale(focusScale).orient("bottom"),
+    		contextXAxis = d3.svg.axis().scale(contextScale).orient("bottom");
+
+    	// Draw Context
+    	stream(contextData, ["Total"])
+
+    	// Draw a Stream
+    	function stream(data, wordList) {
+
+    	}
 
     	// Set Domain of Focus
     	function brushed() {
- 			
+ 			focusScale.domain(brush.empty() ? contextScale.domain() : brush.extent());
+			// Redraw Focus and Focus Axis
+		}
+
+		/* Creates a multiple selection widget
+		for selection of ideas to display */
+
+		function multiSelect(data, words) {
+
+			// Create Multiselect
+			var widget = d3.select("body").append("div").classed("widget", true),
+				select = widget.append("select").classed("multiselect", true),
+				params = {
+					"multiple" : "multiple",
+			 		"data-placeholder" : "Add thoughts",
+			 		"id" : "multiselect"
+				}
+
+			// Create Basic Markup
+			select.attr(params)
+				.selectAll("option")
+				.data(words)
+				.enter()
+				.append("option")
+				.text(function(d){return d});
+
+			// Construct Widget
+			$('.multiselect').multiselect({
+				enableFiltering : true,
+				maxHeight : 250,
+				includeSelectAllOption: true,
+				onChange : function (element, checked) {
+					selected = $("select.multiselect").val()
+					stream(data, selected)
+				}
+		    });
+
 		}
 
 	}
