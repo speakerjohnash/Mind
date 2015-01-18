@@ -1,6 +1,42 @@
 (function() {
 
-	/* Sort an Object */
+	/* Creates a multiple selection widget
+	for selection of ideas to display */
+
+	function multiSelect(data, words) {
+
+		// Create Multiselect
+		var widget = d3.select("body").append("div").classed("widget", true),
+			select = widget.append("select").classed("multiselect", true),
+			params = {
+				"multiple" : "multiple",
+		 		"data-placeholder" : "Add thoughts",
+		 		"id" : "multiselect"
+			}
+
+		// Create Basic Markup
+		select.attr(params)
+			.selectAll("option")
+			.data(words)
+			.enter()
+			.append("option")
+			.text(function(d){return d});
+
+		// Construct Widget
+		$('.multiselect').multiselect({
+			enableFiltering : true,
+			maxHeight : 250,
+			includeSelectAllOption: true,
+			onChange : function (element, checked) {
+				selected = $("select.multiselect").val()
+				stream(data, selected)
+			}
+	    });
+
+	}
+
+	/* Sort an Object's keys and values
+	into an array */
 
 	function sortObjectIntoArray(obj) {
 
@@ -70,10 +106,11 @@
 	function makeStream(data) {
 
 		// Canvas Dimensions
-		var margin = {top: 20, right: 40, bottom: 30, left: 30},
-	    	width = document.body.clientWidth - margin.left - margin.right,
-	     	focusHeight = 550 - margin.top - margin.bottom,
-	     	contextHeight = 100;
+		var focusMargin = {top: 20, right: 40, bottom: 30, left: 30},
+			contextMargin = {top: 430, right: 10, bottom: 20, left: 40},
+	    	width = document.body.clientWidth - focusMargin.left - focusMargin.right,
+	     	focusHeight = 500 - focusMargin.top - focusMargin.bottom,
+	     	contextHeight = 500 - contextMargin.top - contextMargin.bottom;
 
 	    // Data
 		var words = Object.keys(data[0]),
@@ -83,6 +120,12 @@
 		var sorted = sortObjectIntoArray(totals),
 			topWords = [],
 			sLen = sorted.length;
+
+		for (var i=0; i<150; i++) {
+			if (sorted[i]["key"] != "Post Date") {
+				topWords.push(sorted[i]["key"])
+			}
+		}
 
 		// Generate Context Data Stream
 		var contextData = calculateDayTotals(data, words);
@@ -101,10 +144,12 @@
 
     	// Setting Up Canvas
     	var svg = d3.select(".chart").append("svg")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
+			.attr("width", width + focusMargin.left + focusMargin.right)
+			.attr("height", focusHeight + focusMargin.top + focusMargin.bottom)
 			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			.attr("transform", "translate(" + focusMargin.left + "," + focusMargin.top + ")");
+
+		// Axes
 
     	// Set Domain of Focus
     	function brushed() {
