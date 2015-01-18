@@ -149,6 +149,15 @@
 			.append("g")
 			.attr("transform", "translate(" + focusMargin.left + "," + focusMargin.top + ")");
 
+		// Containers for Focus and Context
+		var focus = svg.append("g")
+    		.attr("class", "focus")
+    		.attr("transform", "translate(" + focusMargin.left + "," + focusMargin.top + ")");
+
+		var context = svg.append("g")
+    		.attr("class", "context")
+    		.attr("transform", "translate(" + contextMargin.left + "," + contextMargin.top + ")");
+
 		// Axes
 
     	// Set Domain of Focus
