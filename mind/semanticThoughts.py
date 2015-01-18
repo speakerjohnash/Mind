@@ -36,11 +36,10 @@ def run_from_command_line(command_line_arguments):
 	#documents = documentGenerator(sys.argv[1], "Thought")
 
 	input_file = open(sys.argv[1], encoding='utf-8', errors='replace')
-	thoughts = list(csv.DictReader(input_file, delimiter=',', quoting=csv.QUOTE_NONE))
+	thoughts = list(csv.DictReader(input_file, delimiter=','))
 	input_file.close()
 
 	thoughts = [t['Thought'].split() for t in thoughts]
-	print(thoughts[0])
 	model = Word2Vec(thoughts)
 	model.save('./models/word2vec_thoughts')
 
