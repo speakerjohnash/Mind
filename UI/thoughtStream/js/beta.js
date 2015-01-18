@@ -1,4 +1,4 @@
-$(document).ready(function() {
+(function() {
 
 	/* Sort an Object */
 
@@ -70,4 +70,4 @@ $(document).ready(function() {
 	
 	d3.csv(csvpath, makeStream);
 
-});
+})();
