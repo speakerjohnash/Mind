@@ -2,7 +2,7 @@
 
 	/* Sort an Object */
 
-	function sortObject(obj) {
+	function sortObjectIntoArray(obj) {
 
 	    var arr = [];
 
@@ -21,7 +21,7 @@
 	}
 
 	/* Calculate the total usage
-	of all words */
+	of each word */
 
 	function calculateTotals(data, words) {
 
@@ -60,8 +60,6 @@
 			totals.push({"Post Date": date, "Total": dayTotal})
 		}
 
-		console.log(totals)
-
 		return totals
 
 	}
@@ -82,11 +80,36 @@
 			totals = calculateTotals(data, words);
 
 		// Top Words
-		var sorted = sortObject(totals),
+		var sorted = sortObjectIntoArray(totals),
 			topWords = [],
 			sLen = sorted.length;
 
+		// Generate Context Data Stream
 		var contextData = calculateDayTotals(data, words);
+
+		// Scales and Conversions
+		var format = d3.time.format("%m/%d/%Y"),
+			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
+			x = d3.time.scale().domain(timeRange).range([0, width]);
+
+		// Selection and Brushing
+		var brush = d3.svg.brush()
+    		.x(x)
+    		.on("brush", brushed);
+
+    	multiSelect(data, topWords, true)
+
+    	// Setting Up Canvas
+    	var svg = d3.select(".chart").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    	// Set Domain of Focus
+    	function brushed() {
+ 			
+		}
 
 	}
     
