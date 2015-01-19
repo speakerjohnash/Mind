@@ -96,7 +96,7 @@ $(document).ready(function() {
 
 		// Canvas Dimensions
 		var focusMargin = {top: 120, right: 20, bottom: 20, left: 20},
-			contextMargin = {top: 20, right: 20, bottom: 20, left: 20},
+			contextMargin = {top: 20, right: 20, bottom: 40, left: 20},
 	    	width = document.body.clientWidth - focusMargin.left - focusMargin.right,
 	     	focusHeight = 500,
 	     	contextHeight = 75;
@@ -143,11 +143,11 @@ $(document).ready(function() {
 			.attr("transform", "translate(" + focusMargin.left + ", 0)");
 
 		// Containers for Focus and Context
-		var focus = svg.append("g")
-    		.attr("class", "focus");
-
 		var context = svg.append("g")
     		.attr("class", "context");
+
+		var focus = svg.append("g")
+    		.attr("class", "focus");
 
 		// Axes
 		var focusXAxis = d3.svg.axis().scale(focusScale).orient("bottom"),
@@ -178,12 +178,15 @@ $(document).ready(function() {
 			var formatted = formatData(data, wordList),
 				layers = stack(nest.entries(formatted))
 				formattedContext = formatData(contextData, ["Total"])
-				contextLayer = stack(nest.entries(formattedContext));
+				contextLayer = stack(nest.entries(formattedContext)),
+				formattedFocus = formatData(data, wordList),
+				focusLayers = stack(nest.entries(formattedFocus));
 
 			// Scale Adjustments
 			var color = d3.scale.linear().domain([0, wordList.length]).range(["#457a8b", "#455a8b"]);
 
     		contextYScale.domain([0, d3.max(contextData, function(d) { return d["Total"]; })]);
+    		focusYScale.domain([0, d3.max(formattedFocus, function(d) { return d.y0 + d.y; })]);
 
 			// Area
     		var contextArea = d3.svg.area()
@@ -192,14 +195,28 @@ $(document).ready(function() {
 			    .y0(function(d) { return contextYScale(d.y0); })
 			    .y1(function(d) { return contextYScale(d.y0 + d.y); });
 
+			var focusArea = d3.svg.area()
+			    .interpolate("basis")
+			    .x(function(d) { return focusScale(d.date); })
+			    .y0(function(d) { return focusYScale(d.y0); })
+			    .y1(function(d) { return focusYScale(d.y0 + d.y); });
+
 			// Data Binding
-			var contextFlow = svg.selectAll("context path.layer").data(contextLayer);
+			var contextFlow = svg.selectAll(".context path.layer").data(contextLayer),
+				focusFlows = svg.selectAll(".focus path.layer").data(focusLayers);
 
 			// Enter
 			contextFlow.enter()
 				.append("path")
 				.attr("class", "layer")
 				.attr("d", function(d) { return contextArea(d.values); })
+				.style("fill", function(d, i) { return color(i); });
+
+			focusFlows.enter()
+				.append("path")
+				.attr("class", "layer")
+				.attr("d", function(d) { return focusArea(d.values); })
+    			.attr("transform", "translate(0, " + (contextMargin.bottom) + ")")
 				.style("fill", function(d, i) { return color(i); });
 
 			// Brush
