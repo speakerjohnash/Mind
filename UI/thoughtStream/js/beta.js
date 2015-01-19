@@ -150,14 +150,6 @@ $(document).ready(function() {
 		var focus = svg.append("g")
     		.attr("class", "focus");
 
-    	var contextArea = d3.svg.area()
-		    .interpolate("basis")
-		    .x(function(d) { return contextScale(d.date); });
-
-		var focusArea = d3.svg.area()
-		    .interpolate("basis")
-		    .x(function(d) { return focusScale(d.date); });
-
 		// Axes
 		var focusXAxis = d3.svg.axis().scale(focusScale).orient("bottom"),
     		contextXAxis = d3.svg.axis().scale(contextScale).orient("bottom");
@@ -169,9 +161,17 @@ $(document).ready(function() {
 			.x(function(d) { return d.date; })
 			.y(function(d) { return d.value; });
 
+		var contextArea = d3.svg.area()
+		    .interpolate("basis")
+		    .x(function(d) { return contextScale(d.date); });
+
+		var focusArea = d3.svg.area()
+		    .interpolate("basis")
+		    .x(function(d) { return focusScale(d.date); });
+
   		var nest = d3.nest().key(function(d) { return d.key; });
 
-    	// Draw Context
+    	// Draw Streams
     	streams(topWords.slice(0, numWords))
 
     	// Add Brush
@@ -184,7 +184,7 @@ $(document).ready(function() {
     	// Draw Streams
     	function streams(wordList) {
 
-    		// Return if nothing selected
+    		// Return if no words selected
 			if (wordList == null) {
 				d3.selectAll("path").data(function() {return []}).exit().remove()
 				return
@@ -233,6 +233,12 @@ $(document).ready(function() {
 
 			// Exit
 			focusFlows.exit().remove();
+
+			// Transition
+			focusFlows.transition()
+				.duration(1000)
+				.attr("d", function(d) { return focusArea(d.values); })
+				.style("fill", function(d, i) { return color(i); });
 
     	}
 
