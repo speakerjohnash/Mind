@@ -99,7 +99,7 @@ $(document).ready(function() {
 			contextMargin = {top: 20, right: 20, bottom: 20, left: 20},
 	    	width = document.body.clientWidth - focusMargin.left - focusMargin.right,
 	     	focusHeight = 500,
-	     	contextHeight = 50;
+	     	contextHeight = 75;
 
 	    // Data
 		var words = Object.keys(data[0]),
@@ -183,7 +183,7 @@ $(document).ready(function() {
 			// Scale Adjustments
 			var color = d3.scale.linear().domain([0, wordList.length]).range(["#457a8b", "#455a8b"]);
 
-    		contextYScale.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+    		contextYScale.domain([0, d3.max(contextData, function(d) { return d["Total"]; })]);
 
 			// Area
     		var contextArea = d3.svg.area()
