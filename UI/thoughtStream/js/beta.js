@@ -149,6 +149,14 @@ $(document).ready(function() {
 		var focus = svg.append("g")
     		.attr("class", "focus");
 
+    	var contextArea = d3.svg.area()
+		    .interpolate("basis")
+		    .x(function(d) { return contextScale(d.date); });
+
+		var focusArea = d3.svg.area()
+		    .interpolate("basis")
+		    .x(function(d) { return focusScale(d.date); });
+
 		// Axes
 		var focusXAxis = d3.svg.axis().scale(focusScale).orient("bottom"),
     		contextXAxis = d3.svg.axis().scale(contextScale).orient("bottom");
@@ -189,21 +197,17 @@ $(document).ready(function() {
     		focusYScale.domain([0, d3.max(formattedFocus, function(d) { return d.y0 + d.y; })]);
 
 			// Area
-    		var contextArea = d3.svg.area()
-			    .interpolate("basis")
-			    .x(function(d) { return contextScale(d.date); })
+    		contextArea
 			    .y0(function(d) { return contextYScale(d.y0); })
 			    .y1(function(d) { return contextYScale(d.y0 + d.y); });
 
-			var focusArea = d3.svg.area()
-			    .interpolate("basis")
-			    .x(function(d) { return focusScale(d.date); })
-			    .y0(function(d) { return focusYScale(d.y0); })
+			focusArea
+				.y0(function(d) { return focusYScale(d.y0); })
 			    .y1(function(d) { return focusYScale(d.y0 + d.y); });
 
 			// Data Binding
-			var contextFlow = svg.selectAll(".context path.layer").data(contextLayer),
-				focusFlows = svg.selectAll(".focus path.layer").data(focusLayers);
+			var contextFlow = context.selectAll("path.layer").data(contextLayer),
+				focusFlows = focus.selectAll("path.layer").data(focusLayers);
 
 			// Enter
 			contextFlow.enter()
@@ -219,6 +223,9 @@ $(document).ready(function() {
     			.attr("transform", "translate(0, " + (contextMargin.bottom) + ")")
 				.style("fill", function(d, i) { return color(i); });
 
+			// Exit
+			focusFlows.exit().remove();
+
 			// Brush
 			context.append("g")
 		    	.attr("class", "x brush")
@@ -231,7 +238,7 @@ $(document).ready(function() {
     	// Set Domain of Focus
     	function brushed() {
  			focusScale.domain(brush.empty() ? contextScale.domain() : brush.extent());
-			// Redraw Focus and Focus Axis
+ 			focus.selectAll("path.layer").attr("d", function(d) { return focusArea(d.values); })
 		}
 
 		/* Creates a multiple selection widget
