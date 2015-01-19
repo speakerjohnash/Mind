@@ -138,7 +138,7 @@ $(document).ready(function() {
     	// Setting Up Canvas
     	var svg = d3.select(".chart").append("svg")
 			.attr("width", width + focusMargin.left + focusMargin.right)
-			.attr("height", focusHeight + focusMargin.top + focusMargin.bottom)
+			.attr("height", focusHeight)
 			.append("g")
 			.attr("transform", "translate(" + focusMargin.left + ", 0)");
 
@@ -172,6 +172,13 @@ $(document).ready(function() {
 
     	// Draw Context
     	streams(topWords)
+
+    	// Add Brush
+		context.append("g")
+	    	.attr("class", "x brush")
+	    	.call(brush)
+			.selectAll("rect")
+  			.attr("height", contextHeight);
 
     	// Draw Streams
     	function streams(wordList) {
@@ -225,13 +232,6 @@ $(document).ready(function() {
 
 			// Exit
 			focusFlows.exit().remove();
-
-			// Brush
-			context.append("g")
-		    	.attr("class", "x brush")
-		    	.call(brush)
-    			.selectAll("rect")
-      			.attr("height", contextHeight);
 
     	}
 
