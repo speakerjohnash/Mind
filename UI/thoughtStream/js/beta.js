@@ -98,6 +98,7 @@ $(document).ready(function() {
 		var focusMargin = {top: 120, right: 20, bottom: 20, left: 20},
 			contextMargin = {top: 20, right: 20, bottom: 40, left: 20},
 	    	width = document.body.clientWidth - focusMargin.left - focusMargin.right,
+	    	numWords = 25,
 	     	focusHeight = 500,
 	     	contextHeight = 75;
 
@@ -133,7 +134,7 @@ $(document).ready(function() {
     		.on("brush", brushed);
 
     	multiSelect(data, topWords, true)
-		$("#multiselect").multiselect('select', topWords.slice(0, 25));
+		$("#multiselect").multiselect('select', topWords.slice(0, numWords));
 
     	// Setting Up Canvas
     	var svg = d3.select(".chart").append("svg")
@@ -171,7 +172,7 @@ $(document).ready(function() {
   		var nest = d3.nest().key(function(d) { return d.key; });
 
     	// Draw Context
-    	streams(topWords)
+    	streams(topWords.slice(0, numWords))
 
     	// Add Brush
 		context.append("g")
