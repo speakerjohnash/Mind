@@ -1,4 +1,4 @@
-(function() {
+$(document).ready(function() {
 
 	/* Sort an Object's keys and values
 	into an array */
@@ -34,7 +34,7 @@
 			for (var i=0, l=wordList.length; i<l; i++) {
 				row = {
 					"value" : parseInt(day[wordList[i]], 10), 
-	          		"key" : selected[i], 
+	          		"key" : wordList[i], 
 	          		"date" : format.parse(day["Post Date"])
 				}
 				formatted.push(row)
@@ -95,11 +95,11 @@
 	function makeStream(data) {
 
 		// Canvas Dimensions
-		var focusMargin = {top: 20, right: 40, bottom: 30, left: 30},
-			contextMargin = {top: 430, right: 10, bottom: 20, left: 40},
+		var focusMargin = {top: 120, right: 20, bottom: 20, left: 20},
+			contextMargin = {top: 20, right: 20, bottom: 20, left: 20},
 	    	width = document.body.clientWidth - focusMargin.left - focusMargin.right,
-	     	focusHeight = 500 - focusMargin.top - focusMargin.bottom,
-	     	contextHeight = 500 - contextMargin.top - contextMargin.bottom;
+	     	focusHeight = 500,
+	     	contextHeight = 50;
 
 	    // Data
 		var words = Object.keys(data[0]),
@@ -123,7 +123,9 @@
 		var format = d3.time.format("%m/%d/%Y"),
 			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
 			focusScale = d3.time.scale().domain(timeRange).range([0, width]),
-			contextScale = d3.time.scale().domain(timeRange).range([0, width]);
+			contextScale = d3.time.scale().domain(timeRange).range([0, width])
+			contextYScale = d3.scale.linear().range([0, contextHeight]),
+			focusYScale = d3.scale.linear().range([0, focusHeight]);
 
 		// Selection and Brushing
 		var brush = d3.svg.brush()
@@ -131,32 +133,81 @@
     		.on("brush", brushed);
 
     	multiSelect(data, topWords, true)
+		$("#multiselect").multiselect('select', topWords.slice(0, 25));
 
     	// Setting Up Canvas
     	var svg = d3.select(".chart").append("svg")
 			.attr("width", width + focusMargin.left + focusMargin.right)
 			.attr("height", focusHeight + focusMargin.top + focusMargin.bottom)
 			.append("g")
-			.attr("transform", "translate(" + focusMargin.left + "," + focusMargin.top + ")");
+			.attr("transform", "translate(" + focusMargin.left + ", 0)");
 
 		// Containers for Focus and Context
 		var focus = svg.append("g")
-    		.attr("class", "focus")
-    		.attr("transform", "translate(" + focusMargin.left + "," + focusMargin.top + ")");
+    		.attr("class", "focus");
 
 		var context = svg.append("g")
-    		.attr("class", "context")
-    		.attr("transform", "translate(" + contextMargin.left + "," + contextMargin.top + ")");
+    		.attr("class", "context");
 
 		// Axes
 		var focusXAxis = d3.svg.axis().scale(focusScale).orient("bottom"),
     		contextXAxis = d3.svg.axis().scale(contextScale).orient("bottom");
 
-    	// Draw Context
-    	stream(contextData, ["Total"])
+    	// Nest, Area and Stack
+		var stack = d3.layout.stack()
+			.offset("silhouette")
+			.values(function(d) { return d.values; })
+			.x(function(d) { return d.date; })
+			.y(function(d) { return d.value; });
 
-    	// Draw a Stream
-    	function stream(data, wordList) {
+  		var nest = d3.nest().key(function(d) { return d.key; });
+
+    	// Draw Context
+    	streams(topWords)
+
+    	// Draw Streams
+    	function streams(wordList) {
+
+    		// Return if nothing selected
+			if (wordList == null) {
+				d3.selectAll("path").data(function() {return []}).exit().remove()
+				return
+			}
+
+			// Format Data
+			var formatted = formatData(data, wordList),
+				layers = stack(nest.entries(formatted))
+				formattedContext = formatData(contextData, ["Total"])
+				contextLayer = stack(nest.entries(formattedContext));
+
+			// Scale Adjustments
+			var color = d3.scale.linear().domain([0, wordList.length]).range(["#457a8b", "#455a8b"]);
+
+    		contextYScale.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+
+			// Area
+    		var contextArea = d3.svg.area()
+			    .interpolate("basis")
+			    .x(function(d) { return contextScale(d.date); })
+			    .y0(function(d) { return contextYScale(d.y0); })
+			    .y1(function(d) { return contextYScale(d.y0 + d.y); });
+
+			// Data Binding
+			var contextFlow = svg.selectAll("context path.layer").data(contextLayer);
+
+			// Enter
+			contextFlow.enter()
+				.append("path")
+				.attr("class", "layer")
+				.attr("d", function(d) { return contextArea(d.values); })
+				.style("fill", function(d, i) { return color(i); });
+
+			// Brush
+			context.append("g")
+		    	.attr("class", "x brush")
+		    	.call(brush)
+    			.selectAll("rect")
+      			.attr("height", contextHeight);
 
     	}
 
@@ -195,7 +246,7 @@
 				includeSelectAllOption: true,
 				onChange : function (element, checked) {
 					selected = $("select.multiselect").val()
-					stream(data, selected)
+					streams(selected)
 				}
 		    });
 
@@ -207,4 +258,4 @@
 	
 	d3.csv(csvpath, makeStream);
 
-})();
+});
