@@ -1,110 +1,216 @@
-chart("../../data/output/all_stream.csv");
+/* Take a CSV and turn it into a
+thought stream visualization*/
 
-var datearray = [];
-var colorrange = [];
+function thoughtStream(data) {
 
-function chart(csvpath) {
+	// Canvas
+	var margin = {top: 20, right: 40, bottom: 30, left: 30},
+    	width = document.body.clientWidth - margin.left - margin.right,
+     	height = 350 - margin.top - margin.bottom;
 
-  var colorrange = ["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"],
-      strokecolor = colorrange[0],
-      colors = {
-        "Predict": "#5A4E8C",
-        "Ask": "#5CB85C",
-        "NULL": "#C4C4C4",
-        "State": "#428BCA"
-      };
+	// Data
+	var words = Object.keys(data[0]),
+		totals = calculateTotals(data, words);
 
-  var format = d3.time.format("%m/%d/%Y");
+	// Top Words
+	var sorted = sortObject(totals),
+		topWords = [],
+		sLen = sorted.length;
 
-  var margin = {top: 20, right: 40, bottom: 30, left: 30},
-      width = document.body.clientWidth - margin.left - margin.right,
-      height = 350 - margin.top - margin.bottom;
+	for (var i=0; i<5; i++) {
+		if (sorted[i]["key"] != "Post Date") {
+			topWords.push(sorted[i]["key"])
+		}
+	}
 
-  var tooltip = d3.select("body")
-      .append("div")
-      .attr("class", "remove")
-      .style("position", "absolute")
-      .style("z-index", "20")
-      .style("visibility", "hidden")
-      .style("top", "30px")
-      .style("left", "55px");
+	// Create Multiselect
+	multiSelect(data, topWords, true)
 
-  var x = d3.time.scale().domain([format.parse("6/24/14"), format.parse("8/22/14")]).range([0, width]),
-      y = d3.scale.linear().domain([0, 9]).range([height-10, 0]),
-      z = d3.scale.linear().domain([0, 1]).range(["#455a8b", "#457a8b"]);
+	// Create SVG
+	var svg = d3.select(".chart").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  var xAxis = d3.svg.axis()
+	// Axis
+	var format = d3.time.format("%m/%d/%Y"),
+		timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
+		x = d3.time.scale().domain(timeRange).range([0, width]);
+
+  	var xAxis = d3.svg.axis()
       .scale(x)
       .orient("bottom")
       .ticks(d3.time.weeks);
-
-  var yAxis = d3.svg.axis().scale(y);
-
-  var stack = d3.layout.stack()
-      .offset("silhouette")
-      .values(function(d) { return d.values; })
-      .x(function(d) { return d.date; })
-      .y(function(d) { return d.value; });
-
-  var nest = d3.nest().key(function(d) { return d.key; });
-
-  var area = d3.svg.area()
-      .interpolate("cardinal")
-      .x(function(d) { return x(d.date); })
-      .y0(function(d) { return y(d.y0); })
-      .y1(function(d) { return y(d.y0 + d.y); });
-
-  var svg = d3.select(".chart").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  var graph = d3.csv(csvpath, function(data) {
-    
-    var formatted = [],
-        row = "";
-
-    data.forEach(function(d) {
-
-      var rows = [d["present"], d["past"], d["future"], d["time"], d["truth"], d["currency"], d["prophet"]]
-          keys = ["Present", "Past", "Future", "Time", "truth", "currency", "prophet"];
-
-      for (var i=0; i < 7; i++) {
-        row = {
-          "value" : parseInt(rows[i], 10), 
-          "key" : keys[i], 
-          "date" : format.parse(d["Post Date"])
-        }
-        formatted.push(row)
-      }
-
-    });
-
-    /* Begin Chart Draw */
-
-    data = formatted
-
-    var layers = stack(nest.entries(data));
-
-    x.domain(d3.extent(data, function(d) { return d.date; }));
-    y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
-
-    svg.selectAll(".layer")
-      .data(layers)
-      .enter().append("path")
-      .attr("class", "layer")
-      .attr("d", function(d) { return area(d.values); })
-      .style("fill", function(d, i) { return z(2 * Math.random())});
-
-    /* End Chart Draw */
 
     svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
-    svg.selectAll(".layer")
+	// Select Top Words
+	$("#multiselect").multiselect('select', topWords.slice(0, 25));
+
+	// Tooltip
+	var tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "remove tooltip")
+      .style("position", "absolute")
+      .style("z-index", "20")
+      .style("visibility", "hidden")
+      .style("top", "30px")
+      .style("left", "55px");
+
+	// Stream
+	stream(data, topWords.slice(0, 25))
+
+}
+
+function sortObject(obj) {
+
+    var arr = [];
+
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            arr.push({
+                'key': prop,
+                'value': obj[prop]
+            });
+        }
+    }
+
+    arr.sort(function(a, b) { return b.value - a.value; });
+
+    return arr;
+}
+
+
+/* Calculate the total usage
+of a word over a give time period */
+
+function calculateTotals(data, words) {
+
+	var totals = {}
+
+	for (var k=0; k<words.length; k++) {
+		totals[words[k]] = 0
+	}
+
+	for (var i=0; i<data.length; i++) {
+		for (var ii=0; ii<words.length; ii++) {
+			var word = words[ii]
+			if (word != "Post Date") {
+				totals[word] += parseInt(data[i][word], 10)
+			}
+		}
+	}
+
+	return totals
+
+}
+
+/* Produces the SVG components that 
+make up the thought stream */
+
+function stream(data, selected) {
+
+	// Return if nothing selected
+	if (selected == null) {
+		d3.selectAll("path").data(function() {return []}).exit().remove()
+		return
+	}
+
+	// SVG
+	var svg = d3.select(".chart svg");
+
+	// Canvas
+	var margin = {top: 20, right: 40, bottom: 30, left: 30},
+    	width = document.body.clientWidth - margin.left - margin.right,
+     	height = 350 - margin.top - margin.bottom,
+     	max = d3.max(data, function(row) { return d3.max(d3.values(row))});
+
+	// Stack
+	var stack = d3.layout.stack()
+		.offset("silhouette")
+		.values(function(d) { return d.values; })
+		.x(function(d) { return d.date; })
+		.y(function(d) { return d.value; });
+
+	// Nest
+  	var nest = d3.nest().key(function(d) { return d.key; });
+
+	// Format Data
+	var formatted = formatData(data, selected),
+		layers = stack(nest.entries(formatted));
+
+	// Scales
+	var timeRange = d3.extent(formatted, function(d) { return d.date; }),
+		color = d3.scale.linear().domain([0, selected.length]).range(["#457a8b", "#455a8b"]),
+		x = d3.time.scale().domain(timeRange).range([0, width]),
+      	y = d3.scale.linear().range([height-10, 0]),
+      	type_colors = {
+        	"Predict": "#5A4E8C",
+        	"Ask": "#5CB85C",
+        	"Thought": "#C4C4C4",
+        	"State": "#428BCA",
+        	"Reflect" : "#A33333"
+      	};
+
+    // Brush
+
+    /*
+  	var brush = d3.svg.brush().x(x);
+
+  	var gBrush = svg.append("g")
+    	.attr("class", "brush")
+    	.call(brush);
+
+    gBrush.selectAll("rect")
+    	.attr("height", height); */
+
+    // Change Scale
+    y.domain([0, d3.max(formatted, function(d) { return d.y0 + d.y; })]);
+
+    // Same Scale
+    //y.domain([0, 150]);
+
+    // Area
+    var area = d3.svg.area()
+	    .interpolate("basis")
+	    .x(function(d) { return x(d.date); })
+	    .y0(function(d) { return y(d.y0); })
+	    .y1(function(d) { return y(d.y0 + d.y); });
+
+	// Draw Stream
+	var flows = svg.selectAll("path.layer").data(layers)
+
+	var colors = {
+        "Predict": "#5A4E8C",
+        "Ask": "#5CB85C",
+        "Thought": "#C4C4C4",
+        "State": "#428BCA",
+        "Reflect": "#A33333"
+    };
+
+	// Enter
+	flows.enter()
+		.append("path")
+		.attr("class", "layer")
+		.attr("d", function(d) { return area(d.values); })
+		.attr("transform", "translate(" + margin.left + "," + 0 + ")")
+		.style("fill", function(d, i) { return colors[d.key]; });
+
+	// Exit
+	flows.exit().remove();
+
+    // Transition
+    flows.transition()
+      .duration(1000)
+	  .attr("d", function(d) { return area(d.values); })
+	  .style("fill", function(d, i) { return colors[d.key]; });
+
+	// Hover On
+	svg.selectAll("path")
       .attr("opacity", 1)
       .on("mouseover", function(d, i) {
         svg.selectAll(".layer").transition()
@@ -113,57 +219,88 @@ function chart(csvpath) {
           return j != i ? 0.6 : 1;
     })})
 
-    .on("mousemove", function(d, i) {
-      mousex = d3.mouse(this);
-      mousex = mousex[0];
-      var invertedx = x.invert(mousex);
-      invertedx = invertedx.getMonth() + invertedx.getDate();
-      var selected = (d.values);
-      for (var k = 0; k < selected.length; k++) {
-        datearray[k] = selected[k].date
-        datearray[k] = datearray[k].getMonth() + datearray[k].getDate();
-      }
-
-      mousedate = datearray.indexOf(invertedx);
-      pro = d.values[mousedate].value;
-
-      d3.select(this)
-      .classed("hover", true)
-      .attr("stroke", strokecolor)
-      .attr("stroke-width", "0.5px"), 
-      tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "visible");
-      
-    })
-    .on("mouseout", function(d, i) {
-     svg.selectAll(".layer")
+    // Hover Off
+    flows.on("mouseout", function(d, i) {
+     svg.selectAll("path")
       .transition()
       .duration(250)
       .attr("opacity", "1");
       d3.select(this)
-      .classed("hover", false)
-      .attr("stroke-width", "0px"), tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "hidden");
-  })
-    
-  var vertical = d3.select(".chart")
-        .append("div")
-        .attr("class", "remove")
-        .style("position", "absolute")
-        .style("z-index", "19")
-        .style("width", "1px")
-        .style("height", "300px")
-        .style("top", "10px")
-        .style("bottom", "30px")
-        .style("left", "0px")
-        .style("background", "#fff");
+      .classed("hover", false);
+  	})
 
-  d3.select(".chart")
-      .on("mousemove", function(){  
-         mousex = d3.mouse(this);
-         mousex = mousex[0] + 5;
-         vertical.style("left", mousex + "px" )})
-      .on("mouseover", function(){  
-         mousex = d3.mouse(this);
-         mousex = mousex[0] + 5;
-         vertical.style("left", mousex + "px")});
-});
+  	// Tooltip
+  	flows.on("mousemove", function(d, i) { 
+  		d3.select(".tooltip").html("<p>" + d.key + "</p>")
+  			.style("visibility", "visible")
+  			.style("opacity", "1");
+  	})
+
 }
+
+/* Prepare a set of words for
+visualization */
+
+function formatData(data, selected) {
+
+    var formatted = [],
+    	format = d3.time.format("%m/%d/%Y"),
+        row = "";
+
+	data.forEach(function(day) {
+		for (var i=0, l=selected.length; i<l; i++) {
+			row = {
+				"value" : parseInt(day[selected[i]], 10), 
+          		"key" : selected[i], 
+          		"date" : format.parse(day["Post Date"])
+			}
+			formatted.push(row)
+		}
+	})
+
+	return formatted
+
+}
+
+/* Creates a multiple selection widget
+for selection of ideas to display */
+
+function multiSelect(data, words) {
+
+	// Create Multiselect
+	var widget = d3.select("body").append("div").classed("widget", true),
+		select = widget.append("select").classed("multiselect", true),
+		params = {
+			"multiple" : "multiple",
+	 		"data-placeholder" : "Add thoughts",
+	 		"id" : "multiselect"
+		}
+
+	// Create Basic Markup
+	select.attr(params)
+		.selectAll("option")
+		.data(words)
+		.enter()
+		.append("option")
+		.text(function(d){return d});
+
+	// Construct Widget
+	$('.multiselect').multiselect({
+		enableFiltering : true,
+		maxHeight : 250,
+		includeSelectAllOption: true,
+		onChange : function (element, checked) {
+			selected = $("select.multiselect").val()
+			stream(data, selected)
+		}
+    });
+
+}
+
+$(document).ready(function() {
+    
+    var csvpath = "../../data/output/type_stream.csv";
+	
+	d3.csv(csvpath, thoughtStream);
+
+});
