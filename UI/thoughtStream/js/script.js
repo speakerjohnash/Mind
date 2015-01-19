@@ -17,7 +17,7 @@ function thoughtStream(data) {
 		topWords = [],
 		sLen = sorted.length;
 
-	for (var i=0; i<200; i++) {
+	for (var i=0; i<150; i++) {
 		if (sorted[i]["key"] != "Post Date") {
 			topWords.push(sorted[i]["key"])
 		}
@@ -206,6 +206,8 @@ function stream(data, selected) {
     flows.transition()
       .duration(1000)
 	  .attr("d", function(d) { return area(d.values); })
+      .style("fill", function(d, i) { return color(i); });
+
 
 	// Hover On
 	svg.selectAll("path")
