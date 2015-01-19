@@ -2,19 +2,27 @@ body {
   font: 10px sans-serif;
 }
 
+/*
+html {
+  background: url(http://www.wallpaperdirect.com/us/wdimages/043159orig.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+} */
+
 p {
   font: 12px helvetica;
 }
 
 .chart { 
   background: #fff;
-  margin-top: 50px;
 }
 
 .axis path, .axis line {
   fill: none;
   stroke: #000;
-  stroke-width: 2px;
+  stroke-width: 1px;
   shape-rendering: crispEdges;
 }
 

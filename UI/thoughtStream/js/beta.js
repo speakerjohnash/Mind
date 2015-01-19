@@ -151,8 +151,8 @@ $(document).ready(function() {
     		.attr("class", "focus");
 
 		// Axes
-		var focusXAxis = d3.svg.axis().scale(focusScale).orient("bottom"),
-    		contextXAxis = d3.svg.axis().scale(contextScale).orient("bottom");
+		var focusXAxis = d3.svg.axis().scale(focusScale).orient("top"),
+    		contextXAxis = d3.svg.axis().scale(contextScale).orient("top");
 
     	// Nest, Area and Stack
 		var stack = d3.layout.stack()
@@ -180,6 +180,17 @@ $(document).ready(function() {
 	    	.call(brush)
 			.selectAll("rect")
   			.attr("height", contextHeight);
+
+  		// Draw Axes
+  		focus.append("g")
+	      .attr("class", "x axis")
+	      .attr("transform", "translate(0," + focusHeight + ")")
+	      .call(focusXAxis);
+
+	    context.append("g")
+	      .attr("class", "x axis")
+	      .attr("transform", "translate(0," + (contextHeight + 20) + ")")
+	      .call(contextXAxis);
 
     	// Draw Streams
     	function streams(wordList) {
@@ -246,6 +257,7 @@ $(document).ready(function() {
     	function brushed() {
  			focusScale.domain(brush.empty() ? contextScale.domain() : brush.extent());
  			focus.selectAll("path.layer").attr("d", function(d) { return focusArea(d.values); })
+ 			focus.select(".x.axis").call(focusXAxis);
 		}
 
 		/* Creates a multiple selection widget
