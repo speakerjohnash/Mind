@@ -47,9 +47,9 @@ def cluster_vectors(word2vec):
 	# Dimensionality Reduction
 	model = TSNE(n_components=2, random_state=0)
 	X = model.fit_transform(X.astype(np.float))
-	safe_print(dict(zip(tokens, list(X))))
+	#safe_print(dict(zip(tokens, list(X))))
 
-	clusters = kmeans(n_clusters=100, max_iter=100, batch_size=200, n_init=10, init_size=300)
+	clusters = kmeans(n_clusters=25, max_iter=100, batch_size=200, n_init=10, init_size=300)
 	clusters.fit(X)
 	word_clusters = {word:label for word, label in zip(tokens, clusters.labels_)}
 	sorted_clusters = sorted(word_clusters.items(), key=operator.itemgetter(1))
@@ -58,7 +58,7 @@ def cluster_vectors(word2vec):
 	for k in sorted_clusters:
 		collected[k[1]].append(k[0])
 
-	for key in keys:
+	for key in tokens:
 		safe_print(key, collected[key], "\n")
 
 def run_from_command_line(command_line_arguments):
