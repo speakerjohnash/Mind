@@ -44,10 +44,12 @@ def cluster_vectors(word2vec):
 	X = np.array([word2vec[t].T for t in tokens])
 
 	# Dimensionality Reduction
-	#model = TSNE(n_components=2, random_state=0)
-	#X = model.fit_transform(X.astype(np.float))
-	#safe_print(dict(zip(tokens, list(X))))
+	model = TSNE(n_components=2, random_state=0)
+	X = model.fit_transform(X.astype(np.float))
+	reduced = dict(zip(tokens, list(X))))
+	dict_2_json(reduced, "t-SNE_top_words_Prophet")
 
+	# Clustering
 	clusters = kmeans(n_clusters=75, max_iter=100, batch_size=200, n_init=10, init_size=30)
 	clusters.fit(X)
 	word_clusters = {word:label for word, label in zip(tokens, clusters.labels_)}
