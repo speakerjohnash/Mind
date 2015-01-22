@@ -24,7 +24,7 @@ import sys
 
 from gensim.models import Phrases
 
-from various_tools import safe_print, safe_input
+from mind.tools import safe_print, safe_input
 
 class DummyFile(object):
     def write(self, x): pass
@@ -47,7 +47,7 @@ def verify_arguments():
 
 	sample = sys.argv[1]
 
-	sample_included = sample.endswith('.txt')
+	sample_included = sample.endswith('.txt') or sample.endswith('.csv')
 
 	if not sample_included:
 		safe_print("Erroneous arguments. Please see usage")
@@ -68,23 +68,28 @@ def run_from_command_line(cla):
 	params = {}
 	params = add_local_params(params)
 	first_chunk = True
+	corpus = []
 
-	reader = pd.read_csv(cla[1], chunksize=5000, na_filter=False, quoting=csv.QUOTE_NONE, encoding="utf-8", sep=',', error_bad_lines=False)
+	reader = pd.read_csv(cla[1], chunksize=5000, na_filter=False, encoding="utf-8", sep=',', error_bad_lines=False)
 
 	# Process Thoughts
 	for chunk in reader:
 
-		thoughts = [row["Thought"].split(" ") for i, row in chunk.iterrows()]
+		thoughts = []
+
+		for i, row in chunk.iterrows():
+			thoughts.append(row["Thought"].lower().split(" "))
+			corpus.append(row["Thought"].lower().split(" "))
 
 		if first_chunk:
-			bigrams = Phrases(thoughts, max_vocab_size=5000)
+			bigrams = Phrases(thoughts, max_vocab_size=10000)
 		else:
 			bigrams.add_vocab(thoughts)
 
 	bigrams.save("models/bigram_model")
 
-	#for index, value in df['Thought'].iteritems():
-	#	safe_print(value)
+	for thought in corpus:
+		safe_print(bigrams[thought])
 
 if __name__ == "__main__":
 	run_from_command_line(sys.argv)
