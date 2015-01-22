@@ -111,7 +111,7 @@ $(document).ready(function() {
 			topWords = [],
 			sLen = sorted.length;
 
-		for (var i=0; i<150; i++) {
+		for (var i=0; i<200; i++) {
 			if (sorted[i]["key"] != "Post Date") {
 				topWords.push(sorted[i]["key"])
 			}

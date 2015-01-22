@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.3
+#!/usr/local/bin/python3.4
 
 """This module processes a sample of thoughts and outputs 
 a model which will selectively tokenize bigrams and unigrams
@@ -9,8 +9,8 @@ Created on Jan 21, 2015
 
 #################### USAGE ##########################
 
-# python3.3 -m mind.bigram_tokenizer [thought_sample] 
-# python3.3 -m mind.bigram_tokenizer data/input/Thoughts.csv
+# python3.4 -m mind.bigram_tokenizer [thought_sample] 
+# python3.4 -m mind.bigram_tokenizer data/input/Thoughts.csv
 
 # Required Columns: 
 # Thought

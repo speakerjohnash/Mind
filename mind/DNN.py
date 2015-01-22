@@ -527,8 +527,8 @@ def add_fit_and_score(class_to_chg):
         scoref = self.score_classif(iterator)
         return numpy.mean(scoref())
 
-    class_to_chg.fit = MethodType(fit, None, class_to_chg)
-    class_to_chg.score = MethodType(score, None, class_to_chg)
+    class_to_chg.fit = MethodType(fit, class_to_chg)
+    class_to_chg.score = MethodType(score, class_to_chg)
 
 
 if __name__ == "__main__":
@@ -640,7 +640,7 @@ if __name__ == "__main__":
             #methods = ['adadelta'] TODO if you want "good" results asap
             for method in methods:
                 dnn = new_dnn(use_dropout)
-                print dnn, "using", method
+                print(dnn, "using", method)
                 dnn.fit(x_train, y_train, max_epochs=n_epochs, method=method, verbose=VERBOSE, plot=PLOT)
                 test_error = dnn.score(x_test, y_test)
                 print("score: %f" % (1. - test_error))
