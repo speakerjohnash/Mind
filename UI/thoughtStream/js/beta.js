@@ -195,10 +195,13 @@ $(document).ready(function() {
     	// Draw Streams
     	function streams(wordList) {
 
+    		var lata = data;
+
     		// Return if no words selected
 			if (wordList == null) {
-				focus.selectAll("path").data(function() {return []}).exit().remove()
-				return
+				focus.selectAll("path").data(function() {return []}).exit().remove();
+				lata = contextData
+				wordList = ["Total"]
 			}
 
 			// Format Data
@@ -206,7 +209,7 @@ $(document).ready(function() {
 				layers = stack(nest.entries(formatted))
 				formattedContext = formatData(contextData, ["Total"])
 				contextLayer = stack(nest.entries(formattedContext)),
-				formattedFocus = formatData(data, wordList),
+				formattedFocus = formatData(lata, wordList),
 				focusLayers = stack(nest.entries(formattedFocus));
 
 			// Scale Adjustments
