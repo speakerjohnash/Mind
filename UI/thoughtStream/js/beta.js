@@ -197,7 +197,7 @@ $(document).ready(function() {
 
     		// Return if no words selected
 			if (wordList == null) {
-				d3.selectAll("path").data(function() {return []}).exit().remove()
+				focus.selectAll("path").data(function() {return []}).exit().remove()
 				return
 			}
 
