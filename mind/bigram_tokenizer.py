@@ -18,13 +18,14 @@ Created on Jan 21, 2015
 #####################################################
 
 import contextlib
+import collections
 import csv
-import pandas as pd
 import sys
 
+import pandas as pd
 from gensim.models import Phrases
 
-from mind.tools import safe_print, safe_input
+from mind.tools import safe_print, safe_input, dict_2_json
 
 class DummyFile(object):
     def write(self, x): pass
@@ -69,6 +70,8 @@ def run_from_command_line(cla):
 	params = add_local_params(params)
 	first_chunk = True
 	corpus = []
+	token_counts = collections.defaultdict(list)
+	output = {}
 
 	reader = pd.read_csv(cla[1], chunksize=5000, na_filter=False, encoding="utf-8", sep=',', error_bad_lines=False)
 
@@ -88,8 +91,16 @@ def run_from_command_line(cla):
 
 	bigrams.save("models/bigram_model")
 
+	# Token Count
 	for thought in corpus:
-		safe_print(bigrams[thought])
+		tokenized = bigrams[thought]
+		for t in list(tokenized):
+			token_counts[t].append(t)
+
+	for t in token_counts:
+		output[t] = token_counts[t]
+
+	dict_2_json(output, "token_counts.json")
 
 if __name__ == "__main__":
 	run_from_command_line(sys.argv)
