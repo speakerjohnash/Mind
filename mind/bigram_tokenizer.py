@@ -98,7 +98,7 @@ def run_from_command_line(cla):
 			token_counts[t].append(t)
 
 	for t in token_counts:
-		output[t] = token_counts[t]
+		output[t] = len(token_counts[t])
 
 	dict_2_json(output, "token_counts.json")
 

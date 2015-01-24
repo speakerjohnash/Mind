@@ -32,7 +32,7 @@ def to_stdout(string, errors="replace"):
 def dict_2_json(obj, filename):
 	"""Saves a dict as a json file"""
 	with open('data/output/' + filename, 'w') as fp:
-		json.dumps(obj, fp, indent=4)
+		json.dump(obj, fp, indent=4)
 
 def safe_print(*objs, errors="replace"):
 	"""Print without unicode errors"""
