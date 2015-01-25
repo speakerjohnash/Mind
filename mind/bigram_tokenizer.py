@@ -70,8 +70,7 @@ def run_from_command_line(cla):
 	params = add_local_params(params)
 	first_chunk = True
 	corpus = []
-	token_counts = collections.defaultdict(list)
-	output = {}
+	token_counts = collections.defaultdict(int)
 
 	reader = pd.read_csv(cla[1], chunksize=5000, na_filter=False, encoding="utf-8", sep=',', error_bad_lines=False)
 
@@ -95,12 +94,9 @@ def run_from_command_line(cla):
 	for thought in corpus:
 		tokenized = bigrams[thought]
 		for t in list(tokenized):
-			token_counts[t].append(t)
+			token_counts[t] += 1
 
-	for t in token_counts:
-		output[t] = len(token_counts[t])
-
-	dict_2_json(output, "token_counts.json")
+	dict_2_json(token_counts, "token_counts.json")
 
 if __name__ == "__main__":
 	run_from_command_line(sys.argv)
