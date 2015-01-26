@@ -9,7 +9,7 @@ Created on Dec 4, 2014
 
 #################### USAGE ##########################
 
-# python3.4 -m mind.cluster_words.py [word2vec_model]
+# python3.4 -m mind.cluster_words [word2vec_model]
 
 #####################################################
 
@@ -17,11 +17,14 @@ import csv
 import sys
 import operator
 import collections
+import pickle
 
 import numpy as np
 from gensim.models import Word2Vec
 from sklearn.cluster import MiniBatchKMeans as kmeans
 from sklearn.manifold import TSNE
+
+from mind.tools import dict_2_json
 
 def to_stdout(string, errors='replace'):
 	"""Converts a string to stdout compatible encoding"""
@@ -35,6 +38,17 @@ def safe_print(*objs, errors="replace"):
 
 	print(*(to_stdout(str(o), errors) for o in objs))
 
+def save_token_subset(word2vec, word_list):
+	"""Save a subset of token and associated vectors
+	to a file for faster loading"""
+
+	vector_dict = collections.defaultdict()
+
+	for word in word_list:
+		vector_dict[word] = word2vec[word]
+
+	pickle.dump(vector_dict, open("data/misc/prophet_vectors.pkl", "wb" ))
+
 def cluster_vectors(word2vec):
 	"""Clusters a set of word vectors"""
 
@@ -43,12 +57,12 @@ def cluster_vectors(word2vec):
 	tokens = ["prophet", "thought", "mind", "truth", "thoughts", "time", "good", "meaning", "like", "future", "make", "context", "words", "self", "consciousness", "stream", "need", "just", "knowledge", "new", "today", "way", "does", "know", "people", "reality", "day", "idea", "life", "ideas", "use", "predictions", "conscious", "light", "word", "state", "things", "reflect", "information", "brain", "learning", "prediction", "better", "think", "past", "speak", "work", "right", "flow", "change", "learn", "meds", "http", "reflection", "feel", "mimi", "data", "true", "want", "human", "language", "best", "com", "truths", "real", "love", "means", "minds", "tomorrow", "world", "important", "tree", "users", "come", "really", "point", "search", "great", "site", "different", "predict", "private", "live", "tool", "path", "perception", "form", "concept", "meditation", "create", "able", "body", "seek", "needs", "used", "design", "flood", "place", "ken", "little", "waves", "subjective", "thinking", "thing", "sync", "set", "lot", "objective", "having", "rate", "present", "health", "using", "makes", "understand", "wisdom", "humans", "sunrise", "mental", "perceive", "ask", "far", "healthy", "current", "wave", "years", "religion", "feature", "long", "predictive", "energy", "post", "understanding", "build", "log", "permanence", "focus", "say", "cognitive", "contexts", "god", "lucid", "user", "lost", "machine", "year", "knowing", "neural", "useful", "questions", "end", "physical", "potential", "did", "old", "let", "clock", "control", "write", "rating", "link", "sense", "andy", "sun", "line", "button", "dream", "public", "usage", "challenging", "distributed", "book", "based", "going", "remember", "streams", "awareness", "root", "bound", "start", "share", "define", "semantic", "explore", "features", "statements", "question", "helps", "repeat", "reflections", "stretch"]
 	X = np.array([word2vec[t].T for t in tokens])
 
-	# Save a small subset of total vectors for faster loading
-	np.save("data/misc/prophet_vectors", X)
-
+	# Create vector cache for faster load
+	save_token_subset(word2vec, tokens)
+	
 	# Visualize an easy dataset for exploration
-	#tokens = ["one", "two", "three", "minister", "leader", "president"]
-	#X = np.array([word2vec[t].T for t in tokens])
+	tokens = ["one", "two", "three", "minister", "leader", "president"]
+	X = np.array([word2vec[t].T for t in tokens])
 
 	# Dimensionality Reduction
 	model = TSNE(n_components=2, random_state=0)
