@@ -152,13 +152,13 @@ def processByDay(days, ken):
 	
 		# Get Daily Words
 		for word, count in word_count.items():
-			word = Word(word).singularize()
+			#word = Word(word).lemmatize()
 			if word in ken:
 				daily_ken[word] = count
 
 		# Add Missing Words
 		for word in ken:
-			word = Word(word).singularize()
+			#word = Word(word).lemmatize()
 			if word not in daily_ken:
 				daily_ken[word] = 0
 
@@ -261,7 +261,7 @@ def run_from_command():
 
 	buildTypeStream(days)
 	buildWordStream(days, ken)
-	buildSentimentStream(days)
+	#buildSentimentStream(days)
 
 if __name__ == "__main__":
 	run_from_command()
