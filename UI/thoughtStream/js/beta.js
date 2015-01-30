@@ -100,7 +100,8 @@ $(document).ready(function() {
 	    	width = document.body.clientWidth - focusMargin.left - focusMargin.right,
 	    	numWords = 25,
 	     	focusHeight = 500,
-	     	contextHeight = 75;
+	     	contextHeight = 75,
+	     	wordsInSelect = 150;
 
 	    // Data
 		var words = Object.keys(data[0]),
@@ -111,7 +112,7 @@ $(document).ready(function() {
 			topWords = [],
 			sLen = sorted.length;
 
-		for (var i=0; i<200; i++) {
+		for (var i=0; i<wordsInSelect; i++) {
 			if (sorted[i]["key"] != "Post Date") {
 				topWords.push(sorted[i]["key"])
 			}

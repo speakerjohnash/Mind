@@ -1,7 +1,7 @@
 #################### USAGE ####################################
 
 # python3.4 -m mind.thoughtStream [input_file] [user]
-# python3.4 -m mind.thoughtStream data/input/stream_update.csv matt
+# python3.4 -m mind.thoughtStream data/input/Thoughts.csv matt
 
 ###############################################################
 
@@ -17,7 +17,7 @@ import collections
 import datetime
 
 import numpy
-
+from textblob import TextBlob, Word
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 def to_stdout(string, errors='replace'):
@@ -152,11 +152,13 @@ def processByDay(days, ken):
 	
 		# Get Daily Words
 		for word, count in word_count.items():
+			word = Word(word).singularize()
 			if word in ken:
 				daily_ken[word] = count
 
 		# Add Missing Words
 		for word in ken:
+			word = Word(word).singularize()
 			if word not in daily_ken:
 				daily_ken[word] = 0
 
@@ -170,6 +172,31 @@ def buildWordStream(days, ken):
 	stream = processByDay(days, sorted(ken))
 	sorted_stream = sorted(stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/all_stream.csv")
+
+def buildSentimentStream(days):
+	"""Build out a sentiment stream from daily thoughts"""
+
+	sentiment_stream = []
+
+	for day, thoughts in days.items():
+
+		polarity, subjectivity = [], []
+
+		for thought in thoughts:
+			doc = TextBlob(thought["Thought"])
+			polarity.append(doc.sentiment.polarity)
+			subjectivity.append(doc.sentiment.subjectivity)
+
+		daily_sentiment = {
+			"polarity" : sum(polarity) / float(len(polarity)),
+			"subjectivity" : sum(subjectivity) / float(len(subjectivity))
+		}
+
+		daily_sentiment['Post Date'] = day
+		sentiment_stream.append(daily_sentiment)
+
+	sorted_stream = sorted(sentiment_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
+	write_dict_list(sorted_stream, "data/output/sentiment_stream.csv")
 
 def buildTypeStream(days):
 	"""Build stream data from thought type count"""
@@ -215,6 +242,7 @@ def run_from_command():
 	matt_thoughts = thinkers['msevrens']
 	prophet_thoughts = thinkers['prophet']
 	work_thoughts = thinkers['msevrens@yodlee.com']
+	leah_thoughts = thinkers['leahdaniels']
 
 	# Automate User Selection
 	if sys.argv[2] == "all":
@@ -223,7 +251,9 @@ def run_from_command():
 	elif sys.argv[2] == "pat":
 		collective_thoughts = pat_thoughts
 	elif sys.argv[2] == "matt":
-		collective_thoughts = matt_thoughts + prophet_thoughts + work_thoughts	
+		collective_thoughts = matt_thoughts + prophet_thoughts + work_thoughts
+	elif sys.argv[2] == "leah":
+		collective_thoughts = leah_thoughts
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=7)
@@ -231,6 +261,7 @@ def run_from_command():
 
 	buildTypeStream(days)
 	buildWordStream(days, ken)
+	buildSentimentStream(days)
 
 if __name__ == "__main__":
 	run_from_command()
