@@ -256,7 +256,7 @@ def run_from_command():
 		collective_thoughts = leah_thoughts
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
-	ken = vectorize(thoughts, min_df=7)
+	ken = vectorize(thoughts, min_df=0.0002)
 	days = groupByDay(collective_thoughts)
 
 	buildTypeStream(days)
