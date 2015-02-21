@@ -225,6 +225,25 @@ def buildTypeStream(days):
 	sorted_stream = sorted(type_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/type_stream.csv")
 
+def buildUserStream(thinkers):
+	"""Build a user usage stream"""
+
+	days = collections.defaultdict(lambda : collections.defaultdict(int))
+	user_stream = []
+
+	for thinker, thoughts in thinkers.items():
+		byDay = groupByDay(thoughts)
+		for day, daily in byDay.items():
+			days[day][thinker] = len(daily)
+
+	for date, day in days.items():
+		dated = day
+		dated["Post Date"] = date
+		user_stream.append(dated)
+
+	sorted_stream = sorted(user_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
+	write_dict_list(sorted_stream, "data/output/user_stream.csv")
+
 # TODO: 
 # 1) run countVectorizer on each day
 # 2) Output and connect to thought stream code
@@ -243,6 +262,7 @@ def run_from_command():
 	prophet_thoughts = thinkers['prophet']
 	work_thoughts = thinkers['msevrens@yodlee.com']
 	leah_thoughts = thinkers['leahdaniels']
+	nestor_thoughts = thinkers['philosoNestor']
 
 	# Automate User Selection
 	if sys.argv[2] == "all":
@@ -254,13 +274,16 @@ def run_from_command():
 		collective_thoughts = matt_thoughts + prophet_thoughts + work_thoughts
 	elif sys.argv[2] == "leah":
 		collective_thoughts = leah_thoughts
+	elif sys.argv[2] == "nestor":
+		collective_thoughts = nestor_thoughts
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=0.0002)
 	days = groupByDay(collective_thoughts)
 
-	buildTypeStream(days)
-	buildWordStream(days, ken)
+	#buildTypeStream(days)
+	#buildWordStream(days, ken)
+	buildUserStream(thinkers)
 	#buildSentimentStream(days)
 
 if __name__ == "__main__":
