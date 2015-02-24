@@ -239,6 +239,9 @@ def buildUserStream(thinkers):
 	for date, day in days.items():
 		dated = day
 		dated["Post Date"] = date
+		for key in thinkers.keys():
+			if key not in dated:
+				dated[key] = 0
 		user_stream.append(dated)
 
 	sorted_stream = sorted(user_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());

@@ -17,7 +17,7 @@ function thoughtStream(data) {
 		topWords = [],
 		sLen = sorted.length;
 
-	for (var i=0; i<3; i++) {
+	for (var i=0; i<sLen; i++) {
 		if (sorted[i]["key"] != "Post Date") {
 			topWords.push(sorted[i]["key"])
 		}
