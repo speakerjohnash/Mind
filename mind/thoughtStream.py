@@ -269,6 +269,7 @@ def run_from_command():
 
 	# Automate User Selection
 	if sys.argv[2] == "all":
+		buildUserStream(thinkers)
 		for thinker, thoughts in thinkers.items():
 			collective_thoughts += thoughts
 	elif sys.argv[2] == "pat":
@@ -284,9 +285,8 @@ def run_from_command():
 	ken = vectorize(thoughts, min_df=0.0002)
 	days = groupByDay(collective_thoughts)
 
-	#buildTypeStream(days)
-	#buildWordStream(days, ken)
-	buildUserStream(thinkers)
+	buildTypeStream(days)
+	buildWordStream(days, ken)
 	#buildSentimentStream(days)
 
 if __name__ == "__main__":
