@@ -89,6 +89,13 @@ $(document).ready(function() {
 
 	}
 
+	/* Fill in any missing days with zero
+	values */
+
+	function fillInDays(data) {
+		makeStream(data)
+	}
+
 	/* Prepare data after loading from csv 
 	and draw necessary UI elements */
 
@@ -96,11 +103,13 @@ $(document).ready(function() {
 
 		// Canvas Dimensions
 		var focusMargin = {top: 120, right: 20, bottom: 20, left: 20},
-			contextMargin = {top: 20, right: 20, bottom: 40, left: 20},
+			contextMargin = {top: 20, right: 20, bottom: 20, left: 20},
 	    	width = document.body.clientWidth - focusMargin.left - focusMargin.right,
+	    	axisHeight = 20,
 	    	numWords = 25,
-	     	focusHeight = 500,
-	     	contextHeight = 75,
+	     	focusHeight = 430,
+	     	contextHeight = 80,
+	     	svgHeight = focusHeight + contextHeight + (2 * axisHeight),
 	     	wordsInSelect = 150;
 
 	    // Data
@@ -140,7 +149,7 @@ $(document).ready(function() {
     	// Setting Up Canvas
     	var svg = d3.select(".chart").append("svg")
 			.attr("width", width + focusMargin.left + focusMargin.right)
-			.attr("height", focusHeight)
+			.attr("height", svgHeight + 1)
 			.append("g")
 			.attr("transform", "translate(" + focusMargin.left + ", 0)");
 
@@ -185,12 +194,12 @@ $(document).ready(function() {
   		// Draw Axes
   		focus.append("g")
 	      .attr("class", "x axis")
-	      .attr("transform", "translate(0," + focusHeight + ")")
+	      .attr("transform", "translate(0," + svgHeight + ")")
 	      .call(focusXAxis);
 
 	    context.append("g")
 	      .attr("class", "x axis")
-	      .attr("transform", "translate(0," + (contextHeight + 20) + ")")
+	      .attr("transform", "translate(0," + (contextHeight + axisHeight) + ")")
 	      .call(contextXAxis);
 
     	// Draw Streams
@@ -206,9 +215,7 @@ $(document).ready(function() {
 			}
 
 			// Format Data
-			var formatted = formatData(data, wordList),
-				layers = stack(nest.entries(formatted))
-				formattedContext = formatData(contextData, ["Total"])
+			var formattedContext = formatData(contextData, ["Total"])
 				contextLayer = stack(nest.entries(formattedContext)),
 				formattedFocus = formatData(lata, wordList),
 				focusLayers = stack(nest.entries(formattedFocus));
@@ -243,7 +250,7 @@ $(document).ready(function() {
 				.append("path")
 				.attr("class", "layer")
 				.attr("d", function(d) { return focusArea(d.values); })
-    			.attr("transform", "translate(0, " + (contextMargin.bottom) + ")")
+    			.attr("transform", "translate(0, " + (contextHeight + axisHeight) + ")")
 				.style("fill", function(d, i) { return color(i); });
 
 			// Exit
@@ -303,6 +310,6 @@ $(document).ready(function() {
     
     var csvpath = "../../data/output/all_stream.csv";
 	
-	d3.csv(csvpath, makeStream);
+	d3.csv(csvpath, fillInDays);
 
 });
