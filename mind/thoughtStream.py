@@ -280,6 +280,8 @@ def run_from_command():
 		collective_thoughts = leah_thoughts
 	elif sys.argv[2] == "nestor":
 		collective_thoughts = nestor_thoughts
+	elif sys.argv[2] == "work":
+		collective_thoughts = thinkers['msevrens@yodlee.com'] + thinkers['joeandrewkey@gmail.com']
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=0.0002)
@@ -287,7 +289,7 @@ def run_from_command():
 
 	buildTypeStream(days)
 	buildWordStream(days, ken)
-	#buildSentimentStream(days)
+	buildSentimentStream(days)
 
 if __name__ == "__main__":
 	run_from_command()
