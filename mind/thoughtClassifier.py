@@ -10,7 +10,8 @@ Created on Nov 28, 2014
 
 #################### USAGE ##########################
 
-# python3.3 thoughtClassifier.py [file_name] [document_column_name] [label_column_name]
+# python3.4 -m mind.thoughtClassifier [file_name] [document_column_name] [label_column_name]
+# python3.4 -m mind.thoughtClassifier data/input/Thoughts.csv Thought Type
 
 #####################################################
 
@@ -84,7 +85,7 @@ def build_model(thoughts, labels):
 		'clf__n_iter': (10, 50, 80)
 	}
 
-	grid_search = GridSearchCV(pipeline, parameters, n_jobs=8, verbose=3, cv=3)
+	grid_search = GridSearchCV(pipeline, parameters, n_jobs=-1, verbose=3, cv=3)
 	grid_search.fit(thoughts, labels)
 	score = grid_search.score(thoughts, labels)
 
@@ -100,7 +101,7 @@ def build_model(thoughts, labels):
 	#test_model("data/input/ThoughtsNov28.txt", grid_search)
 
 	# Save Model
-	joblib.dump(grid_search, 'thought_classifier_' + str(score) + '.pkl', compress=3)
+	joblib.dump(grid_search, 'models/thought_classifier_' + str(score) + '.pkl', compress=3)
 
 def test_model(file_to_test, model):
 	"""Tests our classifier."""
