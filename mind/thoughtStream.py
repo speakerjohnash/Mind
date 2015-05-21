@@ -247,6 +247,28 @@ def buildUserStream(thinkers):
 	sorted_stream = sorted(user_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/user_stream.csv")
 
+def buildPrivacyStream(days):
+	"""Build out a privacy stream from daily thoughts"""
+
+	privacy_stream = []
+
+	for day, thoughts in days.items():
+
+		privacy_counts = {
+			"Private" : 0,
+			"Public" : 0,
+			"" : 0
+		}
+
+		for thought in thoughts:
+			privacy_counts[thought['Privacy']] += 1
+
+		privacy_counts['Post Date'] = day
+		privacy_stream.append(privacy_counts)
+
+	sorted_stream = sorted(privacy_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
+	write_dict_list(sorted_stream, "data/output/privacy_stream.csv")
+
 # TODO: 
 # 1) run countVectorizer on each day
 # 2) Output and connect to thought stream code
@@ -280,8 +302,12 @@ def run_from_command():
 		collective_thoughts = leah_thoughts
 	elif sys.argv[2] == "nestor":
 		collective_thoughts = nestor_thoughts
+	elif sys.argv[2] == "fox":
+		collective_thoughts = thinkers['fox scarlett']
 	elif sys.argv[2] == "work":
-		collective_thoughts = thinkers['msevrens@yodlee.com'] + thinkers['joeandrewkey@gmail.com']
+		collective_thoughts = thinkers['msevrens@yodlee.com'] + thinkers['joeandrewkey@gm...']
+	elif sys.argv[2] == "andy":
+		collective_thoughts = thinkers['joeandrewkey@gm...']
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=0.0002)
@@ -290,6 +316,7 @@ def run_from_command():
 	buildTypeStream(days)
 	buildWordStream(days, ken)
 	buildSentimentStream(days)
+	buildPrivacyStream(days)
 
 if __name__ == "__main__":
 	run_from_command()
