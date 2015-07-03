@@ -1,8 +1,8 @@
 #!/usr/local/bin/python3.4
 
-"""This module defines the Meerkat web service API
+"""This module defines the Prophet Mind Sentiment Analysis web service API
 
-Created on Jun 20, 2015
+Created on Jul 07, 2015
 @author: Matthew Sevrens
 """
 
@@ -12,21 +12,21 @@ import json
 from tornado import gen
 from tornado_json.requesthandlers import APIHandler
 
-class Mind_API(APIHandler):
-	"""This class is the Prophet Mind API"""
+class Sentiment_Analysis(APIHandler):
+	"""This class handles Sentiment Analysis for Prophet"""
 
 	thread_pool = concurrent.futures.ThreadPoolExecutor(8)
 
-	with open("mind/schema_input.json") as data_file:
+	with open("schemas/sentiment/schema_input.json") as data_file:
 		schema_input = json.load(data_file)
 
-	with open("mind/example_input.json") as data_file:
+	with open("schemas/sentiment/example_input.json") as data_file:
 		example_input = json.load(data_file)
 
-	with open("mind/schema_output.json") as data_file:
+	with open("schemas/sentiment/schema_output.json") as data_file:
 		schema_output = json.load(data_file)
 
-	with open("mind/example_output.json") as data_file:
+	with open("schemas/sentiment/example_output.json") as data_file:
 		example_output = json.load(data_file)
 
 	@schema.validate(

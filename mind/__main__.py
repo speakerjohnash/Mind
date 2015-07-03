@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3.4
 
 """This module starts an HTTP web service for use with processing
-thoughts on Prophet for visualization purposes
+thoughts on Prophet for visualization and analysis purposes
 
 Created on Jun 20, 2015
 @author: Matthew Sevrens
@@ -19,7 +19,7 @@ import tornado.ioloop
 
 from tornado_json.application import Application
 from tornado.options import define, options
-from mind.api import Mind_API
+from mind.sentiment_api import Sentiment_Analysis
 
 # Define Some Defaults
 define("port", default=443, help="run on the given port", type=int)
@@ -32,7 +32,7 @@ def main():
 
 	# Define valid routes
 	routes = [
-		("/mind/?", Mind_API)
+		("/sentiment/?", Sentiment_Analysis)
 	]
 
 	# Create the tornado_json.application
