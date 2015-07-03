@@ -1,0 +1,29 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Wordstream Input Schema",
+	"definitions": {
+		"thought": {
+			"type": "object",
+			"properties": {
+				"thought" : { "type": "string" }
+			},
+			"required": ["thought"]
+		}
+	},
+	"description": "A schema for defining input into the Prophet Mind Wordstream Analyzer",
+	"type" : "object",
+	"properties" : {
+		"thoughts" : {
+			"description" : "An array containing at least one thought",
+			"type" : "array",
+			"items" : {
+				"allOf": [
+					{"$ref": "#/definitions/thought"}
+				]
+			},
+			"minItems": 1,
+			"uniqueItems": true
+		}
+	},
+	"required": ["thoughts"]
+}
