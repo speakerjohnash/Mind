@@ -140,6 +140,20 @@ def groupByDay(thoughts):
 
 	return days
 
+def groupByWeek(thoughts):
+	"""Bucket a users thoughts by week"""
+
+	weeks = collections.defaultdict(list)
+
+	# Split by day
+	for thought in thoughts:
+		day = thought.get("Post date", "")[:8]
+		dt = datetime.datetime.strptime(day, '%m/%d/%y')
+		weekstart = dt - datetime.timedelta(days = dt.weekday())
+		weeks[weekstart.strftime('%m/%d/%y')].append(thought)
+
+	return weeks
+
 def processByDay(days, ken):
 	"""Run the vectorizing tool on many days"""
 
