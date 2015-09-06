@@ -110,7 +110,7 @@ $(document).ready(function() {
 	     	focusHeight = 430,
 	     	contextHeight = 80,
 	     	svgHeight = focusHeight + contextHeight + (2 * axisHeight),
-	     	wordsInSelect = 250;
+	     	wordsInSelect = 500;
 
 	    // Data
 		var words = Object.keys(data[0]),
