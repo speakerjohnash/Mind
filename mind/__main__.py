@@ -20,6 +20,7 @@ import tornado.ioloop
 from tornado_json.application import Application
 from tornado.options import define, options
 from mind.sentiment_api import Sentiment_Analysis
+from mind.wordstream_api import Wordstream_Analysis
 
 # Define Some Defaults
 define("port", default=443, help="run on the given port", type=int)
@@ -32,7 +33,8 @@ def main():
 
 	# Define valid routes
 	routes = [
-		("/sentiment/?", Sentiment_Analysis)
+		("/sentiment/?", Sentiment_Analysis),
+		("/wordstream/?", Wordstream_Analysis)
 	]
 
 	# Create the tornado_json.application
