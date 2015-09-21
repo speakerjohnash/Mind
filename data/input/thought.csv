@@ -1,4 +1,1183 @@
 "Seer","Thought","Good","Truth","Reflections","Type","Post date","Privacy"
+"msevrens","Today I started wearing my Jawbone Up again","+0
+-0
+","0","0","Reflect","09/20/15 10:06 PM","Public"
+"msevrens","Haircut today at the 6 setting","+0
+-0
+","0","0","Reflect","09/20/15 5:38 PM","Public"
+"msevrens","This weekend Mimi and I are in Rohnert Park visiting her parents","+0
+-0
+","0","0","State","09/19/15 6:37 PM","Public"
+"msevrens","People seem to personify OCD a lot","+0
+-0
+","0","0","State","09/19/15 5:03 PM","Public"
+"msevrens","I sound start quantifying the intensity of my OCD symptoms","+0
+-0
+","0","0","State","09/19/15 4:41 PM","Private"
+"msevrens","My OCD symptoms have been flaring up today","+0
+-1
+","0","0","Reflect","09/19/15 4:38 PM","Private"
+"msevrens","I feel somewhat apprehensive","+0
+-0
+","0","0","State","09/19/15 12:37 PM","Public"
+"msevrens","Today I used Prophet to track back which AMI to explore to figure out how to rebuild Lupa with Torch","+1
+-0
+","0","0","Reflect","09/19/15 12:13 PM","Public"
+"msevrens","I'm pretty sure I just got Lupa working on my personal AWS deep learning AMI","+1
+-0
+","0","0","Reflect","09/19/15 12:11 PM","Public"
+"msevrens","lupa build step 4) pip3 install lupa","+0
+-0
+","0","0","State","09/19/15 12:09 PM","Public"
+"msevrens"," lupa build step 3) apt-get install libluajit-5.1-dev","+0
+-0
+","0","0","State","09/19/15 12:09 PM","Public"
+"msevrens","lupa build step 2) cp ~torch/install/share/5.1 /usr/local/share/lua/","+0
+-0
+","0","0","State","09/19/15 12:08 PM","Public"
+"msevrens","lupa build step 1) cp ~torch/exe/luajit-rocks/luajit-2.0/etc/luajit.pc /usr/lib/pkgconfig/","+0
+-0
+","0","0","State","09/19/15 12:07 PM","Public"
+"msevrens","Steps to build Lupa with Torch libraries for python3","+0
+-0
+","0","0","State","09/19/15 12:06 PM","Public"
+"msevrens","#dream: Both Mimi and I woke up from multi-layered dreams at the same time which kind of creeped me out","+0
+-0
+","0","0","Reflect","09/19/15 7:46 AM","Public"
+"msevrens","I feel bad that I don't know where the tree skirt my mom made me is","+0
+-0
+","0","0","State","09/18/15 8:47 PM","Public"
+"msevrens","I've had some of the most unpleasant experiences I've ever had in the last four months","+0
+-0
+","0","0","Reflect","09/18/15 8:05 PM","Public"
+"msevrens","Based on my experiences, legal weed will have many unexpected effects","+0
+-1
+","0","0","Predict","09/18/15 8:03 PM","Public"
+"msevrens","Weed will be legal in California within 5 years","+0
+-0
+","0","0","Predict","09/18/15 8:03 PM","Public"
+"msevrens","It would not be a good idea for me to use weed at any point in the near future","+0
+-0
+","90","0","Predict","09/18/15 8:01 PM","Private"
+"msevrens","Ray Kurzweil needs to spend some more time thinking about mental illness","+0
+-0
+","80","0","State","09/18/15 7:56 PM","Public"
+"msevrens","The last remaining task I need to build a deep learning AMI is to build a lupa runtime with Torch","+0
+-0
+","0","0","State","09/18/15 6:01 PM","Public"
+"msevrens","My OCD symptoms haven't had much of a focus recently","+0
+-0
+","0","0","Reflect","09/18/15 5:59 PM","Public"
+"msevrens","If you did drugs during a lucid dream would you experience the effects?","+0
+-0
+","0","0","Ask","09/18/15 5:49 PM","Public"
+"msevrens","My brain is still a bit funky","+0
+-0
+","0","0","State","09/18/15 4:16 PM","Public"
+"msevrens","How did I build Lupa with Torch the first time?","+0
+-0
+","0","0","Ask","09/18/15 3:48 PM","Public"
+"msevrens","I'm glad I took the time to put together a Deep Learning Toolkit on AWS for personal use","+0
+-0
+","0","0","State","09/18/15 10:17 AM","Public"
+"msevrens","Today I got a deep learning toolkit working on my AWS account","+1
+-0
+","0","0","Reflect","09/17/15 3:55 PM","Public"
+"msevrens","In 15 years programming will be a required subject for all students graduating highschool","+0
+-0
+","0","0","Predict","09/17/15 11:00 AM","Public"
+"patch615","To a certain extent coding and speaking another language are already the most valuable skills. ","+0
+-0
+","90","0","State","09/17/15 9:23 AM","Public"
+"patch615","Being Bilingual and Knowing how to program will be the two most valuable skills in the job market in the next 10 years ","+0
+-0
+","90","0","Predict","09/17/15 9:23 AM","Public"
+"patch615","#tracking CE 10 MC no SU yes #beer #weed HC 10 HL 9","+0
+-0
+","0","0","Reflect","09/17/15 9:15 AM","Public"
+"msevrens","#dream: Nightmare","+0
+-0
+","0","0","Reflect","09/17/15 9:13 AM","Public"
+"patch615","I like being in bands where the bass can play an important melodic role","+0
+-0
+","0","0","State","09/17/15 9:13 AM","Public"
+"patch615","Joined a band. A punky kind of outfit, but the kind of band that I can put my mark on. ","+1
+-0
+","0","0","Reflect","09/17/15 9:13 AM","Public"
+"patch615","last night was enjoyable. went to a volunteer meeting for Bernie Sanders, and  a band audition practise thing","+0
+-0
+","0","0","Reflect","09/17/15 9:12 AM","Public"
+"msevrens","Prophet is designed to quantify truth","+0
+-0
+","0","0","State","09/16/15 5:48 PM","Public"
+"msevrens","I'm a bit surprised that so many people are upset about islamophobia in the US right now in regards to Ahmed and his clock","+0
+-0
+","0","0","State","09/16/15 4:29 PM","Public"
+"msevrens","I got into a semi-state of flow today but I didn't end up with anything of consequence at the end of it","+0
+-0
+","0","0","Reflect","09/16/15 4:26 PM","Public"
+"msevrens","#Meds: Lions Mane, Piracetam, CDP Choline, Phosphatidylcholine","+0
+-0
+","0","0","State","09/16/15 1:08 PM","Private"
+"msevrens","Should I talk to Vinay about my work goals being too aggressive?","+0
+-0
+","0","0","Ask","09/15/15 11:37 PM","Public"
+"msevrens","I will mostly cut out candy and soda over the next month","+0
+-0
+","0","0","Predict","09/15/15 11:34 PM","Public"
+"msevrens","I will not go above 165 lbs this winter","+0
+-0
+","0","0","Predict","09/15/15 11:33 PM","Public"
+"msevrens","Mimi will go out for her birthday dinner next week","+0
+-0
+","0","0","Predict","09/15/15 11:33 PM","Private"
+"msevrens","Patrick and I will confluesce some time in the next two weeks","+0
+-0
+","0","0","Predict","09/15/15 11:32 PM","Public"
+"msevrens","Andy, Joseph and I will go out to lunch next week","+1
+-0
+","0","0","Predict","09/15/15 11:31 PM","Public"
+"msevrens","Mimi and I will keep Pippin for longer than the initial two weeks","+0
+-0
+","0","0","Predict","09/15/15 11:29 PM","Public"
+"msevrens","More people will vote with truth when you can earn truth for correct predictions and end up on the top seers page","+0
+-0
+","0","0","Predict","09/15/15 11:26 PM","Public"
+"msevrens","I always read everything Patrick posts publicly to Prophet","+0
+-0
+","0","0","Reflect","09/15/15 11:21 PM","Public"
+"patch615","I've written a lot of SFish things, but maybe I should write some more realistic stuff too. ","+0
+-0
+","0","0","State","09/15/15 9:04 PM","Public"
+"patch615","As far as writing, I'm wondering if it's time to start writing about some fictional character with an analagous experience to mine","+0
+-0
+","0","0","State","09/15/15 9:04 PM","Public"
+"patch615","I think the job will be about 10$ an hour, with more for commission, and a carrot on a stick of advancement","+0
+-0
+","0","0","Predict","09/15/15 9:03 PM","Public"
+"patch615","I feel like I deserve better than I've gotten, and I think I can manage that. ","+0
+-0
+","0","0","State","09/15/15 9:02 PM","Public"
+"patch615","I always feel kind of bad for leaving jobs, but I don't know if it's really a reasonable guilt.","+0
+-0
+","0","0","State","09/15/15 9:02 PM","Public"
+"patch615","I feel  like it's reasonable to take the job if it doesn't suck royally and then take another job if it comes up. ","+0
+-0
+","0","0","State","09/15/15 9:02 PM","Public"
+"patch615","If the job seems ok, and pays more than 13$ an hour, I'll take it. ","+0
+-0
+","0","0","Predict","09/15/15 9:01 PM","Public"
+"patch615","If the job seems like it's just absolutely horrible I won't take it. ","+0
+-0
+","0","0","Predict","09/15/15 9:01 PM","Public"
+"patch615","It's still important that I check it out and see what it's like. ","+0
+-0
+","0","0","State","09/15/15 9:01 PM","Public"
+"patch615","I don't care all that much about the job I'm checking out tomorrow. I don't like the idea of sales, and I don't feel like it's going to be a good gig. ","+0
+-0
+","0","0","State","09/15/15 9:00 PM","Public"
+"patch615","I should be going to be relatively soon with the interview thing tomorrow. ","+0
+-0
+","0","0","State","09/15/15 9:00 PM","Public"
+"patch615","It always makes me sad that we live in a country where service professions can put someone on the poverty line. ","+0
+-0
+","0","0","State","09/15/15 8:59 PM","Public"
+"patch615","I haven't had health insurance for about 6 years. ","+0
+-1
+","0","0","Reflect","09/15/15 8:59 PM","Public"
+"patch615","One of my first goals when I get a job is to begin getting health insurance","+1
+-0
+","0","0","Predict","09/15/15 8:59 PM","Public"
+"patch615","I've been getting a lot done, but I don't know if it's really paid off because I haven't gotten as many job interviews as I'd like","+0
+-0
+","0","0","State","09/15/15 8:58 PM","Public"
+"patch615","I think I will feel more motivated when I get a job, but mostly just because the process of applying for jobs is oddly draining","+0
+-0
+","0","0","State","09/15/15 8:58 PM","Public"
+"patch615","People are nice in New York than they were in Boston. ","+0
+-0
+","0","0","State","09/15/15 8:57 PM","Public"
+"patch615","It's still not California. ","+0
+-0
+","0","0","State","09/15/15 8:57 PM","Public"
+"patch615","I feel more comfortable in new york than I did in Boston. ","+0
+-0
+","0","0","State","09/15/15 8:57 PM","Public"
+"patch615","It helps to have a routine when it comes to writing","+0
+-0
+","0","0","State","09/15/15 8:57 PM","Public"
+"patch615","I want to start my 1000 words a day of writing again. ","+1
+-0
+","0","0","State","09/15/15 8:56 PM","Public"
+"patch615","I will use a recording of an improvised set to get shows as a solo act","+0
+-0
+","0","0","Predict","09/15/15 8:56 PM","Public"
+"patch615","I recorded an improvised set a few days ago and it sounded passable. I think I could perform an improvised set. ","+0
+-0
+","0","0","State","09/15/15 8:56 PM","Public"
+"patch615","I'm considering making a posting for a drummer and bassist to try and start a project of my own. But I think I might need to do solo shows first. ","+0
+-0
+","0","0","State","09/15/15 8:56 PM","Public"
+"patch615","I'm also going to play with a band I found on craigslist. ","+1
+-0
+","0","0","State","09/15/15 8:55 PM","Public"
+"patch615","I am also going to be going to an organising meeting for Bernie Sanders in my area (volunteering to try and get some voters registered)","+0
+-0
+","0","0","State","09/15/15 8:55 PM","Public"
+"patch615","Tomorrow I am going to be doing the secondary interview thing (a day with one of the people doing the job to see what it's like) ","+0
+-0
+","0","0","State","09/15/15 8:54 PM","Public"
+"patch615","Tomorrow will be one of the busier days that I've had so far. ","+0
+-0
+","0","0","Predict","09/15/15 8:54 PM","Public"
+"patch615","Moving to New York has been a weird mix of very busy and not busy at all. ","+0
+-0
+","0","0","State","09/15/15 8:54 PM","Public"
+"patch615","I think I'd only be good at selling something I believe in. (e.g. prophet)","+0
+-0
+","0","0","State","09/15/15 8:53 PM","Public"
+"patch615","I have a low tolerance for bullshit. ","+0
+-0
+","0","0","State","09/15/15 8:53 PM","Public"
+"patch615","I have a feeling it's not the kind of job I'll like. ","+0
+-0
+","0","0","Predict","09/15/15 8:51 PM","Public"
+"patch615","Tomorrow I am going in for a secondary interview for a sales job. ","+0
+-0
+","0","0","State","09/15/15 8:50 PM","Public"
+"leahdaniels","I am going to repost only POSITIVE news on social media this week. ","+0
+-0
+","0","0","Predict","09/15/15 8:39 PM","Public"
+"leahdaniels","Prophet helps me be mindful. ","+2
+-0
+","0","0","State","09/15/15 6:57 PM","Public"
+"msevrens","Flowing inward towards reality","+0
+-0
+","0","0","State","09/15/15 4:06 PM","Public"
+"msevrens","Different words saying the same things that mean nothing to opposite parties","+0
+-0
+","0","0","State","09/15/15 4:05 PM","Public"
+"msevrens","Four months of swimming back towards the shore has made my mind somewhat dull","+0
+-0
+","0","0","Reflect","09/15/15 4:04 PM","Public"
+"msevrens"," When I'm in a state of flow I can see the time paths of least resistance","+0
+-0
+","0","0","State","09/15/15 4:00 PM","Public"
+"msevrens","Stress narrows the flow of the stream of consciousness","+0
+-0
+","0","0","State","09/15/15 3:57 PM","Public"
+"msevrens","A confluence is a flowing together of minds rather than a linear turned exchange of ideas","+0
+-0
+","0","0","State","09/15/15 3:56 PM","Public"
+"msevrens","Patrick and I haven't confluesced in a while","+0
+-0
+","0","0","Reflect","09/15/15 3:54 PM","Public"
+"msevrens","Seeking flow","+0
+-0
+","0","0","State","09/15/15 3:49 PM","Public"
+"msevrens","Most deep learning work is being done on images because it's easily interpretable","+0
+-0
+","0","0","State","09/15/15 3:43 PM","Public"
+"msevrens","What would be the best next topic for me to focus on learning?","+0
+-0
+","0","0","Ask","09/15/15 3:40 PM","Public"
+"msevrens","I feel a little down today","+0
+-0
+","0","0","State","09/15/15 1:55 PM","Public"
+"msevrens","I don't feel very clever or creative right now","+0
+-0
+","0","0","State","09/15/15 1:40 PM","Public"
+"msevrens","When was the last time I created something truly new?","+0
+-0
+","0","0","Ask","09/15/15 1:08 PM","Public"
+"msevrens","Should I allow for multiple dates in the wordstream API input schema?","+0
+-0
+","0","0","Ask","09/15/15 1:06 PM","Public"
+"msevrens","I'm grumpy","+0
+-0
+","0","0","State","09/15/15 12:53 PM","Public"
+"msevrens","#books: Today I began reading Harry Potter and the Order of the Phoenix by J. K. Rowling","+0
+-0
+","0","0","Reflect","09/15/15 12:36 PM","Public"
+"msevrens","#books: Yesterday I finished reading Harry Potter and the Goblet of Fire by J. K. Rowling","+0
+-0
+","0","0","Reflect","09/15/15 12:36 PM","Public"
+"msevrens","Sometimes the fact that it's a dream is referenced in the dream but I don't become lucid","+0
+-0
+","0","0","Reflect","09/15/15 9:57 AM","Public"
+"leahdaniels","I'm good at not burning bridges and maintaining good relationships even when I don't like the person. ","+0
+-0
+","0","0","Reflect","09/15/15 9:06 AM","Public"
+"leahdaniels","I love cuddling with Cadence on the couch as she falls asleep. ","+0
+-0
+","0","0","State","09/14/15 10:52 PM","Public"
+"leahdaniels","I had too much caffeine this afternoon. ","+0
+-0
+","0","0","Reflect","09/14/15 10:52 PM","Public"
+"leahdaniels","It's good to feel secure with a job. ","+0
+-0
+","0","0","State","09/14/15 10:51 PM","Public"
+"leahdaniels","It feels good to know that I have a job at JFW if my new one doesn't work out. ","+0
+-0
+","0","0","State","09/14/15 10:50 PM","Public"
+"leahdaniels","I'm really glad that Nathan is taking over my job. I feel good about leaving my projects with him. ","+0
+-0
+","0","0","State","09/14/15 10:50 PM","Public"
+"leahdaniels","Tomorrow is my last day at JFW. ","+0
+-0
+","0","0","State","09/14/15 10:49 PM","Public"
+"leahdaniels","I will probably go to symbiosis. ","+0
+-0
+","0","0","State","09/14/15 10:49 PM","Public"
+"leahdaniels","Part of me wants to drive to Arizona to visit her instead of go to Symbiosis. ","+0
+-0
+","0","0","State","09/14/15 10:48 PM","Public"
+"leahdaniels","Her brother tells the truth and seems to think it's very serious. ","+0
+-0
+","0","0","State","09/14/15 10:47 PM","Public"
+"leahdaniels","I don't know how sick my mom really is because both her and her husband tend to heavily sugar coat things. ","+0
+-0
+","0","0","State","09/14/15 10:47 PM","Public"
+"leahdaniels","My mom is sick in the hospital. ","+0
+-1
+","0","0","State","09/14/15 10:44 PM","Public"
+"leahdaniels","I will make new friends after I start my new job in Berkeley next week. ","+0
+-0
+","100","0","Predict","09/14/15 10:44 PM","Public"
+"leahdaniels","I need some new friends. ","+0
+-0
+","90","0","State","09/14/15 10:43 PM","Public"
+"leahdaniels","It's really bothers me that some of my friends who CAN do something do nothing and yet express sadness for what's happening. ","+0
+-1
+","0","0","State","09/14/15 10:43 PM","Public"
+"leahdaniels","I hate feeling like there is nothing I can do to help. ","+0
+-0
+","0","0","State","09/14/15 10:42 PM","Public"
+"leahdaniels","I feel very sad and emotionally drained because of the Valley Fire. ","+0
+-0
+","0","0","State","09/14/15 10:41 PM","Public"
+"msevrens","Dumbledore describes the pensieve in a very similar fashion to Prophet","+0
+-0
+","0","0","State","09/14/15 6:20 PM","Public"
+"msevrens","Goal based mindfulness seems to be somewhat of a contradiction","+0
+-0
+","0","0","State","09/14/15 5:14 PM","Public"
+"msevrens","Usually after days of heavy drinking my mind seems somewhat in a haze of fog","+0
+-0
+","0","0","Reflect","09/14/15 4:11 PM","Public"
+"msevrens","I've been eating too much candy and drinking too much today lately","+0
+-0
+","0","0","Reflect","09/14/15 4:06 PM","Public"
+"msevrens","Not thinking at all as a response to intrusive thoughts is not a very good solution","+0
+-0
+","0","0","State","09/14/15 4:00 PM","Public"
+"msevrens","The ability to accept change as it comes is a virtue","+0
+-0
+","0","0","State","09/14/15 3:57 PM","Public"
+"msevrens","My experience with my OCD symptoms has been me minding the glitch","+0
+-0
+","0","0","Reflect","09/14/15 3:56 PM","Public"
+"msevrens","It's nice to have a dog in the house","+0
+-0
+","0","0","State","09/14/15 3:55 PM","Public"
+"msevrens","Reflection and statement volume seems to reflect overall thought volume","+0
+-0
+","0","0","State","09/14/15 3:55 PM","Public"
+"msevrens","What useful predictions do I have to make?","+0
+-0
+","0","0","Ask","09/14/15 3:53 PM","Public"
+"msevrens","Life is a battle between permanence and impermanence","+0
+-0
+","0","0","State","09/14/15 3:52 PM","Public"
+"msevrens","I'm proud of myself for quitting weed","+0
+-0
+","0","0","State","09/14/15 3:51 PM","Public"
+"msevrens","I need to get back in the habit of being creative","+0
+-0
+","0","0","State","09/14/15 3:48 PM","Public"
+"msevrens","I don't have any exciting ideas to drive or motivate me forward right now","+0
+-0
+","0","0","State","09/14/15 3:48 PM","Public"
+"msevrens","I will fully recover from my OCD symptoms","+0
+-0
+","80","0","Predict","09/14/15 3:46 PM","Public"
+"msevrens","Take time to quantify your perception of the future","+0
+-0
+","0","0","State","09/14/15 3:45 PM","Public"
+"msevrens","There's no doubt that my focus on the future has diminished recently","+0
+-0
+","0","0","Reflect","09/14/15 3:45 PM","Public"
+"msevrens","The interplay between permanence and change creates what we perceive to be reality and time","+0
+-0
+","0","0","State","09/14/15 3:41 PM","Public"
+"msevrens","What we perceive to be reality is just permanence in a sea of change","+0
+-0
+","0","0","State","09/14/15 3:39 PM","Public"
+"msevrens","Reality is ever changing but some things have more permanence than other things","+0
+-0
+","0","0","State","09/14/15 3:39 PM","Public"
+"msevrens","I like making things","+0
+-0
+","0","0","State","09/14/15 3:36 PM","Public"
+"msevrens","I create my own definition of success","+0
+-0
+","0","0","State","09/14/15 3:36 PM","Public"
+"msevrens","I've already done some really cool things with my life","+0
+-0
+","0","0","Reflect","09/14/15 3:35 PM","Public"
+"msevrens","Only I can walk my own path","+0
+-0
+","0","0","State","09/14/15 3:34 PM","Public"
+"msevrens","Quantifying a goal is key to achieving it","+0
+-0
+","0","0","State","09/14/15 3:33 PM","Public"
+"msevrens","Who am I at my best?","+0
+-0
+","0","0","Ask","09/14/15 3:31 PM","Public"
+"msevrens","Get in a habit of making habits","+0
+-0
+","0","0","State","09/14/15 3:28 PM","Public"
+"msevrens","Would it be a reasonable goal to create something every day?","+0
+-0
+","0","0","Ask","09/14/15 3:28 PM","Public"
+"msevrens","What's preventing me from being more motivated?","+0
+-0
+","0","0","Ask","09/14/15 3:26 PM","Public"
+"msevrens","#meditation: 7 minutes","+0
+-0
+","0","0","State","09/14/15 3:22 PM","Public"
+"msevrens","Sometimes when I've been reading a lot I feel like I haven't been using my mind proactively","+0
+-0
+","0","0","Reflect","09/14/15 3:11 PM","Public"
+"msevrens","I spent most of August reading","+0
+-0
+","0","0","Reflect","09/14/15 3:11 PM","Public"
+"msevrens","I should probably stop drinking soda","+0
+-0
+","0","0","State","09/14/15 3:07 PM","Public"
+"msevrens","I've been gaining more weight than I would like recently","+0
+-0
+","0","0","Reflect","09/14/15 3:07 PM","Public"
+"msevrens","Prophet is a glimpse into my mind","+0
+-0
+","0","0","State","09/14/15 3:06 PM","Public"
+"msevrens","What inspires me?","+0
+-0
+","0","0","Ask","09/14/15 2:58 PM","Public"
+"msevrens","Am I more interested in visualization or machine learning lately?","+0
+-0
+","0","0","Ask","09/14/15 2:57 PM","Public"
+"msevrens","I've been getting really absorbed into reading fiction recently","+0
+-0
+","0","0","Reflect","09/14/15 2:56 PM","Public"
+"msevrens","I haven't done an interesting side project in a while","+0
+-0
+","0","0","Reflect","09/14/15 2:55 PM","Public"
+"msevrens","Feeling like one is supposed to do something is usually a killer of motivation in general","+0
+-0
+","0","0","State","09/14/15 2:55 PM","Public"
+"msevrens","In all my time on Prophet I still haven't discovered how to cultivate motivation","+0
+-0
+","0","0","Reflect","09/14/15 2:55 PM","Public"
+"msevrens","What biologically is motivation?","+0
+-0
+","0","0","Ask","09/14/15 2:53 PM","Public"
+"msevrens","How effective is the flow mix without modafinil?","+0
+-0
+","0","0","Ask","09/14/15 2:52 PM","Private"
+"msevrens","How can I best use Prophet to query the thoughts of my past self?","+0
+-0
+","0","0","Ask","09/14/15 2:51 PM","Public"
+"msevrens","How do I foster motivation?","+0
+-0
+","0","0","Ask","09/14/15 2:44 PM","Public"
+"msevrens","I'm interested in learning the art of learning","+0
+-0
+","0","0","State","09/14/15 2:34 PM","Public"
+"msevrens","I have been feeling about 95% recovered recently","+1
+-0
+","0","0","Reflect","09/14/15 1:51 PM","Public"
+"msevrens","I will post to r/leaves about my ordeal quitting weed on or after 09/21","+0
+-0
+","0","0","Predict","09/14/15 1:50 PM","Public"
+"msevrens","My motivation is low today","+0
+-1
+","0","0","State","09/14/15 1:42 PM","Public"
+"msevrens","""If you want to know what a man's like, take a good look at how he treats his inferiors, not his equals"" - Sirius Black","+0
+-0
+","0","0","State","09/14/15 12:19 PM","Public"
+"msevrens","Everyone wants to be right","+0
+-0
+","0","0","State","09/14/15 11:36 AM","Public"
+"msevrens","Woke up with a sight hangover","+0
+-0
+","0","0","Reflect","09/14/15 9:04 AM","Public"
+"msevrens","It's annoying how many people twist the facts about Bernie Sander's polling numbers on Reddit and noone bats an eye","+0
+-0
+","0","0","State","09/13/15 11:10 PM","Public"
+"msevrens","#mimiDate: Bookstore and mall day","+0
+-0
+","0","0","Reflect","09/13/15 10:32 PM","Private"
+"msevrens","I've been feeling normal more often than not recently","+2
+-0
+","0","0","Reflect","09/13/15 10:32 PM","Public"
+"msevrens","Intelligence and self awareness should be valued over other traits in animals","+0
+-0
+","0","0","State","09/13/15 6:52 PM","Public"
+"msevrens","Humans should respect animals more","+0
+-0
+","0","0","State","09/13/15 6:51 PM","Public"
+"msevrens","I'm glad we decided to take Pippin","+0
+-0
+","0","0","Reflect","09/13/15 3:33 PM","Private"
+"msevrens","Yesterday I had an OCD focus shift","+0
+-0
+","0","0","Reflect","09/13/15 11:13 AM","Private"
+"msevrens","#weight: 160.6 lbs","+0
+-0
+","0","0","State","09/13/15 10:51 AM","Public"
+"msevrens","AI psychology will be just as complex if not more complex of a field than human psychology","+0
+-0
+","0","0","Predict","09/12/15 6:25 PM","Public"
+"msevrens","I've been eating unhealthily recently","+0
+-1
+","0","0","Reflect","09/12/15 4:00 PM","Public"
+"msevrens","It's a dreary day","+0
+-0
+","0","0","State","09/12/15 3:59 PM","Public"
+"msevrens","I've been feeling more normal than not recently","+1
+-0
+","0","0","Reflect","09/12/15 2:48 PM","Public"
+"msevrens","What biologically is boredom?","+0
+-0
+","0","0","Ask","09/12/15 2:39 PM","Public"
+"msevrens","What causes boredom?","+0
+-0
+","0","0","Ask","09/12/15 2:39 PM","Public"
+"msevrens","Will the future of humanity be more defined by space exploration or by virtual reality?","+1
+-0
+","0","0","Ask","09/12/15 12:02 PM","Public"
+"msevrens","“Any fool can know. The point is to understand.” ― Albert Einstein","+0
+-0
+","0","0","State","09/12/15 11:29 AM","Public"
+"msevrens","""Anyone who stops learning is old, whether at twenty or eighty. Anyone who keeps learning stays young"" - Henry Ford","+0
+-0
+","0","0","State","09/12/15 11:25 AM","Public"
+"leahdaniels","Being sick is even worse when you have a baby to take care of. ","+0
+-0
+","0","0","State","09/12/15 10:21 AM","Public"
+"leahdaniels","I hate being sick. ","+0
+-0
+","0","0","State","09/12/15 10:21 AM","Public"
+"msevrens","I'm getting older","+0
+-0
+","0","0","State","09/11/15 10:30 PM","Public"
+"msevrens","Anchorage: The desire to hold on to time as it passes, like trying to keep your grip on a rock in the middle of a river","+0
+-0
+","0","0","State","09/11/15 10:28 PM","Public"
+"msevrens","Adomania: The sense that the future is arriving ahead of schedule","+0
+-0
+","0","0","State","09/11/15 10:26 PM","Public"
+"msevrens","Keyframe: A moment that seemed innocuous at the time but ended up marking a diversion into a strange new era of your life","+1
+-0
+","0","0","State","09/11/15 10:25 PM","Public"
+"msevrens","Zenosyne: The sense that time keeps going faster","+0
+-0
+","0","0","State","09/11/15 10:21 PM","Public"
+"msevrens","Onism: The awareness of how little of the world you’ll experience","+0
+-0
+","0","0","State","09/11/15 10:20 PM","Public"
+"msevrens","Occhiolism: The awareness of the smallness of your perspective","+0
+-0
+","0","0","State","09/11/15 10:17 PM","Public"
+"msevrens","Google's new logo has soured on me","+0
+-0
+","0","0","Reflect","09/11/15 10:07 PM","Public"
+"msevrens","I feel extreme guilt over accidentally overwriting Mimi's save file in Kingdom Hearts","+0
+-1
+","0","0","State","09/11/15 9:38 PM","Public"
+"msevrens","I'm bored and hyper","+0
+-0
+","0","0","State","09/11/15 6:44 PM","Public"
+"msevrens","It's interesting how much the output of my mind varies over time","+0
+-0
+","0","0","State","09/11/15 4:00 PM","Public"
+"leahdaniels","I want to leave work early today. ","+0
+-0
+","0","0","State","09/11/15 3:59 PM","Public"
+"leahdaniels","I'm not going to go anywhere or do anything this weekend. ","+0
+-0
+","0","0","Predict","09/11/15 3:59 PM","Public"
+"leahdaniels","Definitely feeling a lot of ""you dont know what you got until its gone"" from coworkers. ","+0
+-0
+","0","0","State","09/11/15 3:58 PM","Public"
+"leahdaniels","I feel sad to be leaving JFW","+0
+-0
+","0","0","State","09/11/15 3:57 PM","Public"
+"msevrens","I feel somewhat stressed","+0
+-1
+","0","0","State","09/11/15 3:49 PM","Public"
+"msevrens","Time is like a river","+0
+-0
+","0","0","State","09/11/15 12:52 PM","Public"
+"msevrens","Mind dump","+0
+-0
+","0","0","State","09/11/15 11:48 AM","Public"
+"msevrens","I feel somewhat stagnant","+0
+-0
+","0","0","State","09/11/15 11:48 AM","Public"
+"msevrens","Weed was an easy solution to a complex problem","+0
+-0
+","0","0","Reflect","09/11/15 11:48 AM","Public"
+"msevrens","Enacting change is difficult","+0
+-0
+","0","0","State","09/11/15 11:45 AM","Public"
+"msevrens","It's far to easy to feel complacent","+0
+-0
+","0","0","State","09/11/15 11:45 AM","Public"
+"msevrens","I am the water of consciousness within the alluvial soils of my mind, where the bank of the river of my mind goes my self flows forward day by day until change occurs","+0
+-0
+","0","0","State","09/11/15 11:44 AM","Public"
+"msevrens","Looking at my thought stream makes it fairly clear that since quitting weed I have moved steadily back in towards the shore","+0
+-0
+","0","0","State","09/11/15 11:43 AM","Public"
+"msevrens","In moments like this I feel like my OCD tendencies are a temporary affliction","+1
+-0
+","0","0","State","09/11/15 11:42 AM","Public"
+"msevrens","Depending on the structure and organization of a mind it may not be ready to receive certain truths","+0
+-0
+","0","0","State","09/11/15 11:40 AM","Public"
+"msevrens","Since quitting weed I've become far less interested in space","+1
+-0
+","0","0","Reflect","09/11/15 11:39 AM","Public"
+"msevrens","Right now I feel about 95% recovered","+1
+-0
+","0","0","State","09/11/15 11:38 AM","Public"
+"msevrens","I worry that I'm not enriching my mind enough and leaving it to rot","+0
+-0
+","0","0","State","09/11/15 11:37 AM","Public"
+"msevrens","Some mysteries are not meant to be uncovered until a later date","+0
+-0
+","0","0","State","09/11/15 11:37 AM","Public"
+"msevrens","I used to be far more concerned with the concept of having a body","+0
+-0
+","0","0","Reflect","09/11/15 11:37 AM","Public"
+"msevrens","#mindscape: I have reached the peak of the mountain","+0
+-0
+","0","0","Reflect","09/11/15 11:36 AM","Public"
+"msevrens","I might even be a bit inland","+0
+-0
+","0","0","State","09/11/15 11:34 AM","Public"
+"msevrens","I feel either on the shore or close to it","+0
+-0
+","0","0","State","09/11/15 11:34 AM","Public"
+"msevrens","I have been less concerned with prediction since quitting weed","+0
+-0
+","0","0","Reflect","09/11/15 11:32 AM","Public"
+"msevrens","The concept of knowledge has been less on my mind since quitting weed","+0
+-0
+","0","0","Reflect","09/11/15 11:30 AM","Public"
+"msevrens","The mind has the capacity to simulate any reality you can conceive of, good or bad","+0
+-0
+","0","0","State","09/11/15 11:30 AM","Public"
+"msevrens","The mind can be a frightening place","+0
+-0
+","0","0","State","09/11/15 11:30 AM","Public"
+"msevrens","Take time to explore your mind","+0
+-0
+","0","0","State","09/11/15 11:29 AM","Public"
+"msevrens","I feel like I don't have that much motivation today","+0
+-1
+","0","0","State","09/11/15 11:29 AM","Public"
+"msevrens","Long term trends of self fascinate me","+0
+-0
+","0","0","State","09/11/15 11:29 AM","Public"
+"msevrens","I should learn more new words","+0
+-0
+","0","0","State","09/11/15 11:29 AM","Public"
+"msevrens","Consciousness is a fascinating concept but it falls by the wayside when you have more pressing matters to attend to","+0
+-0
+","0","0","State","09/11/15 11:28 AM","Public"
+"msevrens","Have I been challenging myself enough lately?","+0
+-0
+","0","0","Ask","09/11/15 11:27 AM","Public"
+"msevrens","I need to find more things that I'm interested in learning","+0
+-0
+","0","0","State","09/11/15 11:27 AM","Public"
+"msevrens","Reflection is healthy","+0
+-0
+","0","0","State","09/11/15 11:26 AM","Public"
+"msevrens","'Stream' seems to be a consistently relevant concept in the context of Prophet","+0
+-0
+","0","0","Reflect","09/11/15 11:26 AM","Public"
+"msevrens","How do the self and the ego differ?","+0
+-0
+","0","0","Ask","09/11/15 11:25 AM","Public"
+"msevrens","From November through early May my mind was highly focused on the concept of self","+0
+-0
+","0","0","Reflect","09/11/15 11:25 AM","Public"
+"msevrens","There are times where I can logically know 100% the veracity of a fact but still have all consuming doubt","+0
+-0
+","0","0","State","09/11/15 11:24 AM","Public"
+"msevrens","One part of my brain perceives truth in a logical way while another perceives it as more of a gut feeling of fear and doubt","+0
+-0
+","0","0","State","09/11/15 11:23 AM","Public"
+"msevrens","OCD has given me a unique perspective on how the brain perceives truth","+0
+-0
+","0","0","Reflect","09/11/15 11:22 AM","Public"
+"msevrens","As time has progressed since the inception of Prophet I have been less and less concerned with the concept of truth","+0
+-0
+","0","0","Reflect","09/11/15 11:22 AM","Public"
+"msevrens","I made an assumption that maximizing the amount of sunlight you were exposed to per day would increase productivity","+0
+-0
+","0","0","Reflect","09/11/15 11:21 AM","Public"
+"msevrens","Despite the fact that I have a working version of Sync to Sunrise I haven't been using it at all","+0
+-0
+","0","0","Reflect","09/11/15 11:20 AM","Public"
+"msevrens","My mind as a whole needs to be reoptimized","+0
+-0
+","0","0","State","09/11/15 11:20 AM","Public"
+"msevrens","My mind seems somewhat muted lately","+0
+-0
+","0","0","Reflect","09/11/15 11:19 AM","Public"
+"msevrens","#Meds: Phosphatidylcholine, CDP Choline, Lions Mane, Piracetam","+0
+-0
+","0","0","State","09/11/15 11:18 AM","Public"
+"msevrens","I forgot today was 9/11 this morning","+0
+-0
+","0","0","Reflect","09/11/15 10:59 AM","Public"
+"msevrens","I don't feel like doing anything today","+0
+-0
+","0","0","State","09/11/15 9:27 AM","Public"
+"leahdaniels","I hope Pippin and Matt are doing well. ","+0
+-0
+","0","0","State","09/10/15 9:27 PM","Public"
+"leahdaniels","I will get back into golf this year.","+0
+-0
+","0","0","Predict","09/10/15 9:24 PM","Public"
+"leahdaniels","It was nice that the CFO came too. It's comforting to know I am welcome back if my new job doesnt work out. ","+0
+-0
+","0","0","Reflect","09/10/15 9:15 PM","Public"
+"leahdaniels","I had a really nice farewell lunch with my coworkers today. ","+0
+-0
+","0","0","Reflect","09/10/15 9:14 PM","Public"
+"leahdaniels","I will relax this weekend and be better by Monday. ","+0
+-0
+","0","0","Predict","09/10/15 9:13 PM","Public"
+"leahdaniels","I am getting sick. ","+0
+-1
+","0","0","State","09/10/15 9:12 PM","Public"
+"patch615","It will be easier to write 1000 words a day when I have a job because usually a routine helps me with this. ","+0
+-0
+","0","0","State","09/10/15 8:33 PM","Public"
+"patch615","I will start writing 1000 words a day again","+1
+-0
+","0","0","Predict","09/10/15 8:32 PM","Public"
+"patch615","I have quite a lot of religious texts for an athiest","+0
+-0
+","0","0","State","09/10/15 8:30 PM","Public"
+"patch615","I still have my copy of the Tao Te Ching","+0
+-0
+","0","0","State","09/10/15 8:29 PM","Public"
+"patch615","I've always Liked Lao Tsu","+0
+-0
+","0","0","State","09/10/15 8:29 PM","Public"
+"patch615","Bernie Sanders will win the Presidential nomination for the Democrats","+0
+-0
+","45","0","Predict","09/10/15 8:28 PM","Public"
+"msevrens","“The truth is not always beautiful, nor beautiful words the truth” - Lao Tzu","+0
+-0
+","0","0","State","09/10/15 8:28 PM","Public"
+"patch615","Bernie Sanders will win the democratic primaries in Iowa and New Hampshire","+0
+-0
+","65","0","Predict","09/10/15 8:28 PM","Public"
+"patch615","I will start work sometime in september","+0
+-0
+","0","0","Predict","09/10/15 8:27 PM","Public"
+"patch615","I will find a job in the next two weeks","+0
+-0
+","0","0","Predict","09/10/15 8:27 PM","Public"
+"patch615","I hope I find a job soon. It's frustrating not having any money","+0
+-0
+","0","0","State","09/10/15 8:27 PM","Public"
+"patch615","I like music for it's immediacy","+0
+-0
+","0","0","State","09/10/15 8:26 PM","Public"
+"patch615","I could always write songs with a band, but I much prefer coming up with things on the spot","+0
+-0
+","0","0","State","09/10/15 8:26 PM","Public"
+"patch615","I would also want to improvise songs more. that might be difficult with a band","+0
+-0
+","0","0","State","09/10/15 8:25 PM","Public"
+"patch615","I'd enjoy starting a band of my own, but were I to do that I'd want to do it as a guitarist","+0
+-0
+","0","0","State","09/10/15 8:23 PM","Public"
+"patch615","Some of the bassist wanted postings look interesting, or at least in the realm of what I have played in the past","+0
+-0
+","0","0","State","09/10/15 8:21 PM","Public"
+"patch615","In front of people, I might be able to better improvise lyrics with a story to tell. ","+0
+-0
+","0","0","State","09/10/15 8:20 PM","Public"
+"patch615","I could either tell a story that goes through the whole set or tell a different story for each song","+0
+-0
+","0","0","State","09/10/15 8:19 PM","Public"
+"patch615","I want to make a story to tell, and build the set around it. ","+0
+-0
+","0","0","State","09/10/15 8:18 PM","Public"
+"patch615","I think I'll be able to do an interesting solo set improvised. ","+0
+-0
+","0","0","State","09/10/15 8:17 PM","Public"
+"patch615","I want to make a solo set as well. ","+0
+-0
+","0","0","State","09/10/15 8:17 PM","Public"
+"patch615","I've been searching for all sorts of jobs. I don't much care what kind of job I do. ","+0
+-0
+","0","0","Reflect","09/10/15 8:17 PM","Public"
+"patch615","at least bipolar disorder has moments of joy (even though they are destructive moments of joy) ","+0
+-0
+","0","0","State","09/10/15 8:16 PM","Public"
+"patch615","I've long held that OCD was more difficult and bothersome for me than Bipolar disorder was. ","+0
+-0
+","0","0","Reflect","09/10/15 8:16 PM","Public"
+"patch615","intrusive thoughts are one of the worst things to experience. ","+0
+-0
+","0","0","State","09/10/15 8:15 PM","Public"
+"patch615","I've also been looking at postings for Bassist's wanted. ","+1
+-0
+","0","0","Reflect","09/10/15 8:13 PM","Public"
+"patch615","It's been a pretty relaxed day ","+0
+-0
+","0","0","Reflect","09/10/15 8:13 PM","Public"
+"patch615","I've spent most of today drinking tea and applying for jobs. ","+0
+-0
+","0","0","Reflect","09/10/15 8:12 PM","Public"
+"msevrens","What should I do for Mimi for her birthday?","+0
+-0
+","0","0","Ask","09/10/15 8:04 PM","Private"
+"msevrens","What should I get Mimi for her birthday?","+0
+-0
+","0","0","Ask","09/10/15 8:04 PM","Private"
+"msevrens","I should get back to being more creative","+0
+-0
+","0","0","State","09/10/15 7:58 PM","Public"
+"msevrens","Have I been utilizing my mind to its fullest potential recently?","+0
+-0
+","0","0","Ask","09/10/15 7:57 PM","Public"
+"msevrens","I like numbers","+0
+-0
+","0","0","State","09/10/15 7:53 PM","Public"
+"msevrens","I prefer general anxiety to OCD and uncontrollable intrusive thoughts","+0
+-0
+","0","0","State","09/10/15 6:26 PM","Public"
+"msevrens","I feel a sense of general anxiety","+0
+-0
+","0","0","State","09/10/15 6:21 PM","Public"
+"msevrens","A 7 in terms of happiness seems worse if you're coming from a 8 to a 7 as opposed to coming from a 6 to a 7","+0
+-0
+","0","0","State","09/10/15 1:30 PM","Public"
+"msevrens","Before my OCD symptoms set in I was riding a high and logging a lot of 9's for happiness","+0
+-0
+","0","0","Reflect","09/10/15 1:16 PM","Public"
+"msevrens","What goes up tends to go down eventually","+0
+-0
+","0","0","State","09/10/15 1:08 PM","Public"
+"msevrens","#dream: Dreamt about the process of reincarnation and the awareness of what it means to be a human throughout that process","+0
+-0
+","0","0","Reflect","09/10/15 12:24 PM","Public"
+"leahdaniels","I had a lot of caffeine this morning. ","+0
+-0
+","0","0","Reflect","09/10/15 11:25 AM","Public"
+"leahdaniels","#happy: 11 SO EXCITED","+1
+-0
+","0","0","State","09/10/15 10:51 AM","Public"
+"leahdaniels","I will buy the ThinkPad T450s","+1
+-0
+","100","0","Predict","09/10/15 10:15 AM","Public"
+"leahdaniels","#dream: morning after party with new friends, went to find Zack's jeep for some reason, ended up in some random house, early morning, and owner wakes up and comes out and its Josh and his bf.","+0
+-0
+","0","0","Reflect","09/10/15 10:14 AM","Public"
+"leahdaniels","#dream: out partying and kept running into random people from RL that I barely know creating a posse of awesome new friends. ","+0
+-0
+","0","0","Reflect","09/10/15 10:12 AM","Public"
+"leahdaniels","#dream: searching Trader Joe's for blackberries for a really long time. Asked cute stocker where they were and ended up getting in a grocery cart and he pushed me around the store. Never found them. ","+0
+-0
+","0","0","Reflect","09/10/15 10:11 AM","Public"
+"leahdaniels","I dreamt about people I barely know but in my dream they were important. ","+0
+-0
+","0","0","Reflect","09/10/15 10:09 AM","Public"
+"leahdaniels","I had weird dreams last night. ","+0
+-0
+","0","0","Reflect","09/10/15 10:08 AM","Public"
+"msevrens","I had weird existential dreams last night","+0
+-0
+","0","0","Reflect","09/10/15 8:47 AM","Public"
+"msevrens","A mental knot","+0
+-0
+","0","0","State","09/09/15 3:23 PM","Public"
+"msevrens","Can Patrick send me his address details?","+0
+-0
+","0","0","Ask","09/09/15 2:24 PM","Public"
+"msevrens","I will send Patrick my vaporizer ","+0
+-0
+","0","0","Predict","09/09/15 2:24 PM","Public"
+"leahdaniels","Will I buy the ThinkPad T450s or the Latitude e7450?","+0
+-0
+","0","0","Ask","09/09/15 1:38 PM","Public"
+"patch615","I feel a bit better today though. Job interview makes things feel a bit better for certain","+0
+-0
+","0","0","State","09/09/15 8:14 AM","Public"
+"patch615","I think I have been grouchy because I'm nervous about having no money, and I am stilll getting used to sharing my space with someone. ","+0
+-0
+","0","0","State","09/09/15 8:14 AM","Public"
+"patch615","Recently I have been a bit grouchy","+0
+-0
+","0","0","Reflect","09/09/15 8:13 AM","Public"
+"patch615","I am an oddy centered and calm person most of the time. ","+0
+-0
+","0","0","Reflect","09/09/15 8:13 AM","Public"
+"patch615","My experience with psychosis made Shrooms a much more pleasant experience","+0
+-0
+","0","0","Reflect","09/09/15 8:13 AM","Public"
+"patch615","I feel like the effects of psychedelics and other drugs like them are less distressing to people who have recoverd from mental illness. ","+0
+-0
+","0","0","State","09/09/15 8:13 AM","Public"
+"patch615","I wonder if Matt still has his vaporiser/would still send it to me. ","+0
+-0
+","0","0","Ask","09/09/15 8:12 AM","Public"
+"patch615","I think that it will be easier to get out and get to know people once i have money. ","+0
+-0
+","0","0","Predict","09/09/15 8:11 AM","Public"
+"patch615","Moving here with Katie is far easier than moving alone would have beenh","+0
+-0
+","0","0","State","09/09/15 8:11 AM","Public"
+"patch615","it's a little annoying that the job doesn't start until october first","+0
+-0
+","0","0","State","09/09/15 8:11 AM","Public"
+"patch615","The interview will go well","+0
+-0
+","0","0","Predict","09/09/15 8:10 AM","Public"
+"patch615","I have a job interview for a receptionist position at an optometrists office today. ","+1
+-0
+","0","0","State","09/09/15 8:10 AM","Public"
+"msevrens","Le passé qui ne passe pas","+0
+-0
+","0","0","State","09/08/15 9:39 PM","Public"
+"msevrens","I have a little understanding about convolutional neural nets","+0
+-0
+","0","0","State","09/08/15 9:26 PM","Public"
+"msevrens","What are my learning goals?","+0
+-0
+","0","0","Ask","09/08/15 9:23 PM","Public"
+"msevrens","I should learn more about recurrent networks, lstm and auto encoders","+0
+-0
+","0","0","State","09/08/15 9:20 PM","Public"
+"leahdaniels","#vocab: defenestrate ","+0
+-0
+","0","0","State","09/08/15 7:51 PM","Public"
+"msevrens","Dogs bring joy to life","+1
+-0
+","100","0","State","09/08/15 5:03 PM","Public"
+"leahdaniels","If I sign up for workout classes will I go to them?","+0
+-0
+","0","0","Ask","09/08/15 11:21 AM","Public"
+"leahdaniels","Will I use the gym if I buy a membership?","+0
+-0
+","0","0","Ask","09/08/15 11:21 AM","Public"
+"leahdaniels","Why do I struggle so much with eating healthy and exercise? ","+0
+-0
+","0","0","Ask","09/08/15 11:20 AM","Public"
+"leahdaniels","I haven't been exercising regularly this past week. ","+0
+-0
+","0","0","Reflect","09/08/15 11:19 AM","Public"
+"msevrens","Pippin is a little tootsie roll filled with love","+0
+-0
+","100","0","State","09/08/15 10:37 AM","Public"
+"leahdaniels","I will ask Kevin out this week. ","+1
+-0
+","0","0","Predict","09/08/15 8:56 AM","Public"
+"leahdaniels","I'm tired of always being the third wheel. Almost all my friends are married or might as well be. ","+0
+-0
+","0","0","State","09/08/15 8:55 AM","Public"
+"leahdaniels","I miss him already but I know he will love it with Matt and Mimi. ","+0
+-0
+","0","0","State","09/08/15 8:54 AM","Public"
+"leahdaniels","It was strange not having Pippin at home last night and this morning. ","+0
+-0
+","0","0","State","09/08/15 8:54 AM","Public"
+"leahdaniels","#happy: 4 #anxiety: 6","+0
+-0
+","0","0","State","09/08/15 8:31 AM","Public"
+"msevrens","#books: Today I began reading Harry Potter and the Goblet of Fire by J. K. Rowling","+0
+-0
+","0","0","Reflect","09/07/15 9:47 PM","Public"
+"msevrens","#books: Today I finished reading Harry Potter and the Prisoner of Azkaban by J. K. Rowling","+0
+-0
+","0","0","Reflect","09/07/15 9:47 PM","Public"
+"msevrens","How can I realize my original vision of Prophet?","+0
+-0
+","0","0","Ask","09/07/15 7:25 PM","Public"
+"msevrens","If truth functioned more like a currency or Prophet featured a top seers board I would use it more","+0
+-0
+","0","0","Predict","09/07/15 7:25 PM","Public"
+"msevrens","I don't rate with truth as much as I should","+0
+-0
+","0","0","State","09/07/15 7:24 PM","Public"
+"msevrens","Pippin is a good dog","+1
+-0
+","100","0","State","09/07/15 6:21 PM","Public"
+"msevrens","Leah dropped off Pippin about an hour ago","+1
+-0
+","0","0","Reflect","09/07/15 3:15 PM","Public"
+"msevrens","I'm excited to get Pippin today","+1
+-0
+","0","0","State","09/07/15 10:12 AM","Public"
+"leahdaniels","It was like all of the weight of her future and my responsibility in shaping it and educating her etc dropped onto my head","+0
+-0
+","0","0","State","09/06/15 11:32 PM","Public"
+"leahdaniels","I just had a moment while watching Cadence go back to sleep that scared the crap out me. ","+0
+-0
+","0","0","State","09/06/15 11:31 PM","Public"
+"msevrens","It's hard not to use the ""good"" button as a ""like"" button","+0
+-0
+","0","0","State","09/06/15 6:46 PM","Public"
+"msevrens","My OCD seems off right now","+1
+-0
+","0","0","State","09/06/15 6:10 PM","Public"
+"msevrens","I know my brain wants to obsess over something but nothing readily comes","+0
+-0
+","0","0","State","09/06/15 4:40 PM","Public"
+"msevrens","It's weird being in between obsessions","+0
+-0
+","0","0","State","09/06/15 4:39 PM","Public"
+"msevrens","My mind seems somewhat in between obsessions","+0
+-0
+","0","0","State","09/06/15 4:19 PM","Public"
+"msevrens","I like physical books more than e-books","+1
+-0
+","0","0","State","09/06/15 3:25 PM","Public"
+"msevrens","#songPractice: Dog Days","+0
+-0
+","0","0","State","09/05/15 8:03 PM","Public"
+"msevrens","#songPractice: Heart in the Shape of the Moon","+0
+-0
+","0","0","State","09/05/15 7:59 PM","Public"
+"msevrens","#songPractice: Miles Davis","+0
+-0
+","0","0","State","09/05/15 7:53 PM","Public"
+"msevrens","#songPractice: In a Minute","+0
+-0
+","0","0","State","09/05/15 7:48 PM","Public"
+"msevrens","How much can a mind really be transformed?","+0
+-0
+","0","0","Ask","09/05/15 7:41 PM","Public"
+"msevrens","My usage of the word ""conscious"" has evaporated over the last month","+0
+-0
+","0","0","Reflect","09/05/15 7:39 PM","Public"
+"msevrens","I really feel that knowing how to program empowers me","+0
+-0
+","0","0","State","09/05/15 7:36 PM","Public"
+"msevrens","I haven't had as much focus on words since quitting weed","+0
+-0
+","0","0","Reflect","09/05/15 7:36 PM","Public"
+"msevrens","Today Patrick and I talked on the phone for an hour and a half","+1
+-0
+","0","0","Reflect","09/05/15 7:07 PM","Public"
+"msevrens","#meditation: 10 minutes","+0
+-0
+","0","0","State","09/05/15 4:50 PM","Public"
+"msevrens","Sometimes I feel like there's a worry hole in my brain that needs to be filled with some arbitrary bullshit","+0
+-0
+","0","0","State","09/05/15 3:46 PM","Public"
+"msevrens","It's been too long since Patrick and I have really talked","+0
+-0
+","0","0","Reflect","09/05/15 3:40 PM","Public"
+"msevrens","Math is sort of something you have to use often to keep up your skills in it","+0
+-0
+","0","0","State","09/05/15 3:40 PM","Public"
+"msevrens","Calm the self to clarify the waters of the mind","+0
+-0
+","0","0","State","09/05/15 3:38 PM","Public"
+"msevrens","What information has the most value?","+0
+-0
+","0","0","Ask","09/05/15 3:21 PM","Public"
+"patch615","97th percentile verbal 52nd math 98th writing","+1
+-0
+","0","0","Reflect","09/05/15 3:13 PM","Public"
+"patch615","On the GRE i got 167 verbal 153 quantitative and 5.5 writing","+0
+-0
+","0","0","Reflect","09/05/15 3:08 PM","Public"
+"patch615","It's weird to think I live in brooklyn now","+0
+-0
+","60","0","State","09/05/15 3:06 PM","Public"
+"msevrens","The amount of L-Theanine I have been taking has significantly increased since quitting weed","+0
+-0
+","0","0","Reflect","09/05/15 2:54 PM","Public"
+"msevrens","What scores did Patrick get on the GRE?","+0
+-0
+","0","0","Ask","09/05/15 2:48 PM","Public"
+"patch615","I've been feeling a little more cranky and out of it today","+0
+-0
+","0","0","State","09/05/15 2:10 PM","Public"
+"patch615","I don't know what kind of job I want. ","+0
+-0
+","0","0","State","09/05/15 2:10 PM","Public"
+"msevrens","What hard limitations does my mind have?","+0
+-0
+","0","0","Ask","09/05/15 1:40 PM","Public"
+"patch615","I did particularly well on the GRE, so I'm guessing I will do well on the subject test","+0
+-0
+","0","0","State","09/05/15 1:37 PM","Public"
+"patch615","I will take the Psychology GRE subject test within the next three months. ","+0
+-0
+","0","0","Predict","09/05/15 1:37 PM","Public"
+"patch615","I've been trying to be more particular about getting a job that pays better","+0
+-0
+","0","0","State","09/05/15 1:36 PM","Public"
+"patch615","Money is pretty much always my concern","+0
+-0
+","0","0","State","09/05/15 1:36 PM","Public"
+"patch615","I would prefer a job with health insurance though. ","+0
+-0
+","0","0","State","09/05/15 1:36 PM","Public"
+"patch615","I'm considering applying at a temp agency for the time being","+0
+-0
+","0","0","State","09/05/15 1:35 PM","Public"
+"patch615","I'm a bit worried about having money in the near future, but not to any huge degree","+0
+-0
+","0","0","State","09/05/15 1:35 PM","Public"
+"patch615","I've been applying for jobs, but have no idea what kind of job will ask for an interview","+0
+-0
+","0","0","State","09/05/15 1:35 PM","Public"
+"patch615","The apartment is nearly all set up ","+1
+-0
+","0","0","State","09/05/15 1:34 PM","Public"
+"msevrens","It would be nice to color tag a particular word in the wordStream to make it easier to view in context","+0
+-0
+","0","0","State","09/05/15 1:27 PM","Public"
+"msevrens","The weekStream seems more interpretable than the dayStream right now based on how much data I've collected","+0
+-0
+","0","0","State","09/05/15 1:27 PM","Public"
+"msevrens","I need better tools for reflection","+0
+-0
+","0","0","State","09/05/15 1:22 PM","Public"
+"msevrens","Context is key","+0
+-0
+","0","0","State","09/05/15 1:22 PM","Public"
+"msevrens","Truth has rarely been on my mind recently","+0
+-0
+","0","0","Reflect","09/05/15 1:20 PM","Public"
+"msevrens","My mind has been on my mind more often recently","+0
+-0
+","0","0","Reflect","09/05/15 1:19 PM","Public"
+"msevrens","It's important to actively think about how one constructs their mind","+0
+-0
+","0","0","State","09/05/15 1:19 PM","Public"
+"msevrens","I would get a lot of karma if I posted my wordStream on r/dataisbeautiful","+0
+-0
+","0","0","Predict","09/05/15 1:17 PM","Public"
+"msevrens","Today I updated the type stream to use the newer focus plus context code","+0
+-0
+","0","0","Reflect","09/05/15 1:16 PM","Public"
 "msevrens"," Looking at the type stream upside down must be how the stream graphs look to others when they see them for the first time","+0
 -0
 ","0","0","State","09/05/15 1:14 PM","Public"
@@ -306,7 +1485,7 @@
 -0
 ","0","0","State","09/03/15 4:15 PM","Public"
 "msevrens","I don't really remember the last time I got into a state of flow","+0
--0
+-1
 ","0","0","Reflect","09/03/15 4:14 PM","Public"
 "msevrens","Planning has a lot of value but flow is an immeasurably powerful tool","+0
 -0
@@ -15688,7 +16867,7 @@
 ","100","0","State","05/24/15 2:23 PM","Private"
 "msevrens","If it is OCD it's treatable and I will be able to nip it in the bud due to me noticing the symptoms early before I developed any compulsions","+0
 -0
-","0","0","State","05/24/15 2:22 PM","Private"
+","40","0","State","05/24/15 2:22 PM","Private"
 "msevrens","I doubt what I'm experiencing is OCD","+0
 -0
 ","70","0","State","05/24/15 2:22 PM","Private"
@@ -17818,7 +18997,7 @@
 ","0","0","State","05/17/15 9:40 AM","Public"
 "msevrens","I will build an AWS deep learning environment for Prophet","+0
 -0
-","95","0","Predict","05/17/15 9:39 AM","Public"
+","96.66670000000001","0","Predict","05/17/15 9:39 AM","Public"
 "msevrens","I should build an AWS deep learning environment for Prophet","+0
 -0
 ","0","0","State","05/17/15 9:39 AM","Public"
@@ -51146,7 +52325,7 @@
 "msevrens","Making connections forward. Making connections backward.","+0
 -0
 ","0","0","State","01/09/15 11:30 PM",""
-"msevrens","All week long I have been in a state of flow after reading about how to get in a state of flow at the beginning of the week","+0
+"msevrens","All week long I have been in a state of flow after reading about how to get in a state of flow at the beginning of the week","+1
 -0
 ","0","0","Reflect","01/09/15 11:30 PM",""
 "msevrens","I am a talented software engineer","+0
@@ -70814,7 +71993,7 @@
 "msevrens","“The measure of intelligence is the ability to change.” ― Albert Einstein","+0
 -0
 ","0","0","State","09/12/14 1:22 PM",""
-"msevrens","“It is not that I'm so smart. But I stay with the questions much longer.” ― Albert Einstein","+0
+"msevrens","“It is not that I'm so smart. But I stay with the questions much longer.” ― Albert Einstein","+1
 -0
 ","0","0","State","09/12/14 1:21 PM",""
 "msevrens","If you don't understand a thing, you don't know it","+0
@@ -70825,7 +72004,7 @@
 ","0","0","State","09/12/14 1:20 PM",""
 "msevrens","“Any fool can know. The point is to understand.”  ― Albert Einstein","+0
 -0
-","0","0","State","09/12/14 1:19 PM",""
+","100","0","State","09/12/14 1:19 PM",""
 "msevrens","""Think before you speak. Read before you think” ","+0
 -0
 ","0","0","State","09/12/14 1:12 PM",""
@@ -76303,7 +77482,7 @@
 ","0","0","State","08/15/14 4:37 PM",""
 "msevrens","Patrick's first Machine Learning experiment will use the Iris data set and will classify flowers","+0
 -0
-","60","0","Predict","08/15/14 3:18 PM",""
+","35","0","Predict","08/15/14 3:18 PM",""
 "msevrens","Memetic is a great word","+0
 -0
 ","80","0","State","08/15/14 2:15 PM",""
