@@ -17,8 +17,7 @@ import numpy as np
 def load_dict_list(file_name, encoding='utf-8', delimiter="|"):
 	"""Loads a dictionary of input from a file into a list."""
 	input_file = open(file_name, encoding=encoding, errors='replace')
-	dict_list = list(csv.DictReader(input_file, delimiter=delimiter,\
-		quoting=csv.QUOTE_NONE))
+	dict_list = list(csv.DictReader(input_file, delimiter=delimiter, quoting=csv.QUOTE_NONE))
 	input_file.close()
 	return dict_list
 
@@ -76,5 +75,4 @@ def safely_remove_file(filename):
 	print("File removed.")
 
 if __name__ == "__main__":
-	print("This module is a library that contains useful functions;" \
-		" it should not be run from the console.")
+	print("This module is a library that contains useful functions; it should not be run from the console.")
