@@ -32,7 +32,7 @@ def get_CNN(model_name):
 	# Load Runtime and Lua Modules
 	lua = LuaRuntime(unpack_returned_tuples=True)
 	nn = lua.require('nn')
-	model = lua.require('meerkat/classification/lua/model')
+	model = lua.require('mind/lua/model')
 	torch = lua.require('torch')
 	cutorch = lua.require('cutorch')
 	cunn = lua.require('cunn')
