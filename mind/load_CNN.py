@@ -82,9 +82,9 @@ def get_CNN(model_name):
 	make_batch = lua.eval('''
 		function(trans)
 			transLen = table.getn(trans)
-			batch = torch.Tensor(transLen, #alphabet, 123)
+			batch = torch.Tensor(transLen, #alphabet, 177)
 			for k = 1, transLen do
-				stringToTensor(trans[k], 123, batch:select(1, k))
+				stringToTensor(trans[k], 177, batch:select(1, k))
 			end
 			return batch
 		end
