@@ -46,7 +46,7 @@ def get_CNN(model_name):
 	if model_name == "thought_type":
 		label_map = {"1":"Reflect", "2":"State", "3": "Ask", "4":"Predict"}
 		lua.execute('''
-			model = Model:makeCleanSequential(torch.load("models/deepConv_thought_classifier.t7b"))
+			model = Model:makeCleanSequential(torch.load("models/thought_type.t7b"))
 		''')
 	else:
 		print("Requested CNN does not exist. Please reference an existing model")
