@@ -1,14 +1,16 @@
+import sys
+
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("thought.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
+df = pd.read_csv("data/input/thought.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
 
 grouped = df.groupby('Type', as_index=False)
 groups = dict(list(grouped))
 del groups['']
 df = pd.concat(list(groups.values()), ignore_index=True)
 
-label_map = dict(zip(groups.keys(), range(1, len(groups.keys()) + 1)))
+label_map = {'Reflect': 1, 'State': 2, 'Ask': 3, 'Predict': 4}
 
 a = lambda x: label_map[x["Type"]]
 df['LABEL_NUM'] = df.apply(a, axis=1)
