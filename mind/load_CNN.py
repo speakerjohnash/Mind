@@ -48,6 +48,11 @@ def get_CNN(model_name):
 		lua.execute('''
 			model = Model:makeCleanSequential(torch.load("models/thought_type.t7b"))
 		''')
+	elif model_name == "binary_prediction":
+		label_map = {"1":"Prediction", "2":"Non-Prediction"}
+		lua.execute('''
+			model = Model:makeCleanSequential(torch.load("models/binary_prediction.t7b"))
+		''')
 	else:
 		print("Requested CNN does not exist. Please reference an existing model")
 
