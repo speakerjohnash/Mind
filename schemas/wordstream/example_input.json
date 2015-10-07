@@ -1,0 +1,18 @@
+{
+	"days" : [
+		{
+			"thoughts" : [
+				"This thought is a statement not a question",
+				"Yesterday I thought of a reflection",
+				"Is this thought a question?"
+			],
+			"date": "2014-04-01"
+		},
+		{
+			"thoughts" : [
+				"I didn't have many thoughts this day"
+			],
+			"date": "2014-04-02"
+		}
+	]
+}
