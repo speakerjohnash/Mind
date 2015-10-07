@@ -29,5 +29,5 @@
 			"uniqueItems": true
 		}
 	},
-	"required": ["thoughts"]
+	"required": ["days"]
 }
