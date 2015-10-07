@@ -2,29 +2,39 @@
 	"$schema" : "http://json-schema.org/draft-04/schema#",
 	"title" : "Wordstream Output Schema",
 	"definitions" : {
-		"word" : {
-			"type" : "object",
-			"properties" : {
-				"word" : { "type" : "string" },
-				"count" : { "type" : "number" }
+		"day": {
+			"type": "object",
+			"properties": {
+				"word_list" : { 
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"word" : { "type" : "string" },
+							"count" : { "type" : "number" }
+						},
+						"required": ["word", "count"]
+					}
+				},
+				"date" : { "type": "string", "format": "date"}
 			},
-			"required": [ "word", "count" ]
+			"required": ["word_list", "date"]
 		}
 	},
 	"description": "A schema for defining output from the Prophet Mind Wordstream Analyzer",
 	"type" : "object",
 	"properties" : {
-		"word_list" : {
+		"days" : {
 			"description" : "An array containing at least one of the following response types",
 			"type" : "array",
 			"items" : {
 				"oneOf": [
-					{"$ref": "#/definitions/word"},
+					{"$ref": "#/definitions/day"}
 				]
 			},
 			"minItems": 1,
 			"uniqueItems": true
 		}
 	},
-	"required": ["word_list"]
+	"required": ["days"]
 }
