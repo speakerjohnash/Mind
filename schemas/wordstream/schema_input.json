@@ -2,23 +2,27 @@
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"title": "Wordstream Input Schema",
 	"definitions": {
-		"thought": {
+		"day": {
 			"type": "object",
 			"properties": {
-				"thought" : { "type": "string" }
+				"thoughts" : { 
+					"type": "array",
+					"items": {"type": "string"}
+				},
+				"date" : { "type": "string", "format": "date-time"}
 			},
-			"required": ["thought"]
+			"required": ["thoughts", "date"]
 		}
 	},
 	"description": "A schema for defining input into the Prophet Mind Wordstream Analyzer",
 	"type" : "object",
 	"properties" : {
-		"thoughts" : {
-			"description" : "An array containing at least one thought",
+		"days" : {
+			"description" : "An array containing at least one day",
 			"type" : "array",
 			"items" : {
 				"allOf": [
-					{"$ref": "#/definitions/thought"}
+					{"$ref": "#/definitions/day"}
 				]
 			},
 			"minItems": 1,
