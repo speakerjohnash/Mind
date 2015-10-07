@@ -11,6 +11,7 @@ import json
 
 from tornado import gen
 from tornado_json.requesthandlers import APIHandler
+from tornado_json import schema
 
 class Wordstream_Analysis(APIHandler):
 	"""This class handles Wordstream Analysis for Prophet"""
