@@ -9,7 +9,7 @@
 					"type": "array",
 					"items": {"type": "string"}
 				},
-				"date" : { "type": "string", "format": "date-time"}
+				"date" : { "type": "string", "format": "date"}
 			},
 			"required": ["thoughts", "date"]
 		}
