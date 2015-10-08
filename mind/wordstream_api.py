@@ -18,35 +18,46 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 
 from tornado_json.requesthandlers import APIHandler
-from tornado_json import schema
+from mind import schema
 
 def vectorize(corpus, min_df=1):
 	"""Vectorize text corpus"""
 
 	vectorizer = CountVectorizer(min_df=min_df, ngram_range=(1,1), stop_words='english')
-	countVector = vectorizer.fit_transform(corpus).toarray()
-	num_samples, num_features = countVector.shape
+	count_vector = vectorizer.fit_transform(corpus).toarray()
+	num_samples, num_features = count_vector.shape
 	vocab = vectorizer.get_feature_names()
-	word_count = wordCount(vocab, countVector, num_samples)
+	wc = word_count(vocab, count_vector, num_samples)
 
-	return word_count
+	return wc
 
-def word_count(vocab, countVector, num_samples):
+def word_count(vocab, count_vector, num_samples):
 	"""Count words"""
 
-	np.clip(countVector, 0, 1, out=countVector)
-	dist = np.sum(countVector, axis=0)
+	np.clip(count_vector, 0, 1, out=count_vector)
+	dist = np.sum(count_vector, axis=0)
 	dist = dist.tolist()
 
-	word_count = dict(zip(vocab, dist))
+	wc = dict(zip(vocab, dist))
 
-	return word_count
+	return wc
 
 def process_by_day(data):
 	"""Process data by data and return in proper format"""
 
+	output = {"days" : []}
+
 	for day in data["days"]:
-		print(day["thoughts"])
+
+		today = {"word_list": [], "date": day["date"]}
+		counted = vectorize(day["thoughts"])
+
+		for word, count in counted.items():
+			today["word_list"].append({"word": word, "count": count})
+
+		output["days"].append(today)
+
+	return output
 
 class Wordstream_Analysis(APIHandler):
 	"""This class handles Wordstream Analysis for Prophet"""
