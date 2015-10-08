@@ -8,7 +8,7 @@ Created on Sep 04, 2015
 
 #################### USAGE ##########################
 
-# curl -X POST -d @schemas/wordstream/example_input.json http://localhost:443/wordstream/
+# curl -X POST -d @schemas/wordstream/example_input.json http://localhost:443/wordstream/ | python3.3 -m json.tool
 
 #####################################################
 
