@@ -207,7 +207,10 @@ def buildSentimentStream(days):
 		}
 
 		daily_sentiment['Post Date'] = day
-		sentiment_stream.append(daily_sentiment)
+
+		# Only add point if there are sufficient thoughts per day
+		if len(thoughts) > 10:
+			sentiment_stream.append(daily_sentiment)
 
 	sorted_stream = sorted(sentiment_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/sentiment_stream.csv")
@@ -324,7 +327,7 @@ def run_from_command():
 		collective_thoughts = thinkers['joeandrewkey@gm...']
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
-	ken = vectorize(thoughts, min_df=0.0002)
+	ken = vectorize(thoughts, min_df=1)
 	days = groupByWeek(collective_thoughts)
 
 	buildTypeStream(days)
