@@ -57,7 +57,6 @@ def get_CNN(model_name):
 	# Prepare CNN
 	lua.execute('''
 		model = model:type("torch.DoubleTensor")
-		torch.synchronize()
 
 		alphabet = config.alphabet
 		dict = {}
@@ -119,7 +118,7 @@ def get_CNN(model_name):
 	''')
 
 	# Generate Helper Function
-	def apply_CNN(trans, doc_key="description", label_key="CNN"):
+	def apply_CNN(trans, doc_key="thought", label_key="CNN"):
 		"""Apply CNN to thoughts"""
 		
 		trans_list = [' '.join(x[doc_key].split()) for x in trans]
