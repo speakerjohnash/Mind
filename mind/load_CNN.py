@@ -34,8 +34,6 @@ def get_CNN(model_name):
 	nn = lua.require('nn')
 	model = lua.require('mind/lua/model')
 	torch = lua.require('torch')
-	cutorch = lua.require('cutorch')
-	cunn = lua.require('cunn')
 
 	# Load Config
 	lua.execute('''
@@ -59,7 +57,7 @@ def get_CNN(model_name):
 	# Prepare CNN
 	lua.execute('''
 		model = model:type("torch.DoubleTensor")
-		cutorch.synchronize()
+		torch.synchronize()
 
 		alphabet = config.alphabet
 		dict = {}
