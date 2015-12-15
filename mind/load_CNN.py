@@ -58,7 +58,7 @@ def get_CNN(model_name):
 
 	# Prepare CNN
 	lua.execute('''
-		model = model:type("torch.CudaTensor")
+		model = model:type("torch.DoubleTensor")
 		cutorch.synchronize()
 
 		alphabet = config.alphabet
@@ -109,7 +109,7 @@ def get_CNN(model_name):
 	process_batch = lua.eval('''
 		function(batch)
 			batchLen = batch:size(1)
-			batch = batch:transpose(2, 3):contiguous():type("torch.CudaTensor")
+			batch = batch:transpose(2, 3):contiguous():type("torch.DoubleTensor")
 			output = model:forward(batch)
 			max, decision = output:double():max(2)
 			labels = {}
