@@ -10,6 +10,7 @@ Created on Dec 4, 2014
 #################### USAGE ##########################
 
 # python3.4 -m mind.cluster_words [word2vec_model]
+# Word2Vec available at: https://code.google.com/p/word2vec/
 
 #####################################################
 
@@ -47,7 +48,7 @@ def save_token_subset(word2vec, word_list):
 	for word in word_list:
 		vector_dict[word] = word2vec[word]
 
-	pickle.dump(vector_dict, open("data/misc/prophet_vectors.pkl", "wb" ))
+	pickle.dump(vector_dict, open("models/prophet_vectors.pkl", "wb" ))
 
 def cluster_vectors(word2vec):
 	"""Clusters a set of word vectors"""
@@ -60,16 +61,6 @@ def cluster_vectors(word2vec):
 	# Create vector cache for faster load
 	save_token_subset(word2vec, tokens)
 	
-	# Visualize an easy dataset for exploration
-	tokens = ["one", "two", "three", "minister", "leader", "president"]
-	X = np.array([word2vec[t].T for t in tokens])
-
-	# Dimensionality Reduction
-	model = TSNE(n_components=2, random_state=0)
-	X = model.fit_transform(X.astype(np.float))
-	reduced = dict(zip(tokens, list(X)))
-	dict_2_json(reduced, "t-SNE_top_words_Prophet.json")
-
 	# Clustering
 	clusters = kmeans(n_clusters=75, max_iter=100, batch_size=200, n_init=10, init_size=30)
 	clusters.fit(X)
@@ -82,6 +73,18 @@ def cluster_vectors(word2vec):
 
 	for key in collected.keys():
 		safe_print(key, collected[key], "\n")
+
+def t_SNE(word2vec, tokens):
+	"""Applies t-SNE to word vectors"""
+
+	# Visualize an easy dataset for exploration
+	X = np.array([word2vec[t].T for t in tokens])
+
+	# Dimensionality Reduction
+	model = TSNE(n_components=2, random_state=0)
+	X = model.fit_transform(X.astype(np.float))
+	reduced = dict(zip(tokens, list(X)))
+	dict_2_json(reduced, "t-SNE_top_words_Prophet.json")
 
 def run_from_command_line(command_line_arguments):
 	"""Runs the module when invoked from the command line."""
