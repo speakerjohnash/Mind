@@ -80,6 +80,7 @@ $(document).ready(function() {
 			var date = data[i]["Post Date"]
 			dayTotal = 0
 			for (var ii=0, k=words.length; ii<k; ii++) {
+				if (words[ii] == "Post Date") continue
 				dayTotal += parseInt(data[i][words[ii]])
 			}
 			totals.push({"Post Date": date, "Total": dayTotal})
