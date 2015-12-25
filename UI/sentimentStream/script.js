@@ -27,7 +27,7 @@
 
 	function buildStream(data) {
 
-		var width = 600,
+		var width = 800,
     		height = 200;
 
 		var svg = d3.select(".canvas-frame").append("svg")
@@ -94,6 +94,14 @@
 			.attr("class", "layer")
 			.attr("d", function(d) { return area(d.values) })
 			.style("fill", "url(#gradient)");
+
+		// Draw Axes
+		var XAxis = d3.svg.axis().scale(streamXScale).orient("bottom");
+
+  		stream.append("g")
+	      .attr("class", "x axis")
+	      .attr("transform", "translate(0," + height - 1 + ")")
+	      .call(XAxis);
 
 	}
 
