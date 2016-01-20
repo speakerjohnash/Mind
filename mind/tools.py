@@ -7,6 +7,7 @@ Created on Jan 21, 2015
 @author: Matthew Sevrens
 """
 
+import pandas as pd
 import csv
 import json
 import os
@@ -73,6 +74,20 @@ def safely_remove_file(filename):
 	except OSError:
 		print("Unable to remove {0}".format(filename))
 	print("File removed.")
+	
+def get_write_func(filename, header):
+    
+    file_exists = False
+    
+    def write_func(data):
+        nonlocal file_exists
+        mode = "a" if file_exists else "w"
+        add_head = False if file_exists else header
+        df = pd.DataFrame(data)
+        df.to_csv(filename, mode=mode, index=False, header=add_head)
+        file_exists = True
+    
+    return write_func
 
 if __name__ == "__main__":
 	print("This module is a library that contains useful functions; it should not be run from the console.")
