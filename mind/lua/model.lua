@@ -14,7 +14,11 @@ function Model:__init(config)
    if config.file then
       self.sequential = Model:makeCleanSequential(torch.load(config.file))
    else
-      self.sequential = Model:createSequential(config)
+      if config.transfer then
+         self.sequential = Model:makeTransferSequential(config)
+      else
+         self.sequential = Model:createSequential(config)
+      end
    end
    self.p = config.p or 0.5
    self.tensortype = torch.getdefaulttensortype()
@@ -82,7 +86,7 @@ end
 function Model:changeSequentialDropouts(model,p)
    for i,m in ipairs(model.modules) do
       if m.module_name == "nn.Dropout" or torch.typename(m) == "nn.Dropout" then
-	   m.p = p
+      m.p = p
       end
    end
    return model
@@ -114,7 +118,27 @@ function Model:makeCleanSequential(model)
    for i = 1,#model.modules do
       local m = Model:makeCleanModule(model.modules[i])
       if m then
-	 new:add(m)
+         new:add(m)
+      end
+   end
+   return new
+end
+
+-- Make a clean sequential model with a new output layer
+function Model:makeTransferSequential(config)
+   local model = torch.load(config.transfer)
+   local new = nn.Sequential()
+   for i = 1,#model.modules do
+      if i == #model.modules - 1 then
+         local m = Model:createModule(config[#model.modules - 1])
+         local w,dw = m:getParameters()
+         w:normal():mul(5e-2)
+         new:add(m)
+      else
+         local m = Model:makeCleanModule(model.modules[i])
+         if m then
+            new:add(m)
+         end
       end
    end
    return new
@@ -144,7 +168,7 @@ end
 -- Make a clean module
 function Model:makeCleanModule(m)
    if torch.typename(m) == "nn.TemporalConvolution" then
-	 return Model:toTemporalConvolution(m)
+    return Model:toTemporalConvolution(m)
    elseif torch.typename(m) == "nn.Threshold" then
       return Model:newThreshold()
    elseif torch.typename(m) == "nn.TemporalMaxPooling" then
