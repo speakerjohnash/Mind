@@ -11,6 +11,8 @@ import sys
 import csv
 import json
 
+from mind.tensorflow_cnn import build_graph, validate_config, get_tensor, string_to_tensor
+
 def load_label_map(filename):
 	"""Load a permanent label map"""
 
@@ -19,6 +21,56 @@ def load_label_map(filename):
 	input_file.close()
 
 	return label_map
+
+def get_tf_cnn_by_path(model_path, label_map_path):
+	"""Load a tensorFlow module by name"""
+
+	# Load Config
+	config_path = "config/tf_cnn_config.json"
+	config = validate_config(config_path)
+
+	# Validate Model and Label Map
+	if not isfile(model_path) or not isfile(label_map_path):
+		logging.warning("Resouces to load model not found. Terminating")
+		sys.exit()
+
+	# Load Graph
+	config["model_path"] = model_path
+	config["label_map"] = label_map_path
+	graph, saver = build_graph(config)
+	label_map = config["label_map"]
+
+	# Load Session and Graph
+	sess = tf.Session(graph=graph)
+	saver.restore(sess, config["model_path"])
+	model = get_tensor(graph, "model:0")
+	
+	# Generate Helper Function
+	def apply_cnn(trans, doc_key="description", label_key="CNN", label_only=True):
+		"""Apply CNN to transactions"""
+
+		alphabet_length = config["alphabet_length"]
+		doc_length = config["doc_length"]
+		batch_size = len(trans)
+
+		tensor = np.zeros(shape=(batch_size, 1, alphabet_length, doc_length))
+
+		for index, doc in enumerate(trans):
+			tensor[index][0] = string_to_tensor(config, doc[doc_key], doc_length)
+
+		tensor = np.transpose(tensor, (0, 1, 3, 2))
+		feed_dict_test = {get_tensor(graph, "x:0"): tensor}
+		output = sess.run(model, feed_dict=feed_dict_test)
+		labels = np.argmax(output, 1)
+	
+		for index, transaction in enumerate(trans):
+			label = label_map.get(str(labels[index]), "")
+			if isinstance(label, dict) and label_only: label = label["label"]
+			transaction[label_key] = label
+
+		return trans
+
+	return apply_cnn
 
 def get_CNN(model_name):
 	"""Load a function to process thoughts using a CNN"""
