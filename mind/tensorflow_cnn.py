@@ -62,7 +62,6 @@ def load_labeled_data(config):
 
 	dataset = config["dataset"]
 	label_map = config["label_map"]
-	ledger_entry = config["ledger_entry"]
 	label_key = config["label_key"]
 
 	reversed_map = dict(zip(label_map.values(), label_map.keys()))
@@ -432,7 +431,7 @@ def run_session(config, graph, saver):
 	with tf.Session(graph=graph) as sess:
 
 		mode = config["mode"]
-		model_path = config["model_path"]
+		model_path = config.get("model_path", "")
 
 		tf.initialize_all_variables().run()
 
