@@ -1,0 +1,14 @@
+{
+	"mode": "train",
+	"dataset": "data/input/thought.csv",
+	"label_map": {"Predict": 0, "State": 1, "Ask": 2, "Reflect": 3},
+	"alphabet": "abcdefghijklmnopqrstuvwxyz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
+	"batch_size": 128,
+	"doc_length": 123,
+	"randomize": 5e-2,
+	"momentum": 0.9,
+	"base_rate": 2e-2,
+	"decay": 1e-5,
+	"epochs": 5000,
+	"eras": 25
+}

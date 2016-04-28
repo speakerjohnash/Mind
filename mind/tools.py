@@ -74,6 +74,23 @@ def safely_remove_file(filename):
 	except OSError:
 		print("Unable to remove {0}".format(filename))
 	print("File removed.")
+
+def reverse_map(label_map, key='label'):
+	"""reverse {key : {category, label}} to {label: key} and
+	{key: value} to {value: key} dictionary}"""
+	get_key = lambda x: x[key] if isinstance(x, dict) else x
+	reversed_label_map = dict(zip(map(get_key, label_map.values()),
+		label_map.keys()))
+	return reversed_label_map
+
+def load_params(filename_or_dict):
+	"""Load a json file provided a filename"""
+	if isinstance(filename_or_dict, str):
+		input_file = open(filename_or_dict, encoding='utf-8')
+		json_dict = json.loads(input_file.read())
+		input_file.close()
+		return json_dict
+	return filename_or_dict
 	
 def get_write_func(filename, header):
     
