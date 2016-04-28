@@ -18,7 +18,7 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 
 from tornado_json.requesthandlers import APIHandler
-from mind import schema
+from mind.api import schema
 
 def vectorize(corpus, min_df=1):
 	"""Vectorize text corpus"""

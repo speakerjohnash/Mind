@@ -12,6 +12,8 @@ import json
 from tornado import gen
 from tornado_json.requesthandlers import APIHandler
 
+from mind.api import schema
+
 class Sentiment_Analysis(APIHandler):
 	"""This class handles Sentiment Analysis for Prophet"""
 
