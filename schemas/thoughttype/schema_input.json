@@ -1,0 +1,30 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Thought Type Input Schema",
+	"definitions": {
+		"thought": {
+			"type": "object",
+			"properties": {
+				"thought" : {"type": "string"},
+				"id" : {"type": "number"}
+			},
+			"required": ["thoughts", "id"]
+		}
+	},
+	"description": "A schema for defining input into the Prophet Mind Thought Type Analyzer",
+	"type" : "object",
+	"properties" : {
+		"thoughts" : {
+			"description" : "An array containing at least one thought",
+			"type" : "array",
+			"items" : {
+				"allOf": [
+					{"$ref": "#/definitions/thought"}
+				]
+			},
+			"minItems": 1,
+			"uniqueItems": true
+		}
+	},
+	"required": ["thoughts"]
+}

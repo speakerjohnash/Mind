@@ -1,0 +1,24 @@
+{
+	"thoughts" : [
+		{
+			"thought": "This thought is a statement not a question",
+			"type": "State",
+			"id": "1"
+		},
+		{
+			"thought" : "Yesterday I thought of a reflection",
+			"type": "Reflect",
+			"id": "2"
+		},
+		{
+			"thought" : "Is this thought a question?",
+			"type": "Ask",
+			"id": "3"
+		},
+		{
+			"thought" : "Tomorrow I will think about today",
+			"type": "Predict",
+			"id": "4"
+		},
+	]
+}

@@ -1,0 +1,31 @@
+{
+	"$schema" : "http://json-schema.org/draft-04/schema#",
+	"title" : "Thought Type Output Schema",
+	"definitions" : {
+		"thougth": {
+			"type": "object",
+			"properties": {
+				"thought" : {"type": "string"},
+				"type" : {"type": "string"},
+				"id" : {"type": "number"}
+			},
+			"required": ["id", "type", "thought"]
+		}
+	},
+	"description": "A schema for defining output from the Prophet Mind Thought Type Analyzer",
+	"type" : "object",
+	"properties" : {
+		"thoughts" : {
+			"description" : "An array containing at least one of the following response types",
+			"type" : "array",
+			"items" : {
+				"oneOf": [
+					{"$ref": "#/definitions/thought"}
+				]
+			},
+			"minItems": 1,
+			"uniqueItems": true
+		}
+	},
+	"required": ["thoughts"]
+}
