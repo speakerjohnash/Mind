@@ -33,7 +33,7 @@ import sys
 import numpy as np
 import tensorflow as tf
 
-from mind.various_tools import load_json
+from mind.tools import load_json
 
 logging.basicConfig(level=logging.INFO)
 

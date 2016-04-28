@@ -83,7 +83,7 @@ def reverse_map(label_map, key='label'):
 		label_map.keys()))
 	return reversed_label_map
 
-def load_params(filename_or_dict):
+def load_json(filename_or_dict):
 	"""Load a json file provided a filename"""
 	if isinstance(filename_or_dict, str):
 		input_file = open(filename_or_dict, encoding='utf-8')
