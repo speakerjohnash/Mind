@@ -1,7 +1,7 @@
 {
 	"mode": "train",
 	"dataset": "data/input/thought.csv",
-	"label_map": {"Predict": 0, "State": 1, "Ask": 2, "Reflect": 3},
+	"label_map": {"0": "Predict", "1": "State", "2": "Ask", "3": "Reflect"},
 	"alphabet": "abcdefghijklmnopqrstuvwxyz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
 	"batch_size": 128,
 	"doc_length": 123,
