@@ -396,8 +396,8 @@ def train_model(config, graph, sess, saver):
 			current_era = int(step / epochs)
 			meta_path = save_dir + "era_" + str(current_era) + ".ckpt.meta"
 			model_path = saver.save(sess, save_dir + "era_" + str(current_era) + ".ckpt")
-			logging.info("Checkpoint saved in file: %s" % save_path)
-			checkpoints[current_era] = save_path
+			logging.info("Checkpoint saved in file: %s" % model_path)
+			checkpoints[current_era] = model_path
 
 			# Stop Training if Converged
 			if test_accuracy > best_accuracy:
@@ -405,7 +405,7 @@ def train_model(config, graph, sess, saver):
 				best_accuracy = test_accuracy
 
 			if current_era - best_era == 3:
-				save_path = checkpoints[best_era]
+				model_path = checkpoints[best_era]
 				break
 
 		# Update Learning Rate
@@ -417,7 +417,7 @@ def train_model(config, graph, sess, saver):
 	dataset_path = os.path.basename(dataset).split(".")[0]
 	final_model_path = "models/" + dataset_path + ".ckpt"
 	final_meta_path = "models/" + dataset_path + ".meta"
-	logging.info("Moving final model from {0} to {1}.".format(save_path, final_model_path))
+	logging.info("Moving final model from {0} to {1}.".format(model_path, final_model_path))
 	os.rename(model_path, final_model_path)
 	os.rename(meta_path, final_meta_path)
 	logging.info("Deleting unneeded directory of checkpoints at {0}".format(save_dir))
