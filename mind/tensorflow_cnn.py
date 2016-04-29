@@ -90,7 +90,7 @@ def mixed_batching(config, df, groups_train):
 	indices_to_sample = list(np.random.choice(df.index, half_batch))
 
 	for index in range(half_batch):
-		label = random.randint(1, num_labels)
+		label = random.randint(0, num_labels - 1)
 		select_group = groups_train[str(label)]
 		indices_to_sample.append(np.random.choice(select_group.index, 1)[0])
 
@@ -107,7 +107,7 @@ def batch_to_tensor(config, batch):
 	num_labels = config["num_labels"]
 	batch_size = len(batch.index)
 
-	labels = np.array(batch["LABEL_NUM"].astype(int)) - 1
+	labels = np.array(batch["LABEL_NUM"].astype(int))
 	labels = (np.arange(num_labels) == labels[:, None]).astype(np.float32)
 	docs = batch["Thought"].tolist()
 	transactions = np.zeros(shape=(batch_size, 1, alphabet_length, doc_length))
