@@ -1,7 +1,7 @@
 #################### USAGE ####################################
 
-# python3.4 -m mind.thoughtStream [input_file] [user]
-# python3.4 -m mind.thoughtStream data/input/Thoughts.csv matt
+# python3.4 -m mind.thought_stream [input_file] [user]
+# python3.4 -m mind.thought_stream data/input/Thoughts.csv matt
 
 ###############################################################
 
@@ -36,7 +36,7 @@ def load_dict_list(file_name):
 	"""Loads a dictoinary of input from a file into a list"""
 
 	with open(file_name, 'r', encoding="utf-8", errors='replace') as input_file:
-		dict_list = list(csv.DictReader(input_file, delimiter=","))
+		dict_list = list(csv.DictReader(input_file, delimiter="|"))
 
 	return dict_list
 
@@ -67,7 +67,7 @@ def vectorize(corpus, min_df=1):
 	num_samples, num_features = countVector.shape
 	vocab = vectorizer.get_feature_names()
 
-	termWeighting(vocab, countVector, corpus)
+	#termWeighting(vocab, countVector, corpus)
 	word_count = wordCount(vocab, countVector, num_samples)
 
 	return word_count
@@ -286,10 +286,20 @@ def buildPrivacyStream(days):
 	sorted_stream = sorted(privacy_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/privacy_stream.csv")
 
-# TODO: 
-# 1) run countVectorizer on each day
-# 2) Output and connect to thought stream code
-# if item has truth or good, maybe a multiplier?
+def buildLookup(days, ken):
+	"""Build a lookuptable for search"""
+
+	lookup = collections.defaultdict(list)
+
+	for day, thoughts in days.items():
+		for thought in thoughts:
+			word_count = vectorize([thought['Thought']])
+			for word in word_count.keys():
+				if word in ken:
+					lookup[word].append([thought["ID"], int(datetime.datetime.strptime(day, '%m/%d/%y').timestamp())])
+
+	with open('lookup.json', 'w') as fp:
+		json.dump(lookup, fp)
 
 def run_from_command():             
 	"""Run if file invoked from command line"""
@@ -311,6 +321,15 @@ def run_from_command():
 		buildUserStream(thinkers)
 		for thinker, thoughts in thinkers.items():
 			collective_thoughts += thoughts
+	if sys.argv[2] == "rossi":
+		for thinker, thoughts in thinkers.items():
+			collective_thoughts += thoughts
+		thoughts = [thought['Thought'] for thought in collective_thoughts]
+		ken = vectorize(thoughts, min_df=1)
+		days = groupByWeek(collective_thoughts)
+		lookup = buildLookup(days, ken)
+		buildWordStream(days, ken)
+		sys.exit()
 	elif sys.argv[2] == "pat":
 		collective_thoughts = pat_thoughts
 	elif sys.argv[2] == "matt":

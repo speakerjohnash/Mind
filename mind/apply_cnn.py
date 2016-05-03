@@ -11,8 +11,8 @@ from mind.load_CNN import get_CNN
 
 #################### USAGE ##########################
 
-# python3.3 -m mind.apply_CNN [file_name] [model_name] [column_name]
-# python3.3 -m mind.apply_CNN data/input/thought.csv thought_type Thought_Type_CNN
+# python3.3 -m mind.apply_cnn [file_name] [model_name] [column_name]
+# python3.3 -m mind.apply_cnn data/input/thought.csv thought_type Thought_Type_CNN
 
 #####################################################
 

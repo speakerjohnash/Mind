@@ -16,8 +16,8 @@ import numpy as np
 #################### USAGE ##########################
 
 # Note: In Progress
-# python3 -m mind.CNN_stats [main_filename] [label_map]
-# python3 -m mind.CNN_stats path/to/main_10000.t7b path/to/label_map.json
+# python3 -m mind.cnn_stats [main_filename] [label_map]
+# python3 -m mind.cnn_stats path/to/main_10000.t7b path/to/label_map.json
 
 #####################################################
 

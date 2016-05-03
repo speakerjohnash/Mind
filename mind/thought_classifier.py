@@ -10,8 +10,8 @@ Created on Nov 28, 2014
 
 #################### USAGE ##########################
 
-# python3.4 -m mind.thoughtClassifier [file_name] [document_column_name] [label_column_name]
-# python3.4 -m mind.thoughtClassifier data/input/Thoughts.csv Thought Type
+# python3.4 -m mind.thought_classifier [file_name] [document_column_name] [label_column_name]
+# python3.4 -m mind.thought_classifier data/input/Thoughts.csv Thought Type
 
 #####################################################
 
