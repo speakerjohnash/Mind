@@ -131,20 +131,23 @@ def get_classification_report(confusion_matrix_file, label_map):
 	num_labels = len(label_map)
 	label.index = range(num_labels)
 
-	#Create a classification report
-	feature_list = [accuracy, label, true_positive, false_positive,
-		false_negative, true_negative, precision, recall, specificity,
-		f_measure]
-	feature_labels = ["Accuracy", "Class", "True Positive", "False Positive",
-		"False Negative", "True Negative", "Precision", "Recall", "Specificity",
-		"F Measure"]
+	# Define Report Values
+	features = {
+		"Accuracy": accuracy,
+		"Class": label,
+		"True Positive": true_positive,
+		"True Negative": true_negative,
+		"False Positive": false_positive,
+		"False Negative": false_negative,
+		"Precision": precision,
+		"Recall": recall,
+		"Specificity": specificity,
+		"F Measure": f_measure
+	}
 
-	# Craft the report
-	classification_report = pd.concat(feature_list, axis = 1)
-	classification_report.columns = feature_labels
-
-	# Setting rows to be 1-indexed
-	classification_report.index = range(1, rows + 1)
+	# Craft the Report
+	classification_report = pd.concat(features.keys(), axis=1)
+	classification_report.columns = features.keys()
 
 	logging.debug("Classification Report:\n{0}".format(classification_report))
 	logging.info("Accuracy is: {0}".format(classification_report.iloc[0]["Accuracy"]))
@@ -161,8 +164,9 @@ def main_process(args):
 	human_label_key = args.label_key
 	reader = load_piped_dataframe(args.testdata, chunksize=1000)
 	total_transactions = count_transactions(args.testdata)
-	processed = 0.0
+	processed, chunk_count = 0.0, 0
 	label_map = load_json(args.label_map)
+	reversed_label_map = {}
 
 	get_key = lambda x: x['label'] if isinstance(x, dict) else x
 	label_map = dict(zip(label_map.keys(), map(get_key, label_map.values())))
@@ -170,7 +174,6 @@ def main_process(args):
 	class_names = list(label_map.values())
 
 	# Create reversed label map and check it there are duplicate keys
-	reversed_label_map = {}
 	for key, value in label_map.items():
 		if class_names.count(value) > 1:
 			reversed_label_map[value] = sorted(reversed_label_map.get(value, []) + [int(key)])
@@ -181,14 +184,12 @@ def main_process(args):
 	classifier = get_tf_cnn_by_path(args.model, args.label_map)
 
 	# Prepare for data saving
-	path = 'data/CNN_stats/'
+	path = "data/CNN_stats/"
 	os.makedirs(path, exist_ok=True)
-	write_mislabeled = get_write_func(path + "mislabeled.csv", ['TRANSACTION_DESCRIPTION', 'ACTUAL', 'PREDICTED'])
-	write_correct = get_write_func(path + "correct.csv", ['TRANSACTION_DESCRIPTION', 'ACTUAL'])
-	write_unpredicted = get_write_func(path + "unpredicted.csv", ["TRANSACTION_DESCRIPTION", 'ACTUAL'])
-	write_needs_hand_labeling = get_write_func(path + "need_labeling.csv", ["TRANSACTION_DESCRIPTION"])
-
-	chunk_count = 0
+	write_mislabeled = get_write_func(path + "mislabeled.csv", ['THOUGHT', 'ACTUAL', 'PREDICTED'])
+	write_correct = get_write_func(path + "correct.csv", ['THOUGHT', 'ACTUAL'])
+	write_unpredicted = get_write_func(path + "unpredicted.csv", ["THOUGHT", 'ACTUAL'])
+	write_needs_hand_labeling = get_write_func(path + "need_labeling.csv", ["THOUGHT"])
 
 	logging.info("Total number of transactions: {0}".format(total_transactions))
 	logging.info("Testing begins.")
@@ -201,20 +202,26 @@ def main_process(args):
 		transactions = chunk.to_dict('records')
 		machine_labeled = classifier(transactions, doc_key=doc_key, label_key=machine_label_key)
 
-		# Add indexes for labels
+		# Add Indexes for Labels
 		for item in machine_labeled:
+
 			if item[human_label_key] == "":
 				item['ACTUAL_INDEX'] = None
 				continue
+
 			temp = reversed_label_map[item[human_label_key]]
+
 			if isinstance(temp, list):
 				item['ACTUAL_INDEX'] = temp[0]
 			else:
 				item['ACTUAL_INDEX'] = temp
+
 			if item[machine_label_key] == "":
 				item['PREDICTED_INDEX'] = None
 				continue
+
 			temp = reversed_label_map[item[machine_label_key]]
+
 			if isinstance(temp, list):
 				item['PREDICTED_INDEX'] = temp[0]
 			else:
@@ -231,12 +238,12 @@ def main_process(args):
 
 		chunk_count += 1
 
-	# Make a square confusion matrix dataframe, df
+	# Make a Square Confusion Matrix Dataframe
 	df = pd.DataFrame(confusion_matrix)
 	df = df.drop(df.columns[[-1]], axis=1)
-
-	# Make sure the confusion matrix is a square
 	rows, cols = df.shape
+
+	# Check if Confusion Matrix is a Square
 	if rows != cols:
 		logging.critical("Rows: {0}, Columns {1}".format(rows, cols))
 		logging.critical("Unable to make a square confusion matrix, aborting.")
@@ -244,13 +251,8 @@ def main_process(args):
 	else:
 		logging.debug("Confusion matrix is a proper square, continuing")
 
-	# Make sure the confusion matrix is 1-indexed, to match the label_map
-	df.rename(columns=lambda x: int(x) + 1, inplace=True)
-	df.index = range(1, rows + 1)
-
 	# Save the confusion matrix out to a file
 	confusion_matrix_path = 'data/CNN_stats/confusion_matrix.csv'
-	rows, cols = df.shape
 	logging.debug("Rows: {0}, Columns {1}".format(rows, cols))
 	df.to_csv('data/CNN_stats/confusion_matrix.csv', index=False)
 	logging.info("Confusion matrix saved to: {0}".format(confusion_matrix_path))

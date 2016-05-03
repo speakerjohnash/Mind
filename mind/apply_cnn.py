@@ -7,7 +7,7 @@ from itertools import zip_longest
 import pandas as pd
 import numpy as np
 
-from mind.load_CNN import get_CNN 
+from mind.load_model import get_tf_cnn_by_name
 
 #################### USAGE ##########################
 
@@ -19,7 +19,7 @@ from mind.load_CNN import get_CNN
 def grouper(iterable):
 	return zip_longest(*[iter(iterable)]*1000, fillvalue={"Thought":""})
 
-CLASSIFIER = get_CNN(sys.argv[2])
+classifier = get_tf_cnn_by_name(sys.argv[2])
 
 df = pd.read_csv(sys.argv[1], na_filter=False, encoding="utf-8", error_bad_lines=False)
 thoughts = list(df.T.to_dict().values())
@@ -28,7 +28,7 @@ processed = []
 batches = grouper(thoughts)
 	
 for i, batch in enumerate(batches):
-	processed += CLASSIFIER(batch, doc_key="Thought", label_key=sys.argv[3])
+	processed += classifier(batch, doc_key="Thought", label_key=sys.argv[3])
 
 processed = processed[0:len(thoughts)]
 out_df = pd.DataFrame(processed)
