@@ -59,11 +59,11 @@ def compare_label(*args, **kwargs):
 			pass
 		elif machine_row['PREDICTED_INDEX'] is None:
 			column = num_labels
-			row = machine_row['ACTUAL_INDEX'] - 1
+			row = machine_row['ACTUAL_INDEX']
 			conf_mat[row][column] += 1
 		else:
-			column = machine_row['PREDICTED_INDEX'] - 1
-			row = machine_row['ACTUAL_INDEX'] - 1
+			column = machine_row['PREDICTED_INDEX']
+			row = machine_row['ACTUAL_INDEX']
 			conf_mat[row][column] += 1
 
 		# Record Results
@@ -104,9 +104,6 @@ def get_classification_report(confusion_matrix_file, label_map):
 		raise Exception("Unable to make a square confusion matrix, aborting.")
 	else:
 		logging.debug("Confusion matrix is a proper square, continuing")
-
-	# Convert to 0-indexed confusion matrix
-	df.rename(columns=lambda x: int(x) - 1, inplace=True)
 
 	# First order calculations
 	true_positive = pd.DataFrame(df.iat[i, i] for i in range(rows))
