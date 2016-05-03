@@ -110,16 +110,19 @@ def load_piped_dataframe(filename, chunksize=False, usecols=False):
 	return pd.read_csv(filename, **options)
 	
 def get_write_func(filename, header):
-    
-    file_exists = False
-    
-    def write_func(data):
-        nonlocal file_exists
-        mode = "a" if file_exists else "w"
-        add_head = False if file_exists else header
-        df = pd.DataFrame(data)
-        df.to_csv(filename, mode=mode, index=False, header=add_head)
-        file_exists = True
+	
+	file_exists = False
+	
+	def write_func(data):
+		if len(data) > 0:
+			nonlocal file_exists
+			mode = "a" if file_exists else "w"
+			add_head = False if file_exists else header
+			df = pd.DataFrame(data)
+			df.to_csv(filename, mode=mode, index=False, header=add_head)
+			file_exists = True
+		else:
+			open(filename, 'a').close()
     
     return write_func
 
