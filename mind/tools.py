@@ -57,15 +57,6 @@ def progress(i, my_list, message=""):
 	sys.stdout.write(my_progress)
 	sys.stdout.flush()
 
-def load_params(filename):
-	"""Load a set of parameters provided a filename"""
-
-	input_file = open(filename, encoding='utf-8')
-	params = json.loads(input_file.read())
-	input_file.close()
-
-	return params
-
 def safely_remove_file(filename):
 	"""Safely removes a file"""
 	print("Removing {0}".format(filename))
@@ -91,6 +82,32 @@ def load_json(filename_or_dict):
 		input_file.close()
 		return json_dict
 	return filename_or_dict
+
+def load_piped_dataframe(filename, chunksize=False, usecols=False):
+	"""Load piped dataframe from file name"""
+
+	options = {
+		"quoting": csv.QUOTE_NONE,
+		"na_filter": False,
+		"encoding": "utf-8",
+		"sep": "|",
+		"error_bad_lines": False
+	}
+
+	if usecols:
+		columns = usecols
+		options["usecols"] = usecols
+	else:
+		with open(filename, 'r') as reader:
+			header = reader.readline()
+		columns = header.split("|")
+
+	options["dtype"] = {c: "object" for c in columns}
+
+	if isinstance(chunksize, int):
+		options["chunksize"] = chunksize
+
+	return pd.read_csv(filename, **options)
 	
 def get_write_func(filename, header):
     
