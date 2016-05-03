@@ -57,10 +57,6 @@ def compare_label(*args, **kwargs):
 		# Update Confusion Matrix
 		if machine_row['ACTUAL_INDEX'] is None:
 			pass
-		elif machine_row['PREDICTED_INDEX'] is None:
-			column = num_labels
-			row = machine_row['ACTUAL_INDEX']
-			conf_mat[row][column] += 1
 		else:
 			column = machine_row['PREDICTED_INDEX']
 			row = machine_row['ACTUAL_INDEX']
@@ -169,13 +165,7 @@ def main_process(args):
 	label_map = dict(zip(label_map.keys(), map(get_key, label_map.values())))
 	num_labels = len(label_map)
 	class_names = list(label_map.values())
-
-	# Create reversed label map and check it there are duplicate keys
-	for key, value in label_map.items():
-		if class_names.count(value) > 1:
-			reversed_label_map[value] = sorted(reversed_label_map.get(value, []) + [int(key)])
-		else:
-			reversed_label_map[value] = int(key)
+	reversed_label_map = dict(zip(label_map.values(), label_map.keys()))
 
 	confusion_matrix = [[0 for i in range(num_labels + 1)] for j in range(num_labels)]
 	classifier = get_tf_cnn_by_path(args.model, args.label_map)
@@ -206,23 +196,8 @@ def main_process(args):
 				item['ACTUAL_INDEX'] = None
 				continue
 
-			temp = reversed_label_map[item[human_label_key]]
-
-			if isinstance(temp, list):
-				item['ACTUAL_INDEX'] = temp[0]
-			else:
-				item['ACTUAL_INDEX'] = temp
-
-			if item[machine_label_key] == "":
-				item['PREDICTED_INDEX'] = None
-				continue
-
-			temp = reversed_label_map[item[machine_label_key]]
-
-			if isinstance(temp, list):
-				item['PREDICTED_INDEX'] = temp[0]
-			else:
-				item['PREDICTED_INDEX'] = temp
+			item['ACTUAL_INDEX'] = reversed_label_map[item[human_label_key]]
+			item['PREDICTED_INDEX'] = reversed_label_map[item[machine_label_key]]
 
 		results = compare_label(machine_labeled, machine_label_key, human_label_key, confusion_matrix, num_labels, doc_key=doc_key)
 		mislabeled, correct, unpredicted, needs_hand_labeling, confusion_matrix = results
