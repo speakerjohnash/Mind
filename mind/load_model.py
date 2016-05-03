@@ -55,6 +55,7 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 
 	# Load Model
 	graph, saver = build_graph(config)
+	sess = tf.Session(graph=graph)
 	saver.restore(sess, config["model_path"])
 	model = get_tensor(graph, "model:0")
 	

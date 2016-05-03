@@ -34,7 +34,7 @@ def parse_arguments(args):
 	parser.add_argument('--model', '-model', required=True, help='Path to the model under test')
 	parser.add_argument('--testdata', '-data', required=True, help='Path to the test data')
 	parser.add_argument('--label_map', '-map', required=True, help='Path to a label map')
-	parser.add_argument('--label_key', '-label', required=True, type=lambda x: x.upper(), help="Header name of the ground truth label column")
+	parser.add_argument('--label_key', '-label', required=True, help="Header name of the ground truth label column")
 
 	parser.add_argument("-d", "--debug", help="Show 'debug'+ level logs", action="store_true")
 	parser.add_argument("-v", "--info", help="Show 'info'+ level logs", action="store_true")
