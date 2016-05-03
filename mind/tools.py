@@ -123,8 +123,8 @@ def get_write_func(filename, header):
 			file_exists = True
 		else:
 			open(filename, 'a').close()
-    
-    return write_func
+	
+	return write_func
 
 if __name__ == "__main__":
 	print("This module is a library that contains useful functions; it should not be run from the console.")
