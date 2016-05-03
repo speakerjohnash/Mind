@@ -47,7 +47,7 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 		sys.exit()
 
 	# Load Config
-	config = load_params(config_path)
+	config = load_json(config_path)
 	config["label_map"] = label_map_path
 	config["model_path"] = model_path
 	config = validate_config(config)
