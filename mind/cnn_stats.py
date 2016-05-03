@@ -162,7 +162,7 @@ def main_process(args):
 	machine_label_key = 'PREDICTED_CLASS'
 	doc_key = "Thought"
 	human_label_key = args.label_key
-	reader = load_piped_dataframe(args.testdata, chunksize=1000)
+	reader = pd.read_csv(args.testdata, chunksize=1000)
 	total_transactions = count_transactions(args.testdata)
 	processed, chunk_count = 0.0, 0
 	label_map = load_json(args.label_map)
