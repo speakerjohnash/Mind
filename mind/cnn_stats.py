@@ -196,8 +196,8 @@ def main_process(args):
 				item['ACTUAL_INDEX'] = None
 				continue
 
-			item['ACTUAL_INDEX'] = reversed_label_map[item[human_label_key]]
-			item['PREDICTED_INDEX'] = reversed_label_map[item[machine_label_key]]
+			item['ACTUAL_INDEX'] = int(reversed_label_map[item[human_label_key]])
+			item['PREDICTED_INDEX'] = int(reversed_label_map[item[machine_label_key]])
 
 		results = compare_label(machine_labeled, machine_label_key, human_label_key, confusion_matrix, num_labels, doc_key=doc_key)
 		mislabeled, correct, unpredicted, needs_hand_labeling, confusion_matrix = results

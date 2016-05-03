@@ -75,12 +75,10 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 		tensor = np.transpose(tensor, (0, 1, 3, 2))
 		feed_dict_test = {get_tensor(graph, "x:0"): tensor}
 		output = sess.run(model, feed_dict=feed_dict_test)
-		labels = np.argmax(output, 1) + 1
+		labels = np.argmax(output, 1)
 	
 		for index, thought in enumerate(thoughts):
 			label = label_map.get(str(labels[index]), "")
-			if isinstance(label, dict) and label_only:
-				label = label["label"]
 			thought[label_key] = label
 
 		return thoughts
