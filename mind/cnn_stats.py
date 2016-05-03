@@ -1,7 +1,6 @@
 #!/usr/local/bin/python3.3
 
-"""This module processes the output of Crepe into a more
-readable form
+"""This module reports stats on a trained model
 
 Created on Jan 15, 2016
 @author: Matthew Sevrens
