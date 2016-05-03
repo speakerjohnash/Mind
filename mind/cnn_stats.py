@@ -85,8 +85,8 @@ def compare_label(*args, **kwargs):
 
 	return mislabeled, correct, unpredicted, needs_hand_labeling, conf_mat
 
-def count_transactions(csv_file):
-	"""count number of transactions in csv_file"""
+def count_thoughts(csv_file):
+	"""count number of thoughts in csv_file"""
 	with open(csv_file) as temp:
 		reader = csv.reader(temp, delimiter='|')
 		_ = reader.__next__()
@@ -163,7 +163,7 @@ def main_process(args):
 	doc_key = "Thought"
 	human_label_key = args.label_key
 	reader = pd.read_csv(args.testdata, chunksize=1000)
-	total_transactions = count_transactions(args.testdata)
+	total_thoughts = count_thoughts(args.testdata)
 	processed, chunk_count = 0.0, 0
 	label_map = load_json(args.label_map)
 	reversed_label_map = {}
@@ -191,16 +191,16 @@ def main_process(args):
 	write_unpredicted = get_write_func(path + "unpredicted.csv", ["THOUGHT", 'ACTUAL'])
 	write_needs_hand_labeling = get_write_func(path + "need_labeling.csv", ["THOUGHT"])
 
-	logging.info("Total number of transactions: {0}".format(total_transactions))
+	logging.info("Total number of thoughts: {0}".format(total_thoughts))
 	logging.info("Testing begins.")
 
 	for chunk in reader:
 		processed += len(chunk)
-		my_progress = str(round(((processed/total_transactions) * 100), 2)) + '%'
+		my_progress = str(round(((processed/total_thoughts) * 100), 2)) + '%'
 		logging.info("Evaluating {0} of the testset".format(my_progress))
 		logging.warning("Testing chunk {0}.".format(chunk_count))
-		transactions = chunk.to_dict('records')
-		machine_labeled = classifier(transactions, doc_key=doc_key, label_key=machine_label_key)
+		thoughts = chunk.to_dict('records')
+		machine_labeled = classifier(thoughts, doc_key=doc_key, label_key=machine_label_key)
 
 		# Add Indexes for Labels
 		for item in machine_labeled:

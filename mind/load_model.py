@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3.3
 
 """This module loads classifier from various libraries and produces 
-helper functions that will classify transactions. Depending on the model 
+helper functions that will classify thoughts. Depending on the model 
 requested this module will load a different previously generated model.
 
 Created on Apr 27, 2016
@@ -60,16 +60,16 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 	model = get_tensor(graph, "model:0")
 	
 	# Generate Helper Function
-	def apply_cnn(trans, doc_key="description", label_key="CNN", label_only=True):
-		"""Apply CNN to transactions"""
+	def apply_cnn(thoughts, doc_key="description", label_key="CNN", label_only=True):
+		"""Apply CNN to thoughts"""
 
 		alphabet_length = config["alphabet_length"]
 		doc_length = config["doc_length"]
-		batch_size = len(trans)
+		batch_size = len(thoughts)
 
 		tensor = np.zeros(shape=(batch_size, 1, alphabet_length, doc_length))
 
-		for index, doc in enumerate(trans):
+		for index, doc in enumerate(thoughts):
 			tensor[index][0] = string_to_tensor(config, doc[doc_key], doc_length)
 
 		tensor = np.transpose(tensor, (0, 1, 3, 2))
@@ -77,13 +77,13 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 		output = sess.run(model, feed_dict=feed_dict_test)
 		labels = np.argmax(output, 1) + 1
 	
-		for index, transaction in enumerate(trans):
+		for index, thought in enumerate(thoughts):
 			label = label_map.get(str(labels[index]), "")
 			if isinstance(label, dict) and label_only:
 				label = label["label"]
-			transaction[label_key] = label
+			thought[label_key] = label
 
-		return trans
+		return thoughts
 
 	return apply_cnn
 
