@@ -106,7 +106,7 @@ def get_classification_report(confusion_matrix_file, label_map):
 	col_sum = pd.DataFrame(df.sum(axis=1))
 	false_positive = pd.DataFrame(pd.DataFrame(df.sum(axis=0)).values - true_positive.values, columns=true_positive.columns)
 	false_negative = pd.DataFrame(pd.DataFrame(df.sum(axis=1)).values - true_positive.values, columns=true_positive.columns)
-	true_negative = pd.DataFrame([df.drop(i, axis=1).drop(i, axis=0).sum().sum() for i in range(rows)])
+	true_negative = pd.DataFrame([df.drop(str(i), axis=1).drop(i, axis=0).sum().sum() for i in range(rows)])
 
 	# Second order calculations
 	accuracy = true_positive.sum() / df.sum().sum()
