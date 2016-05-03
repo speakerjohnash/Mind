@@ -48,7 +48,7 @@ def validate_config(config):
 
 	config = load_json(config)
 	logging.debug("Configuration is :\n{0}".format(pprint.pformat(config)))
-	reshape = ((config["doc_length"] - 96) / 27) * 256
+	reshape = ((config["doc_length"] - 78) / 27) * 256
 	config["reshape"] = int(reshape)
 	config["label_map"] = load_json(config["label_map"])
 	config["num_labels"] = len(config["label_map"].keys())
