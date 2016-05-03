@@ -53,8 +53,8 @@ def compare_label(*args, **kwargs):
 
 	# Test Each Machine Labeled Row
 	for machine_row in machine:
-		# Update conf_mat
-		# predicted_label is None if a predicted subtype is ""
+
+		# Update Confusion Matrix
 		if machine_row['ACTUAL_INDEX'] is None:
 			pass
 		elif machine_row['PREDICTED_INDEX'] is None:
@@ -94,8 +94,10 @@ def count_transactions(csv_file):
 
 def get_classification_report(confusion_matrix_file, label_map):
 	"""Produce a classification report for a particular confusion matrix"""
+
 	df = pd.read_csv(confusion_matrix_file)
 	rows, cols = df.shape
+
 	if rows != cols:
 		logging.critical("Rows: {0}, Columns {1}".format(rows, cols))
 		logging.critical("Unable to make a square confusion matrix, aborting.")
@@ -103,28 +105,26 @@ def get_classification_report(confusion_matrix_file, label_map):
 	else:
 		logging.debug("Confusion matrix is a proper square, continuing")
 
-	#Convert to 0-indexed confusion matrix
+	# Convert to 0-indexed confusion matrix
 	df.rename(columns=lambda x: int(x) - 1, inplace=True)
-	#First order calculations
+
+	# First order calculations
 	true_positive = pd.DataFrame(df.iat[i, i] for i in range(rows))
 	col_sum = pd.DataFrame(df.sum(axis=1))
-	false_positive = pd.DataFrame(pd.DataFrame(df.sum(axis=0)).values - true_positive.values,
-		columns=true_positive.columns)
-	false_negative = pd.DataFrame(pd.DataFrame(df.sum(axis=1)).values - true_positive.values,
-		columns=true_positive.columns)
-	true_negative = pd.DataFrame(
-		[df.drop(i, axis=1).drop(i, axis=0).sum().sum() for i in range(rows)])
+	false_positive = pd.DataFrame(pd.DataFrame(df.sum(axis=0)).values - true_positive.values, columns=true_positive.columns)
+	false_negative = pd.DataFrame(pd.DataFrame(df.sum(axis=1)).values - true_positive.values, columns=true_positive.columns)
+	true_negative = pd.DataFrame([df.drop(i, axis=1).drop(i, axis=0).sum().sum() for i in range(rows)])
 
-	#Second order calculations
+	# Second order calculations
 	accuracy = true_positive.sum() / df.sum().sum()
 	precision = true_positive / (true_positive + false_positive)
 	recall = true_positive / (true_positive + false_negative)
 	specificity = true_negative / (true_negative + false_positive)
 
-	#Third order calculation
+	# Third order calculation
 	f_measure = 2 * precision * recall / (precision + recall)
 
-	#Write out the classification report
+	# Write out the classification report
 	label = pd.DataFrame(label_map, index=[0]).transpose()
 	label.index = label.index.astype(int)
 	label = label.sort_index()
@@ -138,10 +138,12 @@ def get_classification_report(confusion_matrix_file, label_map):
 	feature_labels = ["Accuracy", "Class", "True Positive", "False Positive",
 		"False Negative", "True Negative", "Precision", "Recall", "Specificity",
 		"F Measure"]
-	#Craft the report
+
+	# Craft the report
 	classification_report = pd.concat(feature_list, axis = 1)
 	classification_report.columns = feature_labels
-	#Setting rows to be 1-indexed
+
+	# Setting rows to be 1-indexed
 	classification_report.index = range(1, rows + 1)
 
 	logging.debug("Classification Report:\n{0}".format(classification_report))
@@ -229,11 +231,11 @@ def main_process(args):
 
 		chunk_count += 1
 
-	#Make a square confusion matrix dataframe, df
+	# Make a square confusion matrix dataframe, df
 	df = pd.DataFrame(confusion_matrix)
 	df = df.drop(df.columns[[-1]], axis=1)
 
-	#Make sure the confusion matrix is a square
+	# Make sure the confusion matrix is a square
 	rows, cols = df.shape
 	if rows != cols:
 		logging.critical("Rows: {0}, Columns {1}".format(rows, cols))
@@ -242,11 +244,11 @@ def main_process(args):
 	else:
 		logging.debug("Confusion matrix is a proper square, continuing")
 
-	#Make sure the confusion matrix is 1-indexed, to match the label_map
+	# Make sure the confusion matrix is 1-indexed, to match the label_map
 	df.rename(columns=lambda x: int(x) + 1, inplace=True)
 	df.index = range(1, rows + 1)
 
-	#Save the confusion matrix out to a file
+	# Save the confusion matrix out to a file
 	confusion_matrix_path = 'data/CNN_stats/confusion_matrix.csv'
 	rows, cols = df.shape
 	logging.debug("Rows: {0}, Columns {1}".format(rows, cols))
@@ -255,12 +257,15 @@ def main_process(args):
 	get_classification_report(confusion_matrix_path, label_map)
 
 if __name__ == "__main__":
+
 	args = parse_arguments(sys.argv[1:])
 	log_format = "%(asctime)s %(levelname)s: %(message)s"
+
 	if args.debug:
 		logging.basicConfig(format=log_format, level=logging.DEBUG)
 	elif args.info:
 		logging.basicConfig(format=log_format, level=logging.INFO)
 	else:
 		logging.basicConfig(format=log_format, level=logging.WARNING)
+
 	main_process(args)
