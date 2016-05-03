@@ -16,7 +16,7 @@ import numpy as np
 import tensorflow as tf
 
 from mind.tools import load_json
-from mind.tensorflow_cnn import validate_config, get_tensor, string_to_tensor
+from mind.tensorflow_cnn import validate_config, get_tensor, string_to_tensor, build_graph
 
 def get_tf_cnn_by_name(model_name, gpu_mem_fraction=False):
 	"""Load a tensorFlow CNN by name"""
