@@ -50,13 +50,16 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 	config = load_json(config_path)
 	config["label_map"] = label_map_path
 	config["model_path"] = model_path
+	meta_path = model_path.split(".ckpt")[0] + ".meta"
 	config = validate_config(config)
 	label_map = config["label_map"]
 
-	# Load Model
-	graph, saver = build_graph(config)
-	sess = tf.Session(graph=graph)
+	# Load Session and Graph
+	ops.reset_default_graph()
+	saver = tf.train.import_meta_graph(meta_path)
+	sess = tf.Session()
 	saver.restore(sess, config["model_path"])
+	graph = sess.graph
 	model = get_tensor(graph, "model:0")
 	
 	# Generate Helper Function
