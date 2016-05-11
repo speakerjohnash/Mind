@@ -139,7 +139,7 @@ def get_classification_report(confusion_matrix_file, label_map):
 	}
 
 	# Craft the Report
-	classification_report = pd.concat(features.keys(), axis=1)
+	classification_report = pd.concat(features.values(), axis=1)
 	classification_report.columns = features.keys()
 
 	logging.debug("Classification Report:\n{0}".format(classification_report))
