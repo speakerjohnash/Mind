@@ -14,8 +14,8 @@
 
 		data.forEach(function(day) {
 			row = {
-				"value" : parseFloat(day["polarity"], 10), 
-          		"key" : "polarity", 
+				"value" : parseFloat(day["sentiment"], 10), 
+          		"key" : "sentiment", 
           		"date" : format.parse(day["Post Date"])
 			}
 			formatted.push(row)
@@ -35,7 +35,7 @@
 		    .attr("height", height);
 
 		// Gradients
-		var polarityRange = d3.extent(data, function(d) { return d["polarity"] }),
+		var polarityRange = d3.extent(data, function(d) { return d["sentiment"] }),
 			colorScale = d3.scale.linear().domain(polarityRange).range(["#37486F", "#457a8b"]),
 			format = d3.time.format("%m/%d/%Y"),
 			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
@@ -55,7 +55,7 @@
 			.enter()
 			.append("stop")
 			.attr("offset", function(d, i) { return xScale(format.parse(d["Post Date"])) + "%" })
-			.attr("stop-color", function(d, i) { return colorScale(d["polarity"]) })
+			.attr("stop-color", function(d, i) { return colorScale(d["sentiment"]) })
 			.attr("stop-opacity", 1);
 
 		// Stream
