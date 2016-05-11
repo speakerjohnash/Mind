@@ -20,6 +20,10 @@ import numpy
 from textblob import TextBlob, Word
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
+from mind.load_model import get_tf_cnn_by_name
+
+SENTIMENT = get_tf_cnn_by_name("sentiment")
+
 def to_stdout(string, errors='replace'):
 	"""Converts a string to stdout compatible encoding"""
 
@@ -36,7 +40,7 @@ def load_dict_list(file_name):
 	"""Loads a dictoinary of input from a file into a list"""
 
 	with open(file_name, 'r', encoding="utf-8", errors='replace') as input_file:
-		dict_list = list(csv.DictReader(input_file, delimiter="|"))
+		dict_list = list(csv.DictReader(input_file, delimiter=","))
 
 	return dict_list
 
@@ -194,16 +198,15 @@ def buildSentimentStream(days):
 
 	for day, thoughts in days.items():
 
-		polarity, subjectivity = [], []
+		sentiment = []
 
 		for thought in thoughts:
-			doc = TextBlob(thought["Thought"])
-			polarity.append(doc.sentiment.polarity)
-			subjectivity.append(doc.sentiment.subjectivity)
+			classified = SENTIMENT([thought])[0]
+			print(classified)
+			sentiment.append(float(classified["CNN"]))
 
 		daily_sentiment = {
-			"polarity" : sum(polarity) / float(len(polarity)),
-			"subjectivity" : sum(subjectivity) / float(len(subjectivity))
+			"sentiment" : sum(sentiment) / float(len(sentiment))
 		}
 
 		daily_sentiment['Post Date'] = day

@@ -14,9 +14,10 @@ import logging
 
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.framework import ops
 
 from mind.tools import load_json
-from mind.tensorflow_cnn import validate_config, get_tensor, string_to_tensor, build_graph
+from mind.tensorflow_cnn import validate_config, get_tensor, string_to_tensor
 
 def get_tf_cnn_by_name(model_name, gpu_mem_fraction=False):
 	"""Load a tensorFlow CNN by name"""
@@ -28,7 +29,7 @@ def get_tf_cnn_by_name(model_name, gpu_mem_fraction=False):
 		label_map_path = {"0": "Predict", "1": "State", "2": "Ask", "3": "Reflect"},
 	elif model_name == "sentiment":
 		model_path = base + "sentiment.ckpt"
-		label_map_path = {"0": "Positive", "1": "Negative"}
+		label_map_path = {"0": "Negative", "1": "Positive"}
 	else:
 		logging.warning("Model not found. Terminating")
 		sys.exit()
@@ -63,7 +64,7 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 	model = get_tensor(graph, "model:0")
 	
 	# Generate Helper Function
-	def apply_cnn(thoughts, doc_key="description", label_key="CNN", label_only=True):
+	def apply_cnn(thoughts, doc_key="Thought", label_key="CNN"):
 		"""Apply CNN to thoughts"""
 
 		alphabet_length = config["alphabet_length"]
@@ -78,11 +79,15 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 		tensor = np.transpose(tensor, (0, 1, 3, 2))
 		feed_dict_test = {get_tensor(graph, "x:0"): tensor}
 		output = sess.run(model, feed_dict=feed_dict_test)
-		labels = np.argmax(output, 1)
-	
-		for index, thought in enumerate(thoughts):
-			label = label_map.get(str(labels[index]), "")
-			thought[label_key] = label
+		labels = output[:,0] if "sentiment" in model_path else np.argmax(output, 1)
+
+		if "sentiment" in model_path:
+			for index, thought in enumerate(thoughts):
+				thought[label_key] = labels[index]
+		else:
+			for index, thought in enumerate(thoughts):
+				label = label_map.get(str(labels[index]), "")
+				thought[label_key] = label
 
 		return thoughts
 
