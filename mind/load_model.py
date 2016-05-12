@@ -11,6 +11,7 @@ Created on Apr 27, 2016
 from os.path import isfile
 import sys
 import logging
+import math
 
 import numpy as np
 import tensorflow as tf
@@ -79,11 +80,11 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 		tensor = np.transpose(tensor, (0, 1, 3, 2))
 		feed_dict_test = {get_tensor(graph, "x:0"): tensor}
 		output = sess.run(model, feed_dict=feed_dict_test)
-		labels = output[:,0] if "sentiment" in model_path else np.argmax(output, 1)
+		labels = output[:,1] if "sentiment" in model_path else np.argmax(output, 1)
 
 		if "sentiment" in model_path:
 			for index, thought in enumerate(thoughts):
-				thought[label_key] = labels[index]
+				thought[label_key] = math.pow(10, labels[index])				
 		else:
 			for index, thought in enumerate(thoughts):
 				label = label_map.get(str(labels[index]), "")

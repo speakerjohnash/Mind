@@ -202,9 +202,8 @@ def buildSentimentStream(days):
 
 		for thought in thoughts:
 			classified = SENTIMENT([thought])[0]
-			senti = math.pow(10, float(classified["CNN"]))
-			print(classified["Thought"] + ": " + "{0:.3f}".format(senti))
-			sentiment.append(senti)
+			print(classified["Thought"] + ": " + "{0:.3f}".format(classified["CNN"]))
+			sentiment.append(classified["CNN"])
 
 		daily_sentiment = {
 			"sentiment" : sum(sentiment) / float(len(sentiment))
