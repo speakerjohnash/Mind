@@ -439,7 +439,7 @@ def build_graph(config):
 
 		# Decoder
 		z_est, d_cost = {}, []
-		denoising_cost = [0] * (details_clean["layer_count"] - 1) + [1, 1]
+		denoising_cost = [0] * (details_clean["layer_count"]) + [2]
 		with tf.name_scope("denoiser") as scope:
 			L = details_clean["layer_count"]
 			for l in range(L, L-2, -1):
