@@ -85,7 +85,7 @@ def load_unlabeled_data(config):
 	"""Load unlabeled data"""
 
 	unlabeled_filename = config.get("unlabeled_dataset", "")
-	df = load_piped_dataframe("twitter_sentiment.csv")
+	df = pd.read_csv("twitter_sentiment.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
 	df = df.reindex(np.random.permutation(df.index))
 	df["LABEL_NUM"] = "1"
 
