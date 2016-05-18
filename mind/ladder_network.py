@@ -479,6 +479,7 @@ def train_model(config, graph, sess, saver):
 	eras = config["eras"]
 	dataset = config["dataset"]
 	train, test, groups_train = load_labeled_data(config)
+	unlabeled_data = load_unlabeled_data(config)
 	num_eras = epochs * eras
 	logging_interval = 50
 	learning_rate_interval = 15000
