@@ -293,7 +293,7 @@ def build_graph(config):
 
 		bn_scaler = tf.Variable(1.0 * tf.ones([num_labels]))
 
-		denoising_weights = [weight_variable(config, [num_labels, 1024]), weight_variable(config, [1024, reshape])]
+		denoising_weights = weight_variable(config, [num_labels, 1024])
 
 		# Utility for Batch Normalization
 		layer_sizes = [256] * 8 + [1024, num_labels]
@@ -439,19 +439,16 @@ def build_graph(config):
 
 		# Decoder
 		z_est, d_cost = {}, []
-		denoising_cost = [0] * (details_clean["layer_count"]) + [2]
+		denoising_cost = [0] * (details_clean["layer_count"]) + [1]
 		with tf.name_scope("denoiser") as scope:
 			L = details_clean["layer_count"]
-			for l in range(L, L-2, -1):
+			for l in range(L, L-1, -1):
 				z, z_c = details_clean['unlabeled']['z'][l], details_corr['unlabeled']['z'][l]
 				m, v = details_clean['unlabeled']['mean'].get(l, 0), details_clean['unlabeled']['variance'].get(l, 1-1e-10)
 				if l == L:
 					u = unlabeled(config, network_corr)
 				else:
-					if l == L-1:
-						u = tf.matmul(z_est[l+1], denoising_weights[0])
-					else:
-						u = tf.matmul(z_est[l+1], denoising_weights[1])
+					u = tf.matmul(z_est[l+1], denoising_weights)
 				u = batch_normalization(u)
 				z_est[l] = g_gauss(z_c, u, layer_sizes[l-1])
 				z_est_bn = (z_est[l] - m) / v
