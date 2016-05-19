@@ -1,6 +1,7 @@
 import csv
 import sys
 import math
+import os
 
 from itertools import zip_longest
 
@@ -29,6 +30,8 @@ batches = grouper(thoughts)
 	
 for i, batch in enumerate(batches):
 	processed += classifier(batch, doc_key="Thought", label_key=sys.argv[3])
+
+os.makedirs("data/output", exist_ok=True)
 
 processed = processed[0:len(thoughts)]
 out_df = pd.DataFrame(processed)

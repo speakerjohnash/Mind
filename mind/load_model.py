@@ -27,7 +27,7 @@ def get_tf_cnn_by_name(model_name, gpu_mem_fraction=False):
 	# Switch on Models
 	if model_name == "thought_type":
 		model_path = base + "thought_type.ckpt"
-		label_map_path = {"0": "Predict", "1": "State", "2": "Ask", "3": "Reflect"},
+		label_map_path = {"0": "Predict", "1": "State", "2": "Ask", "3": "Reflect"}
 	elif model_name == "sentiment":
 		model_path = base + "sentiment.ckpt"
 		label_map_path = {"0": "Negative", "1": "Positive"}
