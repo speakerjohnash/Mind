@@ -94,12 +94,9 @@ def cluster_vectors(word2vec):
 	keys_in_word2vec = word2vec.vocab.keys()
 	tokens = [x[0] for x in sorted_ken[0:250] if x[0] in keys_in_word2vec]
 	X = np.array([word2vec[t].T for t in tokens])
-
-	# Create vector cache for faster load
-	#save_token_subset(word2vec, tokens)
 	
 	# Clustering
-	clusters = kmeans(n_clusters=75, max_iter=100, batch_size=200, n_init=10, init_size=30)
+	clusters = kmeans(n_clusters=50, max_iter=5000, batch_size=128, n_init=250)
 	clusters.fit(X)
 	word_clusters = {word:label for word, label in zip(tokens, clusters.labels_)}
 	sorted_clusters = sorted(word_clusters.items(), key=operator.itemgetter(1))
@@ -113,6 +110,9 @@ def cluster_vectors(word2vec):
 
 	# Visualize with t-SNE
 	t_SNE(word2vec, tokens)
+
+	# Create vector cache for faster load
+	#save_token_subset(word2vec, tokens)
 
 def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
 	"""Plot labels using t-sne"""
@@ -137,10 +137,6 @@ def t_SNE(word2vec, tokens):
 	tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 	low_dim_embs = tsne.fit_transform(top_embeddings)
 	plot_with_labels(low_dim_embs, tokens)
-
-	# Save Low Dimension Embeddings
-	reduced = dict(zip(tokens, list(top_embeddings)))
-	dict_2_json(reduced, "t-SNE_top_words_Prophet.json")
 
 def run_from_command_line(command_line_arguments):
 	"""Runs the module when invoked from the command line."""
