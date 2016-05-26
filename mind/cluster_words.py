@@ -9,7 +9,7 @@ Created on Dec 4, 2014
 
 #################### USAGE ##########################
 
-# python3.4 -m mind.cluster_words [word2vec_model]
+# python3 -m mind.cluster_words [word2vec_model]
 # Word2Vec available at: https://code.google.com/p/word2vec/
 
 #####################################################
@@ -20,12 +20,15 @@ import operator
 import collections
 import pickle
 
+import pandas as pd
 import numpy as np
-from gensim.models import Word2Vec
 
+from gensim.models import Word2Vec
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.cluster import MiniBatchKMeans as kmeans
 from sklearn.manifold import TSNE
+
+import matplotlib.pyplot as plt
 
 from mind.tools import dict_2_json
 
@@ -108,17 +111,36 @@ def cluster_vectors(word2vec):
 	for key in collected.keys():
 		safe_print(key, collected[key], "\n")
 
+	# Visualize with t-SNE
+	t_SNE(word2vec, tokens)
+
+def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
+	"""Plot labels using t-sne"""
+
+	assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
+	plt.figure(figsize=(18, 18))
+
+	for i, label in enumerate(labels):
+		x, y = low_dim_embs[i,:]
+		plt.scatter(x, y)
+		plt.annotate(label, xy=(x, y), xytext=(5, 2), textcoords='offset points', ha='right', va='bottom')
+
+	plt.savefig("data/output/" + filename)
+
 def t_SNE(word2vec, tokens):
 	"""Applies t-SNE to word vectors"""
 
 	# Visualize an easy dataset for exploration
-	X = np.array([word2vec[t].T for t in tokens])
+	top_embeddings = np.array([word2vec[t].T for t in tokens]).astype(np.float)
 
 	# Dimensionality Reduction
-	model = TSNE(n_components=2, random_state=0)
-	X = model.fit_transform(X.astype(np.float))
-	reduced = dict(zip(tokens, list(X)))
-	dict_2_json(reduced, "t-SNE_top_words_Prophet.json")
+	tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+	low_dim_embs = tsne.fit_transform(top_embeddings)
+	plot_with_labels(low_dim_embs, tokens)
+
+	# Save Low Dimension Embeddings
+	reduced = dict(zip(tokens, list(top_embeddings)))
+	dict_2_json(reduced, "data/output/t-SNE_top_words_Prophet.json")
 
 def run_from_command_line(command_line_arguments):
 	"""Runs the module when invoked from the command line."""
