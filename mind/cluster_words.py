@@ -22,6 +22,8 @@ import pickle
 
 import numpy as np
 from gensim.models import Word2Vec
+
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.cluster import MiniBatchKMeans as kmeans
 from sklearn.manifold import TSNE
 
@@ -50,12 +52,44 @@ def save_token_subset(word2vec, word_list):
 
 	pickle.dump(vector_dict, open("models/prophet_vectors.pkl", "wb" ))
 
+def vectorize(corpus, min_df=1):
+	"""Vectorize text corpus"""
+
+	vectorizer = CountVectorizer(min_df=min_df, ngram_range=(1,1), stop_words='english')
+	countVector = vectorizer.fit_transform(corpus).toarray()
+	num_samples, num_features = countVector.shape
+	vocab = vectorizer.get_feature_names()
+
+	word_count = wordCount(vocab, countVector, num_samples)
+
+	return word_count
+
+def wordCount(vocab, countVector, num_samples):
+	"""Count words"""
+
+	np.clip(countVector, 0, 1, out=countVector)
+	dist = np.sum(countVector, axis=0)
+	dist = dist.tolist()
+
+	word_count = dict(zip(vocab, dist))
+
+	return word_count
+
 def cluster_vectors(word2vec):
 	"""Clusters a set of word vectors"""
 
+	# Load Data
+	df = pd.read_csv("data/input/thought.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
+	seers_grouped = df.groupby('Seer', as_index=False)
+	seers = dict(list(seers_grouped))
+	thoughts = list(seers["msevrens"]["Thought"])
+	ken = vectorize(thoughts, min_df=1)
+	sorted_ken = sorted(ken.items(), key=operator.itemgetter(1))
+	sorted_ken.reverse()
+	tokens = [x[0] for x in sorted_ken[0:250]]
+
 	n_clusters = int(word2vec.syn0.shape[0] / 20)
 	tokens = word2vec.vocab.keys()
-	tokens = ["prophet", "thought", "mind", "truth", "thoughts", "time", "good", "meaning", "like", "future", "make", "context", "words", "self", "consciousness", "stream", "need", "just", "knowledge", "new", "today", "way", "does", "know", "people", "reality", "day", "idea", "life", "ideas", "use", "predictions", "conscious", "light", "word", "state", "things", "reflect", "information", "brain", "learning", "prediction", "better", "think", "past", "speak", "work", "right", "flow", "change", "learn", "meds", "http", "reflection", "feel", "mimi", "data", "true", "want", "human", "language", "best", "com", "truths", "real", "love", "means", "minds", "tomorrow", "world", "important", "tree", "users", "come", "really", "point", "search", "great", "site", "different", "predict", "private", "live", "tool", "path", "perception", "form", "concept", "meditation", "create", "able", "body", "seek", "needs", "used", "design", "flood", "place", "ken", "little", "waves", "subjective", "thinking", "thing", "sync", "set", "lot", "objective", "having", "rate", "present", "health", "using", "makes", "understand", "wisdom", "humans", "sunrise", "mental", "perceive", "ask", "far", "healthy", "current", "wave", "years", "religion", "feature", "long", "predictive", "energy", "post", "understanding", "build", "log", "permanence", "focus", "say", "cognitive", "contexts", "god", "lucid", "user", "lost", "machine", "year", "knowing", "neural", "useful", "questions", "end", "physical", "potential", "did", "old", "let", "clock", "control", "write", "rating", "link", "sense", "andy", "sun", "line", "button", "dream", "public", "usage", "challenging", "distributed", "book", "based", "going", "remember", "streams", "awareness", "root", "bound", "start", "share", "define", "semantic", "explore", "features", "statements", "question", "helps", "repeat", "reflections", "stretch"]
 	X = np.array([word2vec[t].T for t in tokens])
 
 	# Create vector cache for faster load
