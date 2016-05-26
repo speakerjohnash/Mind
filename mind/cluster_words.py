@@ -53,7 +53,7 @@ def save_token_subset(word2vec, word_list):
 	for word in word_list:
 		vector_dict[word] = word2vec[word]
 
-	pickle.dump(vector_dict, open("models/prophet_vectors.pkl", "wb" ))
+	pickle.dump(vector_dict, open("models/prophet_vectors.pkl", "w"))
 
 def vectorize(corpus, min_df=1):
 	"""Vectorize text corpus"""
@@ -89,14 +89,14 @@ def cluster_vectors(word2vec):
 	ken = vectorize(thoughts, min_df=1)
 	sorted_ken = sorted(ken.items(), key=operator.itemgetter(1))
 	sorted_ken.reverse()
-	tokens = [x[0] for x in sorted_ken[0:250]]
 
 	n_clusters = int(word2vec.syn0.shape[0] / 20)
-	tokens = word2vec.vocab.keys()
+	keys_in_word2vec = word2vec.vocab.keys()
+	tokens = [x[0] for x in sorted_ken[0:250] if x[0] in keys_in_word2vec]
 	X = np.array([word2vec[t].T for t in tokens])
 
 	# Create vector cache for faster load
-	save_token_subset(word2vec, tokens)
+	#save_token_subset(word2vec, tokens)
 	
 	# Clustering
 	clusters = kmeans(n_clusters=75, max_iter=100, batch_size=200, n_init=10, init_size=30)
@@ -140,7 +140,7 @@ def t_SNE(word2vec, tokens):
 
 	# Save Low Dimension Embeddings
 	reduced = dict(zip(tokens, list(top_embeddings)))
-	dict_2_json(reduced, "data/output/t-SNE_top_words_Prophet.json")
+	dict_2_json(reduced, "t-SNE_top_words_Prophet.json")
 
 def run_from_command_line(command_line_arguments):
 	"""Runs the module when invoked from the command line."""
