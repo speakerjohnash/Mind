@@ -1,0 +1,15 @@
+#tree-controls {
+	width: 450px;
+	margin: 10px auto;
+}
+
+#seed-word {
+	width: 300px;
+    float: left;
+    margin-right: 10px;
+}
+
+#tree-controls .submit {
+	width: 75px;
+	float: left;
+}

@@ -58,6 +58,6 @@
 
 	var jsonPath = "../../data/output/word2vec_tree.json";
 	
-	d3.csv(csvpath, processData);
+	d3.csv(jsonPath, processData);
 
 })();
