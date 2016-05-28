@@ -16,9 +16,7 @@
 			var branches = [],
 				num_twigs = num_branches;
 
-			if (level == max_depth) {
-				return;
-			}
+			if (level == max_depth) return;
 
 			if (json[word].length < num_branches) {
 				num_twigs = json[word].length
@@ -30,9 +28,7 @@
 					branch = {},
 					new_level = level + 1;
 
-				if (used_words.indexOf(cur_word) > -1) {
-					continue;
-				}
+				if (used_words.indexOf(cur_word) > -1) continue;
 
 				used_words.push(cur_word)
 				branch["name"] = cur_word
