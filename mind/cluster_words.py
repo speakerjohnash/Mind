@@ -24,13 +24,12 @@ import pandas as pd
 import numpy as np
 
 from gensim.models import Word2Vec
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.cluster import MiniBatchKMeans as kmeans
 from sklearn.manifold import TSNE
 
 import matplotlib.pyplot as plt
 
-from mind.tools import dict_2_json
+from mind.tools import dict_2_json, vectorize, word_count
 
 def to_stdout(string, errors='replace'):
 	"""Converts a string to stdout compatible encoding"""
@@ -55,29 +54,6 @@ def save_token_subset(word2vec, word_list):
 
 	pickle.dump(vector_dict, open("models/prophet_vectors.pkl", "w"))
 
-def vectorize(corpus, min_df=1):
-	"""Vectorize text corpus"""
-
-	vectorizer = CountVectorizer(min_df=min_df, ngram_range=(1,1), stop_words='english')
-	countVector = vectorizer.fit_transform(corpus).toarray()
-	num_samples, num_features = countVector.shape
-	vocab = vectorizer.get_feature_names()
-
-	word_count = wordCount(vocab, countVector, num_samples)
-
-	return word_count
-
-def wordCount(vocab, countVector, num_samples):
-	"""Count words"""
-
-	np.clip(countVector, 0, 1, out=countVector)
-	dist = np.sum(countVector, axis=0)
-	dist = dist.tolist()
-
-	word_count = dict(zip(vocab, dist))
-
-	return word_count
-
 def cluster_vectors(word2vec):
 	"""Clusters a set of word vectors"""
 
@@ -90,13 +66,14 @@ def cluster_vectors(word2vec):
 	sorted_ken = sorted(ken.items(), key=operator.itemgetter(1))
 	sorted_ken.reverse()
 
-	n_clusters = int(word2vec.syn0.shape[0] / 20)
 	keys_in_word2vec = word2vec.vocab.keys()
-	tokens = [x[0] for x in sorted_ken[0:250] if x[0] in keys_in_word2vec]
+	tokens = [x[0] for x in sorted_ken[0:2500] if x[0] in keys_in_word2vec]
 	X = np.array([word2vec[t].T for t in tokens])
-	
+
+	print(tokens)
+
 	# Clustering
-	clusters = kmeans(n_clusters=50, max_iter=5000, batch_size=128, n_init=250)
+	clusters = kmeans(n_clusters=100, max_iter=5000, batch_size=128, n_init=250)
 	clusters.fit(X)
 	word_clusters = {word:label for word, label in zip(tokens, clusters.labels_)}
 	sorted_clusters = sorted(word_clusters.items(), key=operator.itemgetter(1))
@@ -109,12 +86,12 @@ def cluster_vectors(word2vec):
 		safe_print(key, collected[key], "\n")
 
 	# Visualize with t-SNE
-	t_SNE(word2vec, tokens)
+	t_SNE(word2vec, tokens, collected)
 
 	# Create vector cache for faster load
 	#save_token_subset(word2vec, tokens)
 
-def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
+def plot_with_labels(low_dim_embs, labels, clusters, filename='tsne.png'):
 	"""Plot labels using t-sne"""
 
 	assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
@@ -127,7 +104,7 @@ def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
 
 	plt.savefig("data/output/" + filename)
 
-def t_SNE(word2vec, tokens):
+def t_SNE(word2vec, tokens, clusters):
 	"""Applies t-SNE to word vectors"""
 
 	# Visualize an easy dataset for exploration
@@ -136,7 +113,7 @@ def t_SNE(word2vec, tokens):
 	# Dimensionality Reduction
 	tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
 	low_dim_embs = tsne.fit_transform(top_embeddings)
-	plot_with_labels(low_dim_embs, tokens)
+	plot_with_labels(low_dim_embs, tokens, clusters)
 
 def run_from_command_line(command_line_arguments):
 	"""Runs the module when invoked from the command line."""

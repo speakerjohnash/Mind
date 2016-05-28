@@ -7,13 +7,15 @@ Created on Jan 21, 2015
 @author: Matthew Sevrens
 """
 
-import pandas as pd
 import csv
 import json
 import os
 import sys
 
+import pandas as pd
 import numpy as np
+
+from sklearn.feature_extraction.text import CountVectorizer
 
 def load_dict_list(file_name, encoding='utf-8', delimiter="|"):
 	"""Loads a dictionary of input from a file into a list."""
@@ -125,6 +127,29 @@ def get_write_func(filename, header):
 			open(filename, 'a').close()
 	
 	return write_func
+
+def vectorize(corpus, min_df=1):
+	"""Vectorize text corpus"""
+
+	vectorizer = CountVectorizer(min_df=min_df, ngram_range=(1,1), stop_words='english')
+	count_vector = vectorizer.fit_transform(corpus).toarray()
+	num_samples, num_features = count_vector.shape
+	vocab = vectorizer.get_feature_names()
+
+	wc = word_count(vocab, count_vector, num_samples)
+
+	return wc
+
+def word_count(vocab, count_vector, num_samples):
+	"""Count words"""
+
+	np.clip(count_vector, 0, 1, out=count_vector)
+	dist = np.sum(count_vector, axis=0)
+	dist = dist.tolist()
+
+	wc = dict(zip(vocab, dist))
+
+	return wc
 
 if __name__ == "__main__":
 	print("This module is a library that contains useful functions; it should not be run from the console.")

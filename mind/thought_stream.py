@@ -18,8 +18,9 @@ import datetime
 
 import numpy
 from textblob import TextBlob, Word
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import TfidfTransformer
 
+from mind.tools import vectorize, word_count
 from mind.load_model import get_tf_cnn_by_name
 
 SENTIMENT = get_tf_cnn_by_name("sentiment")
@@ -62,31 +63,6 @@ def progress(i, list, message=""):
 	sys.stdout.write('\r')
 	sys.stdout.write(progress)
 	sys.stdout.flush()
-
-def vectorize(corpus, min_df=1):
-	"""Vectorize text corpus"""
-
-	vectorizer = CountVectorizer(min_df=min_df, ngram_range=(1,1), stop_words='english')
-	countVector = vectorizer.fit_transform(corpus).toarray()
-	num_samples, num_features = countVector.shape
-	vocab = vectorizer.get_feature_names()
-
-	#termWeighting(vocab, countVector, corpus)
-	word_count = wordCount(vocab, countVector, num_samples)
-
-	return word_count
-
-def wordCount(vocab, countVector, num_samples):
-	"""Count words"""
-
-	numpy.clip(countVector, 0, 1, out=countVector)
-	dist = numpy.sum(countVector, axis=0)
-	dist = dist.tolist()
-
-	word_count = dict(zip(vocab, dist))
-	#distribution_dict = wordFrequency(vocab, dist, num_samples)
-
-	return word_count
 
 def wordFrequency(vocab, dist, num_samples):
 
