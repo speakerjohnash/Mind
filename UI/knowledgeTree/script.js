@@ -52,12 +52,38 @@
 
 	}
 
-	function processData(error, json) {
+	function visualize(word, tree, json) {
+
+		console.log(json)
+
+	}
+
+	function createSVG(json) {
+
+		var margin = {top: 20, right: 120, bottom: 20, left: 120},
+			width = 960 - margin.right - margin.left,
+			height = 800 - margin.top - margin.bottom;
+
+		var tree = d3.layout.tree().size([height, width]),
+			diagonal = d3.svg.diagonal().projection(function(d) { return [d.y, d.x]; });
+
+		var svg = d3.select(".canvas-frame").append("svg")
+			.attr("width", '100%')
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+		d3.select("#build-tree").on("submit", function() {
+			d3.event.preventDefault()
+			svg.selectAll("*").remove()
+			visualize(document.getElementById("seed-word").value, tree, json)
+			return false
+		})
 
 	}
 
 	var jsonPath = "../../data/output/word2vec_tree.json";
-	
-	d3.csv(jsonPath, processData);
+
+	d3.json(jsonPath, createSVG);
 
 })();
