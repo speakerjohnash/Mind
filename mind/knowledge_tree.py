@@ -69,6 +69,6 @@ for i in range(0, number_words):
 	similarity_lookup[word] = [{"w": nw[0], "d": round(nw[1], 3)} for nw in nearest_words]
 
 print(similarity_lookup)
-dict_2_json(similarity_lookup, "word2vec_tree.json")
+dict_2_json(similarity_lookup, "patch615_word2vec_tree.json")
 
 print("Finished!")
