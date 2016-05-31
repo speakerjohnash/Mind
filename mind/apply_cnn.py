@@ -1,3 +1,18 @@
+#!/usr/local/bin/python3
+
+"""This module applies a particular trained
+cnn to a provided dataset
+
+@author: Matthew Sevrens
+"""
+
+#################### USAGE ##########################
+
+# python3.3 -m mind.apply_cnn [file_name] [model_name] [column_name]
+# python3.3 -m mind.apply_cnn data/input/thought.csv thought_type Thought_Type_CNN
+
+#####################################################
+
 import csv
 import sys
 import math
@@ -9,13 +24,6 @@ import pandas as pd
 import numpy as np
 
 from mind.load_model import get_tf_cnn_by_name
-
-#################### USAGE ##########################
-
-# python3.3 -m mind.apply_cnn [file_name] [model_name] [column_name]
-# python3.3 -m mind.apply_cnn data/input/thought.csv thought_type Thought_Type_CNN
-
-#####################################################
 
 def grouper(iterable):
 	return zip_longest(*[iter(iterable)]*1000, fillvalue={"Thought":""})
