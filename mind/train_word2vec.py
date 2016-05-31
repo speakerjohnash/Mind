@@ -30,7 +30,7 @@ wiki = LineSentence("data/output/wiki.en.text")
 
 # Load Thoughts
 prophet = pd.read_csv("data/input/thought.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
-thoughts = [t.split() for t in list(prophet["Thought"])]
+thoughts = [re.sub('[^A-Za-z0-9]+', ' ', t).split().lower() for t in list(prophet["Thought"])]
 
 # Train
 model = Word2Vec(size=600, window=5, min_count=25, workers=multiprocessing.cpu_count())
