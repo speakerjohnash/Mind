@@ -20,7 +20,7 @@
 
 		var tree = {},
 			used_words = [seedWord],
-			max_depth = depth || 5,
+			max_depth = depth || 3,
 			num_children = 5;
 
 		if (!(seedWord in json)) {
@@ -207,7 +207,7 @@
 			}
 		}
 
-		treeRoot.children.forEach(collapse);
+		//treeRoot.children.forEach(collapse);
 		updateTree(treeRoot);
 
 	}

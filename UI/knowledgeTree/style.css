@@ -1,18 +1,23 @@
 #tree-controls {
-	width: 385px;
-	height: 35px;
+	width: 270px;
+	height: 30px;
 	margin: 15px auto;
 }
 
 #seed-word {
-	width: 300px;
+	width: 200px;
+	height: 30px;
     float: left;
     margin-right: 10px;
+    font-size: 13px;
 }
 
 #tree-controls .submit {
-	width: 75px;
-	float: left;
+	width: 60px;
+    float: left;
+    height: 30px;
+    padding: 0px;
+    font-size: 13px;
 }
 
 .node {
