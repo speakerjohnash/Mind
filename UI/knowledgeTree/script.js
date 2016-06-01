@@ -2,7 +2,7 @@
 
 	var margin = {top: 20, right: 120, bottom: 20, left: 120},
 		width = 960 - margin.right - margin.left,
-		height = 800 - margin.top - margin.bottom;
+		height = 600 - margin.top - margin.bottom;
 
 	var treeLayout = d3.layout.tree().size([height, width]),
 		diagonal = d3.svg.diagonal().projection(function(d) {return [d.y, d.x]}),
@@ -16,15 +16,15 @@
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	function growTree(seedWord, json) {
+	function growTree(seedWord, json, depth) {
 
 		var tree = {},
 			used_words = [seedWord],
-			max_depth = 5,
+			max_depth = depth || 5,
 			num_children = 5;
 
 		if (!(seedWord in json)) {
-			return 
+			return {"name": "Seed word not found", "children": [{"name": "Please try another word"}]}
 		}
 
 		function growBranch(word, level) {
@@ -33,6 +33,8 @@
 				num_twigs = num_children;
 
 			if (level == max_depth) return;
+
+			if (!(word in json)) return;
 
 			if (json[word].length < num_children) {
 				num_twigs = json[word].length
@@ -48,6 +50,7 @@
 
 				used_words.push(cur_word)
 				branch["name"] = cur_word
+				branch["fruit"] = json[word][i]["l"]
 
 				if (new_level <= max_depth) {
 					branch["children"] = growBranch(cur_word, new_level)
@@ -57,11 +60,13 @@
 
 			}
 
+			shuffle(children)
 			return children
 
 		}
 
 		tree["name"] = seedWord
+		tree["fruit"] = true
 		tree["children"] = growBranch(seedWord, 0)
 		tree.x0 = height / 2;
 		tree.y0 = 0;
@@ -104,7 +109,11 @@
 
 		nodeEnter.append("circle")
 			.attr("r", 1e-6)
-			.style("fill", function(d) {return d._children ? "lightsteelblue" : "#fff"});
+			.style("fill", function(d) {
+				var color = d._children ? "#88BD98" : "#88BD98"
+				if (!d.fruit) color = "#50A2BF";
+				return color
+			});
 
 		nodeEnter.append("text")
 			.attr("x", function(d) { return d.children || d._children ? -10 : 10; })
@@ -120,7 +129,11 @@
 
 		nodeUpdate.select("circle")
 			.attr("r", 4.5)
-			.style("fill", function(d) {return d._children ? "lightsteelblue" : "#fff"});
+			.style("fill", function(d) {
+				var color = d._children ? "#88BD98" : "#88BD98"
+				if (!d.fruit) color = "#50A2BF";
+				return color
+			});
 
 		nodeUpdate.select("text")
 			.style("fill-opacity", 1);
@@ -166,6 +179,22 @@
 
 	}
 
+	function shuffle(array) {
+
+		var currentIndex = array.length, temporaryValue, randomIndex;
+
+		while (0 !== currentIndex) {
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+			temporaryValue = array[currentIndex];
+			array[currentIndex] = array[randomIndex];
+			array[randomIndex] = temporaryValue;
+		}
+
+		return array;
+
+	}
+
 	function visualize(word, json) {
 
 		treeRoot = growTree(word, json)
@@ -192,9 +221,12 @@
 			return false
 		})
 
+		treeRoot = growTree("word2vec", json, 3)
+		updateTree(treeRoot);
+
 	}
 
-	var jsonPath = "../../data/output/word2vec_tree.json";
+	var jsonPath = "../../data/output/fruiting_word2vec_tree.json";
 
 	d3.json(jsonPath, run);
 

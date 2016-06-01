@@ -20,17 +20,16 @@
 }
 
 .node circle {
-	fill: #fff;
-	stroke: steelblue;
+	fill: #88BD98;
 	stroke-width: 1.5px;
 }
 
 .node text {
-	font: 10px sans-serif;
+	font: 9px sans-serif;
 }
 
 .link {
 	fill: none;
-	stroke: #ccc;
+	stroke: #EAEAEA;
 	stroke-width: 1.5px;
 }
