@@ -21,20 +21,18 @@
 		var tree = {},
 			used_words = [seedWord],
 			max_depth = depth || 3,
-			num_children = 5;
+			num_children = 3;
 
 		if (!(seedWord in json)) {
 			return {"name": "Seed word not found", "children": [{"name": "Please try another word"}]}
 		}
 
-		function growBranch(word, level) {
+		function growBranch(word, level) { 
 
 			var children = [],
 				num_twigs = num_children;
 
-			if (level == max_depth) return;
-
-			if (!(word in json)) return;
+			if (!isNaN(word) || level == max_depth || !(word in json)) return;
 
 			if (json[word].length < num_children) {
 				num_twigs = json[word].length
@@ -43,8 +41,7 @@
 			for (var i=0; i<num_twigs; i++) {
 
 				var cur_word = json[word][i]["w"],
-					branch = {},
-					new_level = level + 1;
+					branch = {};
 
 				if (used_words.indexOf(cur_word) > -1) continue;
 
@@ -52,12 +49,16 @@
 				branch["name"] = cur_word
 				branch["fruit"] = json[word][i]["l"]
 
-				if (new_level <= max_depth) {
-					branch["children"] = growBranch(cur_word, new_level)
-				}
-
 				children.push(branch)
 
+			}
+
+			for (var ii=0; ii<children.length; ii++) {
+				num_children = Math.floor(Math.random() * 4) + 2
+				var new_level = level + 1;
+				if (new_level <= max_depth) {
+					children[ii]["children"] = growBranch(children[ii]["name"], new_level)
+				}
 			}
 
 			shuffle(children)
