@@ -1,10 +1,12 @@
-(function chart() {
+(function timeSelect() {
   var width = 960,
       height = 80,
       timeSpaceHeight = 60,
       xSteps = d3.range(10, width, 10),
       ySteps = d3.range(0),
-      brushStart;
+      brushStart,
+      dateBegin,
+      dateEnd;
 
   var now = new Date,
       year = now.getFullYear(),
@@ -46,9 +48,17 @@
   brush.on("brushstart", function(){
     var xPos = d3.mouse(this)[0]
     brushStart = xPos
+    dateBegin = linearTimeScale(brushStart)
   })
 
-  brush.on("brushend", function(){})
+  brush.on("brushend", function(){
+    dateEnd = linearTimeScale(d3.mouse(this)[0])
+    if (dateEnd < dateBegin) {
+      var tempDate = dateEnd
+      dateEnd = dateBegin
+      dateBegin = tempDate
+    }
+  })
 
   brush.on("brush", function(){
 
@@ -64,7 +74,7 @@
       x = xMouse
       width = newPixel - xMouse
     }
-
+    
     gBrush.selectAll(".extent")
         .attr("x", x)
         .attr("width", width)
@@ -95,6 +105,16 @@
   redraw();
 
   function redraw() {
+
+    if (dateBegin && dateEnd) {
+      var newbStart = timeFisheye(dateBegin),
+          newbEnd = timeFisheye(dateEnd);
+
+      gBrush.selectAll(".extent")
+        .attr("x", newbStart)
+        .attr("width", newbEnd - newbStart)
+    }
+
     svg.select(".x.axis").call(timeLine);
     xLine.attr("x1", xFisheye).attr("x2", xFisheye);
   }
