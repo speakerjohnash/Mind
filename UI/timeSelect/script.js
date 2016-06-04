@@ -74,7 +74,7 @@
       x = xMouse
       width = newPixel - xMouse
     }
-    
+
     gBrush.selectAll(".extent")
         .attr("x", x)
         .attr("width", width)
@@ -91,6 +91,13 @@
     .attr("height", timeSpaceHeight);
 
   svg.on("mousemove", function() {
+    var mouse = d3.mouse(this);
+    xFisheye.focus(mouse[0]);
+    timeFisheye.focus(mouse[0]);
+    redraw();
+  });
+
+  svg.on("touchmove", function() {
     var mouse = d3.mouse(this);
     xFisheye.focus(mouse[0]);
     timeFisheye.focus(mouse[0]);
