@@ -1,10 +1,10 @@
 (function chart() {
   var width = 960,
-      height = 320,
-      timeSpaceHeight = 300,
-      xSteps = d3.range(10, width, 20),
-      ySteps = d3.range(0)
-      brushStart = null;
+      height = 80,
+      timeSpaceHeight = 60,
+      xSteps = d3.range(10, width, 10),
+      ySteps = d3.range(0),
+      brushStart;
 
   var now = new Date,
       year = now.getFullYear(),
@@ -13,7 +13,7 @@
 
   var xFisheye = d3.fisheye.scale(d3.scale.identity).domain([0, width]).focus(0);
 
-  var linearTimeScale = d3.time.scale().domain([now, then]).range([0, width]);
+  var linearTimeScale = d3.time.scale().domain([0, width]).range([now, then]);
 
   var svg = d3.select("#chart").append("svg")
       .attr("width", width)
@@ -44,23 +44,32 @@
   var brush = d3.svg.brush().x(xFisheye);
 
   brush.on("brushstart", function(){
-    brushStart = d3.mouse(this)[0]
+    var xPos = d3.mouse(this)[0]
+    brushStart = xPos
   })
+
+  brush.on("brushend", function(){})
 
   brush.on("brush", function(){
 
-    var newPixel = timeFisheye(linearTimeScale.invert(brushStart)),
-        xMouse = d3.mouse(this)[0];
+    var newPixel = timeFisheye(linearTimeScale(brushStart)),
+        xMouse = d3.mouse(this)[0],
+        x,
+        width;
 
     if (xMouse > brushStart) {
-      gBrush.selectAll(".extent")
-        .attr("x", newPixel)
-        .attr("width", xMouse - newPixel)
+      x = newPixel
+      width = xMouse - newPixel
     } else {
-      gBrush.selectAll(".extent")
-        .attr("x", xMouse)
-        .attr("width", newPixel - xMouse)
+      x = xMouse
+      width = newPixel - xMouse
     }
+
+    gBrush.selectAll(".extent")
+        .attr("x", x)
+        .attr("width", width)
+
+    brush.extent([x, x + width])
     
   })
 

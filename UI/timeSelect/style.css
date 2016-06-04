@@ -9,14 +9,14 @@ text {
 
 #chart {
   width: 960px;
-  height: 320px;
+  height: 80px;
   padding: 15px;
   border: solid 1px #ccc;
 }
 
 #chart line{
   fill: none;
-  stroke: #333;
+  stroke: #E0E0E0;
 }
 
 #chart line {
