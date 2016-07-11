@@ -110,16 +110,16 @@ def batch_to_tensor(config, batch):
 	labels = np.array(batch["LABEL_NUM"].astype(int))
 	labels = (np.arange(num_labels) == labels[:, None]).astype(np.float32)
 	docs = batch["Thought"].tolist()
-	transactions = np.zeros(shape=(batch_size, 1, alphabet_length, doc_length))
+	encoded_thoughts = np.zeros(shape=(batch_size, 1, alphabet_length, doc_length))
 	
-	for index, trans in enumerate(docs):
-		transactions[index][0] = string_to_tensor(config, trans, doc_length)
+	for index, thoughts in enumerate(docs):
+		encoded_thoughts[index][0] = string_to_tensor(config, thoughts, doc_length)
 
-	transactions = np.transpose(transactions, (0, 1, 3, 2))
-	return transactions, labels
+	encoded_thoughts = np.transpose(encoded_thoughts, (0, 1, 3, 2))
+	return encoded_thoughts, labels
 
 def string_to_tensor(config, doc, length):
-	"""Convert transaction to tensor format"""
+	"""Convert thought to tensor format"""
 	alphabet = config["alphabet"]
 	alpha_dict = config["alpha_dict"]
 	doc = doc.lower()[0:length]
@@ -142,8 +142,8 @@ def evaluate_testset(config, graph, sess, model, test):
 		batch_test = test.loc[chunked_test[i]]
 		batch_size = len(batch_test)
 
-		trans_test, labels_test = batch_to_tensor(config, batch_test)
-		feed_dict_test = {get_tensor(graph, "x:0"): trans_test}
+		thoughts_test, labels_test = batch_to_tensor(config, batch_test)
+		feed_dict_test = {get_tensor(graph, "x:0"): thoughts_test}
 		output = sess.run(model, feed_dict=feed_dict_test)
 
 		batch_correct_count = np.sum(np.argmax(output, 1) == np.argmax(labels_test, 1))
@@ -219,7 +219,7 @@ def build_graph(config):
 		input_shape = [None, 1, doc_length, alphabet_length]
 		output_shape = [None, num_labels]
 
-		trans_placeholder = tf.placeholder(tf.float32, shape=input_shape, name="x")
+		thoughts_placeholder = tf.placeholder(tf.float32, shape=input_shape, name="x")
 		labels_placeholder = tf.placeholder(tf.float32, shape=output_shape, name="y")
 
 		# Encoder Weights and Biases
@@ -254,7 +254,7 @@ def build_graph(config):
 		bn_assigns = []
 
 		def layer(input_h, details, layer_type, train, weights=None, biases=None):
-			"""Apply all necessary steps in a ladder layer"""
+			"""Apply all necessary steps in a layer"""
 
 			# Preactivation
 			if layer_type == "conv":
@@ -331,8 +331,8 @@ def build_graph(config):
 
 			return network
 
-		network = encoder(trans_placeholder, "network", train=True)
-		trained_model = encoder(trans_placeholder, "model", train=False)
+		network = encoder(thoughts_placeholder, "network", train=True)
+		trained_model = encoder(thoughts_placeholder, "model", train=False)
 
 		loss = tf.neg(tf.reduce_mean(tf.reduce_sum(network * labels_placeholder, 1)), name="loss")
 		optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9).minimize(loss, name="optimizer")
@@ -365,8 +365,8 @@ def train_model(config, graph, sess, saver):
 
 		# Prepare Data for Training
 		batch = mixed_batching(config, train, groups_train)
-		trans, labels = batch_to_tensor(config, batch)
-		feed_dict = {get_tensor(graph, "x:0") : trans, get_tensor(graph, "y:0") : labels}
+		thoughts, labels = batch_to_tensor(config, batch)
+		feed_dict = {get_tensor(graph, "x:0") : thoughts, get_tensor(graph, "y:0") : labels}
 
 		# Run Training Step
 		sess.run(get_op(graph, "optimizer"), feed_dict=feed_dict)
