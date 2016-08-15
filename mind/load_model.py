@@ -19,6 +19,7 @@ from tensorflow.python.framework import ops
 
 from mind.tools import load_json
 from mind.tensorflow_cnn import validate_config, get_tensor, string_to_tensor
+from mind.bilstm_tagger import validate_config as bilstm_validate_config
 
 def get_tf_cnn_by_name(model_name, gpu_mem_fraction=False):
 	"""Load a tensorFlow CNN by name"""
@@ -93,6 +94,62 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 		return thoughts
 
 	return apply_cnn
+
+def get_tf_rnn_by_path(model_path, w2i_path, gpu_mem_fraction=False, model_name=False):
+	"""Load a tensorflow rnn model"""
+
+	config_path = "config/bilstm_config.json"
+
+	if not isfile(model_path):
+		logging.warning("Resources to load model not found.")
+		sys.exit()
+
+	# Load Graph
+	config = bilstm_validate_config(config_path)
+	config["model_path"] = model_path
+	meta_path = model_path.split(".ckpt")[0] + ".meta"
+	config["w2i"] = load_params(w2i_path)
+
+	# Load Session and Graph
+	ops.reset_default_graph()
+	saver = tf.train.import_meta_graph(meta_path)
+
+	if gpu_mem_fraction:
+		gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.25)
+		sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options))
+	else:
+		sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
+
+	saver.restore(sess, config["model_path"])
+	graph = sess.graph
+
+	if not model_name:
+		model = get_tensor(graph, "model:0")
+	else:
+		model = get_tensor(graph, model_name)
+
+	# Generate Helper Function
+	def apply_rnn(trans, doc_key="thought", label_key="tag"):
+
+		for index, doc in enumerate(trans):
+			tran = doc[doc_key].lower().split()[0:config["max_tokens"]]
+			char_inputs, word_lengths, word_indices, _ = trans_to_tensor(config, sess, graph, tran)
+			feed_dict = {
+				get_tensor(graph, "char_inputs:0"): char_inputs,
+				get_tensor(graph, "word_inputs:0"): word_indices,
+				get_tensor(graph, "word_lengths:0"): word_lengths,
+				get_tensor(graph, "doc_length:0"): len(tran),
+				get_tensor(graph, "train:0"): False
+			}
+
+			output = sess.run(model, feed_dict=feed_dict)
+			output = [config["tag_map"][str(i)] for i in np.argmax(output, 1)]
+			target_indices = [i for i in range(len(output)) if output[i] == "target"]
+			doc[label_key] = " ".join([tran[i] for i in target_indices])
+
+		return trans
+
+	return apply_rnn
 
 if __name__ == "__main__":
 	# pylint:disable=pointless-string-statement
