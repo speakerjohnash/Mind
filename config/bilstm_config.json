@@ -1,0 +1,21 @@
+{
+	"model_path": "",
+	"dataset": "data/input/thought.csv",
+	"alphabet": "abcdefghijklmnopqrstuvwxyz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
+	"embeddings": "/home/ubuntu/git/embeddings/en.polyglot.txt",
+	"tag_map": {
+		"0": "background",
+		"1": "merchant"
+	},
+	"noise_sigma": 0.2,
+	"activation": "tanh",
+	"learning_rate": 0.1,
+	"max_tokens": 35,
+	"num_layers": 1,
+	"ce_dim": 100,
+	"seed": 1512141834,
+	"profile_gpu": false,
+	"we_dim": 64,
+	"h_dim": 100,
+	"eras": 30
+}
