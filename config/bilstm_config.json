@@ -14,7 +14,8 @@
 	"num_layers": 1,
 	"ce_dim": 100,
 	"seed": 1512141834,
-	"profile_gpu": false,
+	"profile_session": false,
+	"use_cpu": true,
 	"we_dim": 64,
 	"h_dim": 100,
 	"eras": 30

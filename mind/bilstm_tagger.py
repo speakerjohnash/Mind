@@ -331,7 +331,7 @@ def train_model(config, graph, sess, saver, run_options, run_metadata):
 			}
 
 			# Collect GPU Profile
-			if config["profile_gpu"]:
+			if config["profile_session"]:
 				optimizer_out, loss = sess.run([get_op(graph, "optimizer"), get_tensor(graph, "loss:0")], feed_dict=feed_dict, options=run_options, run_metadata=run_metadata)
 				tl = timeline.Timeline(run_metadata.step_stats)
 				ctf = tl.generate_chrome_trace_format()
@@ -416,7 +416,10 @@ def run_session(config, graph, saver):
 
 	model_path = config["model_path"]
 
-	with tf.Session(graph=graph) as sess:
+	devices = {'GPU': 0} if config["use_cpu"] else {}
+	tf_config = tf.ConfigProto(device_count=devices)
+
+	with tf.Session(graph=graph, config=tf_config) as sess:
 
 		run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
 		run_metadata = tf.RunMetadata()
