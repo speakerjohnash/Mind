@@ -18,6 +18,7 @@ import sys
 import re
 import math
 import json
+import csv
 import operator
 
 import editdistance
@@ -111,7 +112,7 @@ def tree_cloud(similarity_lookup, depth=3, seed_word="word2vec"):
 	weights = defaultdict(list)
 	used_words = [seed_word]
 	max_depth = depth
-	num_children = 4
+	num_children = 5
 
 	if seed_word not in similarity_lookup:
 		print("Seed word not found, please try another word")
@@ -121,7 +122,7 @@ def tree_cloud(similarity_lookup, depth=3, seed_word="word2vec"):
 
 		num_twigs = num_children;
 
-		if level == 0 or word not in similarity_lookup:
+		if level <= 0 or word not in similarity_lookup:
 			return
 
 		if len(similarity_lookup[word]) < num_children:
@@ -138,15 +139,29 @@ def tree_cloud(similarity_lookup, depth=3, seed_word="word2vec"):
 			weights[level].append(cur_word)
 
 		for word in weights[level]:
-			new_level = level - 1
+			new_level = level - 2
 			grow_branch(word, new_level)
 
+	weights[max_depth + 5].append(seed_word)
 	grow_branch(seed_word, max_depth)
-	print(dict(weights))	
+
+	dict_list = []
+
+	for weight, words in weights.items():
+		for word in words:
+			dict_list.append({
+				"weight": weight,
+				"word": word
+			})
+
+	with open('data/output/tree_cloud.tab', 'w') as output_file:
+		dict_writer = csv.DictWriter(output_file, ["weight", "word"], delimiter="\t")
+		dict_writer.writeheader()
+		dict_writer.writerows(dict_list)
 
 if __name__ == "__main__":
 	#ken = load_ken()
 	#similarity_lookup = knowledge_tree(ken)
 
-	similarity_lookup = load_json("data/output/prophet_word2vec_tree.json")
-	tree_cloud(similarity_lookup, depth=4, seed_word="mind")
+	similarity_lookup = load_json("data/output/word2vec_tree.json")
+	tree_cloud(similarity_lookup, depth=10, seed_word="garden")
