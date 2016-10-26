@@ -3,7 +3,9 @@
 	var margin = {top: 20, right: 120, bottom: 20, left: 120},
 		width = 960 - margin.right - margin.left,
 		height = 600 - margin.top - margin.bottom,
-		fontName = 'Quicksand';
+		fontName = 'Quicksand',
+		fruitColor = "#7599c3",
+		colorPallet = ["#443462", "#455a8b", "#457a8b"];
 
 	var duration = 750,
 		i = 0,
@@ -16,7 +18,7 @@
 		.fontSize(function(d) { return d.size; })
 		.on("end", draw);
 
-	var color = d3.scale.linear().range(["#443462", "#455a8b", "#457a8b"]);
+	var color = d3.scale.linear().range(colorPallet);
 
 
 	var svg = d3.select(".canvas-frame").append("svg")
@@ -34,6 +36,7 @@
 			.data(words)
 			.enter().append("text")
 			.style("font-size", function(d) { return d.size + "px"; })
+			.style("fill", function(d) { return d.fruit ? "black" : fruitColor })
 			.attr("font-family", fontName)
 			.attr("text-anchor", "middle")
 			.attr("transform", function(d) {
@@ -69,11 +72,15 @@
 
 				wordsThisLevel.push(curWord)
 				usedWords.push(curWord)
-				weights.push({"text": curWord, "size": level * 3})
+				weights.push({
+					"text": curWord, 
+					"size": level > 6 ? level * 2 : 6,
+					"fruit": json[word][i]["l"]
+				})
 
 			}
 
-			var newLevel = level - 3
+			var newLevel = level - 2
 
 			for (var ii=0; ii<wordsThisLevel.length; ii++) {
 				growBranch(wordsThisLevel[ii], newLevel)
@@ -81,7 +88,7 @@
 
 		}
 
-		weights.push({"text": seedWord, "size": 85})
+		weights.push({"text": seedWord, "size": 85, "fruit": true})
 		growBranch(seedWord, 16)
 
 		shuffle(weights)
