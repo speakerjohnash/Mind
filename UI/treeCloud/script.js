@@ -43,7 +43,7 @@
 
 				wordsThisLevel.push(curWord)
 				usedWords.push(curWord)
-				weights.push({"text": curWord, "size": level * 6 + 10})
+				weights.push({"text": curWord, "size": level * 5 + 8})
 
 			}
 
@@ -55,7 +55,7 @@
 
 		}
 
-		weights.push({"text": seedWord, "size": maxDepth + 10})
+		weights.push({"text": seedWord, "size": 95})
 		growBranch(seedWord, 16)
 
 		shuffle(weights)
@@ -71,20 +71,23 @@
 
 		// TODO Colors
 
-		var cloudLayout = d3.layout.cloud().size([800, 600])
+		var cloudLayout = d3.layout.cloud().size([700, 700])
             .words(wordList)
             .rotate(0)
             .fontSize(function(d) { return d.size; })
+            .font("Quicksand")
+            .padding(4)
             .on("end", draw)
             .start();
 
         function draw(words) {
         	svg.append("g")
-        		.attr("transform", "translate(" + 200 + "," + 200 + ")")
+        		.attr("transform", "translate(" + 500 + "," + 300 + ")")
         		.selectAll("text")
      			.data(words)
 				.enter().append("text")
       			.style("font-size", function(d) { return d.size + "px"; })
+      			.attr("font-family", "Quicksand")
       			.attr("text-anchor", "middle")
       			.attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
