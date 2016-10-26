@@ -139,7 +139,7 @@ def tree_cloud(similarity_lookup, depth=3, seed_word="word2vec"):
 			weights[level].append(cur_word)
 
 		for word in weights[level]:
-			new_level = level - 2
+			new_level = level - 1
 			grow_branch(word, new_level)
 
 	weights[max_depth + 5].append(seed_word)
@@ -163,5 +163,5 @@ if __name__ == "__main__":
 	#ken = load_ken()
 	#similarity_lookup = knowledge_tree(ken)
 
-	similarity_lookup = load_json("data/output/word2vec_tree.json")
-	tree_cloud(similarity_lookup, depth=10, seed_word="garden")
+	similarity_lookup = load_json("data/output/prophet_word2vec_tree.json")
+	tree_cloud(similarity_lookup, depth=10, seed_word="confluesce")

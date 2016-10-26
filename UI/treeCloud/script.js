@@ -21,7 +21,7 @@
 		var weights = [],
 			usedWords = [seedWord],
 			maxDepth = depth,
-			numChildren = 5;
+			numChildren = 4;
 
 		if (!(seedWord in json)) {
 			return "Seed word not found. Please try another word"
@@ -43,11 +43,11 @@
 
 				wordsThisLevel.push(curWord)
 				usedWords.push(curWord)
-				weights.push({"word": curWord, "weight": level})
+				weights.push({"text": curWord, "size": level * 6 + 10})
 
 			}
 
-			var newLevel = level - 1
+			var newLevel = level - 2
 
 			for (var ii=0; ii<wordsThisLevel.length; ii++) {
 				growBranch(wordsThisLevel[ii], newLevel)
@@ -55,13 +55,43 @@
 
 		}
 
-		weights.push({"word": seedWord, "weight": maxDepth + 10})
-		growBranch(seedWord, 5)
-		console.log(weights)
+		weights.push({"text": seedWord, "size": maxDepth + 10})
+		growBranch(seedWord, 16)
+
+		shuffle(weights)
+		return weights
 
 	}
 
-	function updateTree(tree) {
+	function updateTree(wordList) {
+
+		console.log(wordList)
+
+		// TODO Weight to Font Size Scale
+
+		// TODO Colors
+
+		var cloudLayout = d3.layout.cloud().size([800, 600])
+            .words(wordList)
+            .rotate(0)
+            .fontSize(function(d) { return d.size; })
+            .on("end", draw)
+            .start();
+
+        function draw(words) {
+        	svg.append("g")
+        		.attr("transform", "translate(" + 200 + "," + 200 + ")")
+        		.selectAll("text")
+     			.data(words)
+				.enter().append("text")
+      			.style("font-size", function(d) { return d.size + "px"; })
+      			.attr("text-anchor", "middle")
+      			.attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+      			.text(function(d) { return d.text; });
+        	console.log(words)
+        }
 
 	}
 
@@ -83,9 +113,9 @@
 
 	function visualize(word, json) {
 
-		treeRoot = growTree(word, json)
+		wordList = growTree(word, json)
 
-		updateTree(treeRoot);
+		updateTree(wordList);
 
 	}
 
