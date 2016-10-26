@@ -2,35 +2,36 @@
 
 	var margin = {top: 20, right: 120, bottom: 20, left: 120},
 		width = 960 - margin.right - margin.left,
-		height = 600 - margin.top - margin.bottom;
+		height = 600 - margin.top - margin.bottom,
+		fontName = 'Quicksand';
 
-	var treeLayout = d3.layout.tree().size([height, width]),
-		diagonal = d3.svg.diagonal().projection(function(d) {return [d.y, d.x]}),
-		duration = 750,
+	var duration = 750,
 		i = 0,
 		treeRoot;
+
+	var cloudLayout = d3.layout.cloud().size([width, height])
+		.padding(5)
+		.rotate(0)
+		.font(fontName)
+		.fontSize(function(d) { return d.size; })
+		.on("end", draw);
 
 	var svg = d3.select(".canvas-frame").append("svg")
 		.attr("width", '100%')
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-	var cloudLayout = d3.layout.cloud().size([700, 700])
-		.rotate(0)
-		.fontSize(function(d) { return d.size; })
-		.font("Quicksand")
-		.padding(4)
-		.on("end", draw);
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.attr("width", cloudLayout.size()[0])
+		.attr("height", cloudLayout.size()[1]);
 
 	function draw(words) {
-        svg.append("g")
-			.attr("transform", "translate(" + 500 + "," + 300 + ")")
+		svg.append("g")
+			.attr("transform", "translate(" + cloudLayout.size()[0] / 2 + "," + cloudLayout.size()[1] / 2 + ")")
 			.selectAll("text")
 			.data(words)
 			.enter().append("text")
 			.style("font-size", function(d) { return d.size + "px"; })
-			.attr("font-family", "Quicksand")
+			.attr("font-family", fontName)
 			.attr("text-anchor", "middle")
 			.attr("transform", function(d) {
 				return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
