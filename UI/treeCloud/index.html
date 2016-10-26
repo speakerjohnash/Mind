@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Tree of Knowledge</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+	</head>
+	<body>
+		<div id="tree-controls">
+			<form id="build-tree">
+				<input type="text" id="seed-word" placeholder="Enter seed word" class="form-control"/>
+				<input type="submit" value="Grow" class="btn btn-block btn-primary submit">
+			</form>
+		</div>
+		<div class="canvas-frame"></div>
+	</body>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/2.10.0/d3.v2.min.js"></script>
+	<script src="d3-cloud.js"></script>
+	<script src="script.js"></script>
+</html>
