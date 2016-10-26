@@ -35,7 +35,6 @@
 			.enter().append("text")
 			.style("font-size", function(d) { return d.size + "px"; })
 			.attr("font-family", fontName)
-			.style('fill',function(d) { return color(d.size) })
 			.attr("text-anchor", "middle")
 			.attr("transform", function(d) {
 				return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
@@ -48,7 +47,7 @@
 		var weights = [],
 			usedWords = [seedWord],
 			maxDepth = depth,
-			numChildren = 4;
+			numChildren = 3;
 
 		if (!(seedWord in json)) {
 			return "Seed word not found. Please try another word"
@@ -70,11 +69,11 @@
 
 				wordsThisLevel.push(curWord)
 				usedWords.push(curWord)
-				weights.push({"text": curWord, "size": level * 5 + 8})
+				weights.push({"text": curWord, "size": level * 3})
 
 			}
 
-			var newLevel = level - 2
+			var newLevel = level - 3
 
 			for (var ii=0; ii<wordsThisLevel.length; ii++) {
 				growBranch(wordsThisLevel[ii], newLevel)
@@ -82,7 +81,7 @@
 
 		}
 
-		weights.push({"text": seedWord, "size": 95})
+		weights.push({"text": seedWord, "size": 85})
 		growBranch(seedWord, 16)
 
 		shuffle(weights)
