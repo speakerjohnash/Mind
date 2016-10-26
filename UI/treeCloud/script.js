@@ -16,6 +16,28 @@
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	var cloudLayout = d3.layout.cloud().size([700, 700])
+		.rotate(0)
+		.fontSize(function(d) { return d.size; })
+		.font("Quicksand")
+		.padding(4)
+		.on("end", draw);
+
+	function draw(words) {
+        svg.append("g")
+			.attr("transform", "translate(" + 500 + "," + 300 + ")")
+			.selectAll("text")
+			.data(words)
+			.enter().append("text")
+			.style("font-size", function(d) { return d.size + "px"; })
+			.attr("font-family", "Quicksand")
+			.attr("text-anchor", "middle")
+			.attr("transform", function(d) {
+				return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+			})
+			.text(function(d) { return d.text; });
+	}
+
 	function growTree(seedWord, json, depth) {
 
 		var weights = [],
@@ -63,41 +85,6 @@
 
 	}
 
-	function updateTree(wordList) {
-
-		console.log(wordList)
-
-		// TODO Weight to Font Size Scale
-
-		// TODO Colors
-
-		var cloudLayout = d3.layout.cloud().size([700, 700])
-            .words(wordList)
-            .rotate(0)
-            .fontSize(function(d) { return d.size; })
-            .font("Quicksand")
-            .padding(4)
-            .on("end", draw)
-            .start();
-
-        function draw(words) {
-        	svg.append("g")
-        		.attr("transform", "translate(" + 500 + "," + 300 + ")")
-        		.selectAll("text")
-     			.data(words)
-				.enter().append("text")
-      			.style("font-size", function(d) { return d.size + "px"; })
-      			.attr("font-family", "Quicksand")
-      			.attr("text-anchor", "middle")
-      			.attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-      			.text(function(d) { return d.text; });
-        	console.log(words)
-        }
-
-	}
-
 	function shuffle(array) {
 
 		var currentIndex = array.length, temporaryValue, randomIndex;
@@ -115,11 +102,8 @@
 	}
 
 	function visualize(word, json) {
-
-		wordList = growTree(word, json)
-
-		updateTree(wordList);
-
+		wordList = growTree(word, json, 5)
+		cloudLayout.words(wordList).start();
 	}
 
 	function run(json) {
@@ -131,8 +115,7 @@
 			return false
 		})
 
-		treeRoot = growTree("word2vec", json, 3)
-		updateTree(treeRoot);
+		visualize("word2vec", json)
 
 	}
 
