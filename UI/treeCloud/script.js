@@ -16,6 +16,9 @@
 		.fontSize(function(d) { return d.size; })
 		.on("end", draw);
 
+	var color = d3.scale.linear().range(["#443462", "#455a8b", "#457a8b"]);
+
+
 	var svg = d3.select(".canvas-frame").append("svg")
 		.attr("width", '100%')
 		.attr("height", height + margin.top + margin.bottom)
@@ -32,6 +35,7 @@
 			.enter().append("text")
 			.style("font-size", function(d) { return d.size + "px"; })
 			.attr("font-family", fontName)
+			.style('fill',function(d) { return color(d.size) })
 			.attr("text-anchor", "middle")
 			.attr("transform", function(d) {
 				return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
@@ -104,6 +108,9 @@
 
 	function visualize(word, json) {
 		wordList = growTree(word, json, 5)
+		max = d3.max(wordList, function(d) { return d.size; })
+		min = d3.min(wordList, function(d) { return d.size; })
+		color.domain([0, (max / 4), max])
 		cloudLayout.words(wordList).start();
 	}
 
