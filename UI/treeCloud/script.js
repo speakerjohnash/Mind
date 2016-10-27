@@ -148,7 +148,10 @@
 			return false
 		})
 
-		visualize("word2vec")
+		var words = Object.keys(json),
+			randomWord = words[Math.floor(Math.random()*words.length)];
+
+		visualize(randomWord)
 
 	}
 
