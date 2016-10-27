@@ -39,7 +39,19 @@
 			.style("fill", function(d) { return d.fruit ? "black" : fruitColor })
 			.attr("font-family", fontName)
 			.attr("text-anchor", "middle")
+			.style("cursor", function(d) {
+				if (!d.fruit) {
+					return "pointer"
+				} else {
+					return "crosshair"
+				}
+			})
 			.on("click", function(d){
+				if (!d.fruit) {
+					var url = "https://www.google.com/search?q=" + d.text + "+definition"
+					window.open(url, '_blank');
+					return
+				}
 				var word = d.text
 				visualize(word)
 			})
