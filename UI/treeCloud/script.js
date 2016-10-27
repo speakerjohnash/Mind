@@ -5,7 +5,8 @@
 		height = 600 - margin.top - margin.bottom,
 		fontName = 'Quicksand',
 		fruitColor = "#7599c3",
-		colorPallet = ["#443462", "#455a8b", "#457a8b"];
+		colorPallet = ["#443462", "#455a8b", "#457a8b"],
+		globalJSON = {};
 
 	var duration = 750,
 		i = 0,
@@ -20,7 +21,6 @@
 
 	var color = d3.scale.linear().range(colorPallet);
 
-
 	var svg = d3.select(".canvas-frame").append("svg")
 		.attr("width", '100%')
 		.attr("height", height + margin.top + margin.bottom)
@@ -29,7 +29,7 @@
 		.attr("width", cloudLayout.size()[0])
 		.attr("height", cloudLayout.size()[1]);
 
-	function draw(words) {
+	function draw(words, bounds) {
 		svg.append("g")
 			.attr("transform", "translate(" + cloudLayout.size()[0] / 2 + "," + cloudLayout.size()[1] / 2 + ")")
 			.selectAll("text")
@@ -39,20 +39,24 @@
 			.style("fill", function(d) { return d.fruit ? "black" : fruitColor })
 			.attr("font-family", fontName)
 			.attr("text-anchor", "middle")
+			.on("click", function(d){
+				var word = d.text
+				visualize(word)
+			})
 			.attr("transform", function(d) {
 				return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
 			})
 			.text(function(d) { return d.text; });
 	}
 
-	function growTree(seedWord, json, depth) {
+	function growTree(seedWord, depth) {
 
 		var weights = [],
 			usedWords = [seedWord],
 			maxDepth = depth,
 			numChildren = 3;
 
-		if (!(seedWord in json)) {
+		if (!(seedWord in globalJSON)) {
 			return "Seed word not found. Please try another word"
 		}
 
@@ -61,11 +65,11 @@
 			var numTwigs = numChildren,
 				wordsThisLevel = [];
 
-			if (!isNaN(word) || level <= 0 || !(word in json)) return;
+			if (!isNaN(word) || level <= 0 || !(word in globalJSON)) return;
 
 			for (var i=0; i<numTwigs; i++) {
 
-				var curWord = json[word][i]["w"],
+				var curWord = globalJSON[word][i]["w"],
 					branch = {};
 
 				if (usedWords.indexOf(curWord) > -1) continue;
@@ -75,7 +79,7 @@
 				weights.push({
 					"text": curWord, 
 					"size": level > 6 ? level * 2 : 6,
-					"fruit": json[word][i]["l"]
+					"fruit": globalJSON[word][i]["l"]
 				})
 
 			}
@@ -83,6 +87,7 @@
 			var newLevel = level - 2
 
 			for (var ii=0; ii<wordsThisLevel.length; ii++) {
+				numChildren = Math.floor(Math.random() * 4) + 2
 				growBranch(wordsThisLevel[ii], newLevel)
 			}
 
@@ -112,8 +117,9 @@
 
 	}
 
-	function visualize(word, json) {
-		wordList = growTree(word, json, 5)
+	function visualize(word) {
+		svg.selectAll("*").remove()
+		wordList = growTree(word, 5)
 		max = d3.max(wordList, function(d) { return d.size; })
 		min = d3.min(wordList, function(d) { return d.size; })
 		color.domain([0, (max / 4), max])
@@ -122,14 +128,15 @@
 
 	function run(json) {
 
+		globalJSON = json
+
 		d3.select("#build-tree").on("submit", function() {
 			d3.event.preventDefault()
-			svg.selectAll("*").remove()
-			visualize(document.getElementById("seed-word").value, json)
+			visualize(document.getElementById("seed-word").value)
 			return false
 		})
 
-		visualize("word2vec", json)
+		visualize("word2vec")
 
 	}
 
