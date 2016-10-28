@@ -1,7 +1,7 @@
 #################### USAGE ####################################
 
-# python3.4 -m mind.thought_stream [input_file] [user]
-# python3.4 -m mind.thought_stream data/input/Thoughts.csv matt
+# python3.4 -m mind.legacy.thought_stream [input_file] [user]
+# python3.4 -m mind.legacy.thought_stream data/input/Thoughts.csv matt
 
 ###############################################################
 
@@ -21,9 +21,9 @@ from textblob import TextBlob, Word
 from sklearn.feature_extraction.text import TfidfTransformer
 
 from mind.tools import vectorize, word_count
-from mind.load_model import get_tf_cnn_by_name
+#from mind.load_model import get_tf_cnn_by_name
 
-SENTIMENT = get_tf_cnn_by_name("sentiment")
+#SENTIMENT = get_tf_cnn_by_name("sentiment")
 
 def to_stdout(string, errors='replace'):
 	"""Converts a string to stdout compatible encoding"""
@@ -330,8 +330,8 @@ def run_from_command():
 
 	buildTypeStream(days)
 	buildWordStream(days, ken)
-	buildSentimentStream(days)
-	buildPrivacyStream(days)
+	#buildSentimentStream(days)
+	#buildPrivacyStream(days)
 
 if __name__ == "__main__":
 	run_from_command()

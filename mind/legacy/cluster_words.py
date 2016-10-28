@@ -9,7 +9,7 @@ Created on Dec 4, 2014
 
 #################### USAGE ##########################
 
-# python3 -m mind.cluster_words [word2vec_model]
+# python3 -m mind.legacy.cluster_words [word2vec_model]
 # Word2Vec available at: https://code.google.com/p/word2vec/
 
 #####################################################

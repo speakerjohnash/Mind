@@ -10,8 +10,8 @@ Created on Mar 26, 2016
 
 ############################################# USAGE ###############################################
 
-# python3 -m mind.ladder_network [config]
-# python3 -m mind.ladder_network config/tf_cnn_config.json
+# python3 -m mind.legacy.ladder_network [config]
+# python3 -m mind.legacy.ladder_network config/tf_cnn_config.json
 
 # For addtional details on implementation see:
 # Character-level Convolutional Networks for Text Classification
