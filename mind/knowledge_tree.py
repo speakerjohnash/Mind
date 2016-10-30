@@ -83,7 +83,7 @@ def knowledge_tree(ken):
 			if editdistance.eval(word, non_lexicon[0][0]) > 2:
 				print("Word: " + word)
 				print("Nearest out of lexicon word: " + non_lexicon[0][0])
-				nearest_words.append(non_lexicon[0])
+				nearest_words.insert(0, non_lexicon[0])
 
 		number_nearest_words = len(nearest_words)
 
@@ -91,7 +91,7 @@ def knowledge_tree(ken):
 
 	print(similarity_lookup)
 
-	dict_2_json(similarity_lookup, "fruiting" + "_leah_tree.json")
+	dict_2_json(similarity_lookup, "fruiting" + "_patrick_tree.json")
 
 	return similarity_lookup
 

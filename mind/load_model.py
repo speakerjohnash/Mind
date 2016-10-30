@@ -20,6 +20,7 @@ from tensorflow.python.framework import ops
 from mind.tools import load_json
 from mind.tensorflow_cnn import validate_config, get_tensor, string_to_tensor
 from mind.bilstm_tagger import validate_config as bilstm_validate_config
+from mind.bilstm_tagger import doc_to_tensor
 
 def get_tf_cnn_by_name(model_name, gpu_mem_fraction=False):
 	"""Load a tensorFlow CNN by name"""
@@ -129,16 +130,16 @@ def get_tf_rnn_by_path(model_path, w2i_path, gpu_mem_fraction=False, model_name=
 		model = get_tensor(graph, model_name)
 
 	# Generate Helper Function
-	def apply_rnn(trans, doc_key="thought", label_key="tag"):
+	def apply_rnn(thought, doc_key="thought", label_key="tag"):
 
-		for index, doc in enumerate(trans):
-			tran = doc[doc_key].lower().split()[0:config["max_tokens"]]
-			char_inputs, word_lengths, word_indices, _ = trans_to_tensor(config, sess, graph, tran)
+		for index, doc in enumerate(thought):
+			thot = doc[doc_key].lower().split()[0:config["max_tokens"]]
+			char_inputs, word_lengths, word_indices, _ = doc_to_tensor(config, sess, graph, tran)
 			feed_dict = {
 				get_tensor(graph, "char_inputs:0"): char_inputs,
 				get_tensor(graph, "word_inputs:0"): word_indices,
 				get_tensor(graph, "word_lengths:0"): word_lengths,
-				get_tensor(graph, "doc_length:0"): len(tran),
+				get_tensor(graph, "doc_length:0"): len(thot),
 				get_tensor(graph, "train:0"): False
 			}
 
@@ -147,7 +148,7 @@ def get_tf_rnn_by_path(model_path, w2i_path, gpu_mem_fraction=False, model_name=
 			target_indices = [i for i in range(len(output)) if output[i] == "target"]
 			doc[label_key] = " ".join([tran[i] for i in target_indices])
 
-		return trans
+		return thought
 
 	return apply_rnn
 
