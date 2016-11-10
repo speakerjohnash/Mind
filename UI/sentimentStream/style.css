@@ -17,6 +17,12 @@ p {
   shape-rendering: crispEdges;
 }
 
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
 .widget {
   margin-left: 25px;
   margin-top: 15px;

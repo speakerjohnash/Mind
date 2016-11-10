@@ -1,7 +1,7 @@
 #################### USAGE ####################################
 
-# python3.4 -m mind.legacy.thought_stream [input_file] [user]
-# python3.4 -m mind.legacy.thought_stream data/input/Thoughts.csv matt
+# python3 -m mind.legacy.thought_stream [input_file] [user]
+# python3 -m mind.legacy.thought_stream data/input/thought.csv matt
 
 ###############################################################
 
@@ -177,19 +177,18 @@ def buildSentimentStream(days):
 		sentiment = []
 
 		for thought in thoughts:
-			classified = SENTIMENT([thought])[0]
-			print(classified["Thought"] + ": " + "{0:.3f}".format(classified["CNN"]))
-			sentiment.append(classified["CNN"])
+
+			votes = thought["Good"].split("\n")
+			good, bad, _ = votes
+			net_good = int(good[1:]) + int(bad)
+			sentiment.append(net_good)
 
 		daily_sentiment = {
 			"sentiment" : sum(sentiment) / float(len(sentiment))
 		}
 
 		daily_sentiment['Post Date'] = day
-
-		# Only add point if there are sufficient thoughts per day
-		if len(thoughts) > 10:
-			sentiment_stream.append(daily_sentiment)
+		sentiment_stream.append(daily_sentiment)
 
 	sorted_stream = sorted(sentiment_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/sentiment_stream.csv")
@@ -328,9 +327,9 @@ def run_from_command():
 	ken = vectorize(thoughts, min_df=1)
 	days = groupByWeek(collective_thoughts)
 
+	buildSentimentStream(days)
 	buildTypeStream(days)
 	buildWordStream(days, ken)
-	#buildSentimentStream(days)
 	#buildPrivacyStream(days)
 
 if __name__ == "__main__":
