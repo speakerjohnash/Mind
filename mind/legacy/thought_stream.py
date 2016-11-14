@@ -19,6 +19,7 @@ import datetime
 import numpy
 from textblob import TextBlob, Word
 from sklearn.feature_extraction.text import TfidfTransformer
+from scipy.interpolate import interp1d
 
 from mind.tools import vectorize, word_count
 from mind.load_model import get_tf_cnn_by_name
@@ -174,27 +175,31 @@ def buildSentimentStream(days):
 
 	for day, thoughts in days.items():
 
-		sentiment = []
+		votes, polarity = [], []
 		analysis = [float(x['CNN']) for x in SENTIMENT(thoughts)]
 
 		for thought in thoughts:
 
-			votes = thought["Good"].split("\n")
-			good, bad, _ = votes
+			doc = TextBlob(thought["Thought"])
+			polarity.append(doc.sentiment.polarity)
+			vote_strings = thought["Good"].split("\n")
+			good, bad, _ = vote_strings
 			net_good = int(good[1:]) + int(bad)
 
 			if net_good != 0:
-				sentiment.append(net_good)
+				votes.append(net_good)
 
-		if len(sentiment) == 0:
-			sentiment = [0]
+		if len(votes) == 0:
+			votes = [0]
 
-		average_vote = sum(sentiment) / float(len(sentiment))
-		average_sentiment = sum(analysis) / float(len(analysis))
-		average_mood = (average_vote + average_sentiment) / 2
+		average_vote = sum(votes) / float(len(votes))
+		average_polarity = sum(polarity) / float(len(polarity))
+		average_mood = (average_vote + average_polarity) / 2
 
 		daily_sentiment = {
-			"sentiment" : average_mood 
+			"average" : average_mood,
+			"textBlob": average_polarity,
+			"vote": average_vote
 		}
 
 		print("Average Mood: " + str(average_mood))

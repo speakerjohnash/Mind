@@ -14,8 +14,8 @@
 
 		data.forEach(function(day) {
 			row = {
-				"value" : parseFloat(day["sentiment"], 10), 
-          		"key" : "sentiment", 
+				"value" : parseFloat(day["cnn"], 10), 
+          		"key" : "average", 
           		"date" : format.parse(day["Post Date"])
 			}
 			formatted.push(row)
