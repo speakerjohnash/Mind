@@ -35,7 +35,7 @@ import tensorflow as tf
 from tensorflow.python.client import timeline
 
 from mind.tools import get_tensor, get_op, get_variable
-from mind.tools import load_params, load_piped_dataframe, reverse_map
+from mind.tools import load_json, load_piped_dataframe, reverse_map
 
 logging.basicConfig(level=logging.INFO)
 
@@ -70,7 +70,7 @@ def get_tags(config, doc):
 def validate_config(config):
 	"""Validate input configuration"""
 
-	config = load_params(config)
+	config = load_json(config)
 	config["c2i"] = {a : i + 3 for i, a in enumerate(config["alphabet"])}
 	config["c2i"]["_UNK"] = 0
 	config["c2i"]["<w>"] = 1

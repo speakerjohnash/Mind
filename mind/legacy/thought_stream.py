@@ -21,9 +21,9 @@ from textblob import TextBlob, Word
 from sklearn.feature_extraction.text import TfidfTransformer
 
 from mind.tools import vectorize, word_count
-#from mind.load_model import get_tf_cnn_by_name
+from mind.load_model import get_tf_cnn_by_name
 
-#SENTIMENT = get_tf_cnn_by_name("sentiment")
+SENTIMENT = get_tf_cnn_by_name("sentiment")
 
 def to_stdout(string, errors='replace'):
 	"""Converts a string to stdout compatible encoding"""
@@ -175,13 +175,21 @@ def buildSentimentStream(days):
 	for day, thoughts in days.items():
 
 		sentiment = []
+		analysis = SENTIMENT(thoughts)
+
+		print(analysis)
 
 		for thought in thoughts:
 
 			votes = thought["Good"].split("\n")
 			good, bad, _ = votes
 			net_good = int(good[1:]) + int(bad)
-			sentiment.append(net_good)
+
+			if net_good != 0:
+				sentiment.append(net_good)
+
+		if len(sentiment) == 0:
+			continue
 
 		daily_sentiment = {
 			"sentiment" : sum(sentiment) / float(len(sentiment))
@@ -311,7 +319,7 @@ def run_from_command():
 	elif sys.argv[2] == "pat":
 		collective_thoughts = pat_thoughts
 	elif sys.argv[2] == "matt":
-		collective_thoughts = matt_thoughts + prophet_thoughts + work_thoughts
+		collective_thoughts = matt_thoughts
 	elif sys.argv[2] == "leah":
 		collective_thoughts = leah_thoughts
 	elif sys.argv[2] == "nestor":

@@ -109,7 +109,7 @@ def get_tf_rnn_by_path(model_path, w2i_path, gpu_mem_fraction=False, model_name=
 	config = bilstm_validate_config(config_path)
 	config["model_path"] = model_path
 	meta_path = model_path.split(".ckpt")[0] + ".meta"
-	config["w2i"] = load_params(w2i_path)
+	config["w2i"] = load_json(w2i_path)
 
 	# Load Session and Graph
 	ops.reset_default_graph()
