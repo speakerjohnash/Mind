@@ -175,9 +175,7 @@ def buildSentimentStream(days):
 	for day, thoughts in days.items():
 
 		sentiment = []
-		analysis = SENTIMENT(thoughts)
-
-		print(analysis)
+		analysis = [float(x['CNN']) for x in SENTIMENT(thoughts)]
 
 		for thought in thoughts:
 
@@ -189,11 +187,17 @@ def buildSentimentStream(days):
 				sentiment.append(net_good)
 
 		if len(sentiment) == 0:
-			continue
+			sentiment = [0]
+
+		average_vote = sum(sentiment) / float(len(sentiment))
+		average_sentiment = sum(analysis) / float(len(analysis))
+		average_mood = (average_vote + average_sentiment) / 2
 
 		daily_sentiment = {
-			"sentiment" : sum(sentiment) / float(len(sentiment))
+			"sentiment" : average_mood 
 		}
+
+		print("Average Mood: " + str(average_mood))
 
 		daily_sentiment['Post Date'] = day
 		sentiment_stream.append(daily_sentiment)
