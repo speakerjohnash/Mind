@@ -203,16 +203,16 @@ def buildSentimentStream(days):
 
 		if len(reported) > 0:
 			average_happy = sum(reported) / float(len(reported))
+			average_mood = (average_vote + average_polarity + average_happy + average_happy + average_happy) / 5
 		else:
+			average_mood = average_polarity
 			average_happy = 0
-
-		average_mood = (average_vote + average_polarity + average_happy + average_happy + average_happy) / 5
 
 		daily_sentiment = {
 			"average" : average_mood,
 			"textBlob": average_polarity,
 			"vote": average_vote,
-			"happy": average_happy
+			"mood": average_happy
 		}
 
 		daily_sentiment['Post Date'] = day
