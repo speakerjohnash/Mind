@@ -172,13 +172,19 @@ def buildSentimentStream(days):
 	"""Build out a sentiment stream from daily thoughts"""
 
 	sentiment_stream = []
+	scale = interp1d([0,10],[-1,1])
 
 	for day, thoughts in days.items():
 
-		votes, polarity = [], []
+		votes, polarity, reported = [], [], []
 		analysis = [float(x['CNN']) for x in SENTIMENT(thoughts)]
 
 		for thought in thoughts:
+
+			if "#happy" in thought["Thought"].lower():
+				tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
+				if tokens[1].replace('.', '', 1).isdigit(): 
+					reported.append(scale(float(tokens[1])))
 
 			doc = TextBlob(thought["Thought"])
 			polarity.append(doc.sentiment.polarity)
@@ -194,15 +200,20 @@ def buildSentimentStream(days):
 
 		average_vote = sum(votes) / float(len(votes))
 		average_polarity = sum(polarity) / float(len(polarity))
-		average_mood = (average_vote + average_polarity) / 2
+
+		if len(reported) > 0:
+			average_happy = sum(reported) / float(len(reported))
+		else:
+			average_happy = 0
+
+		average_mood = (average_vote + average_polarity + average_happy + average_happy + average_happy) / 5
 
 		daily_sentiment = {
 			"average" : average_mood,
 			"textBlob": average_polarity,
-			"vote": average_vote
+			"vote": average_vote,
+			"happy": average_happy
 		}
-
-		print("Average Mood: " + str(average_mood))
 
 		daily_sentiment['Post Date'] = day
 		sentiment_stream.append(daily_sentiment)
