@@ -25,7 +25,7 @@ p {
 
 .fat-line {
   fill: none;
-  stroke: steelblue;
+  stroke: url(#temperature-gradient);
   opacity: 0.5;
   stroke-width: 25px;
 }

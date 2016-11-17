@@ -50,9 +50,7 @@
 				return undefined;
 			});
 			points = points.filter(function(each) { return typeof each !== 'undefined' });
-			// Transform the points into a basis line
 			pathDesc = d3.svg.line().interpolate("basis")(points)
-			// Remove the extra "M"
 			return pathDesc.slice(1, pathDesc.length);
 		}
 	}
@@ -91,7 +89,7 @@
 
 		// TODO: Load prophet thoughts via brush selection
 
-		// TODO: Scatterplot
+		// Scatterplot
 		svg.selectAll("dot")
 			.data(mood)
 			.enter().append("circle")
@@ -126,6 +124,21 @@
 			.attr("x2", width)	 // x position of the second end of the line
 			.attr("y2", height / 2);	// y position of the second end of the line
 
+		// Gradient
+		svg.append("linearGradient")
+			.attr("id", "temperature-gradient")
+			.attr("gradientUnits", "userSpaceOnUse")
+			.attr("x1", 0).attr("y1", y(-1))
+			.attr("x2", 0).attr("y2", y(1))
+			.selectAll("stop")
+			.data([
+				{offset: "0%", color: "steelblue"},
+				{offset: "50%", color: "gray"},
+				{offset: "100%", color: "red"}
+			])
+			.enter().append("stop")
+			.attr("offset", function(d) { return d.offset; })
+			.attr("stop-color", function(d) { return d.color; });
 
 	}
 
