@@ -132,7 +132,7 @@
 			.attr("x2", 0).attr("y2", y(1))
 			.selectAll("stop")
 			.data([
-				{offset: "0%", color: "red"},
+				{offset: "0%", color: "#694a69"}, // black, red, purple
 				{offset: "50%", color: "steelblue"},
 				{offset: "100%", color: "yellow"}
 			])
