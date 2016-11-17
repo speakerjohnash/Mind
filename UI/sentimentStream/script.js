@@ -111,6 +111,11 @@
 
 		field.append("path")
 			.datum(mood)
+			.attr("class", "fat-line")
+			.attr("d", line);
+
+		field.append("path")
+			.datum(mood)
 			.attr("class", "line")
 			.attr("d", line);
 

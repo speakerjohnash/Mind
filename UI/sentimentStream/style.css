@@ -23,6 +23,13 @@ p {
   stroke-width: 1px;
 }
 
+.fat-line {
+  fill: none;
+  stroke: steelblue;
+  opacity: 0.5;
+  stroke-width: 25px;
+}
+
 .widget {
   margin-left: 25px;
   margin-top: 15px;
