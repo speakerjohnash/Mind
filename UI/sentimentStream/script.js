@@ -8,10 +8,10 @@
 
 	function formatData(data) {
 
-	    var positivity = [],
-	    	mood = [],
-	    	format = d3.time.format("%m/%d/%Y"),
-	        row = "";
+		var positivity = [],
+			mood = [],
+			format = d3.time.format("%m/%d/%Y"),
+			row = "";
 
 		data.forEach(function(day) {
 			p_row = {
@@ -37,14 +37,34 @@
 
 	}
 
+	movingAvg = function(n) {
+		return function (points) {
+			points = points.map(function(each, index, array) {
+				var to = index + n - 1;
+				var subSeq, sum;
+				if (to < points.length) {
+					subSeq = array.slice(index, to + 1);
+					sum = subSeq.reduce(function(a,b) { return [a[0] + b[0], a[1] + b[1]]; });
+					return sum.map(function(each) { return each / n; });
+				}
+				return undefined;
+			});
+			points = points.filter(function(each) { return typeof each !== 'undefined' });
+			// Transform the points into a basis line
+			pathDesc = d3.svg.line().interpolate("basis")(points)
+			// Remove the extra "M"
+			return pathDesc.slice(1, pathDesc.length);
+		}
+	}
+
 	function buildStream(data) {
 
 		var width = 800,
-    		height = 200;
+			height = 200;
 
 		var svg = d3.select(".canvas-frame").append("svg")
-		    .attr("width", width)
-		    .attr("height", height + 20);
+			.attr("width", width)
+			.attr("height", height + 20);
 
 		// Data
 		var moodAndPositivity = formatData(data),
@@ -57,21 +77,21 @@
 			format = d3.time.format("%m/%d/%Y"),
 			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])});
 
-    	var x = d3.time.scale().domain(timeRange).range([0, width]),
-    		y = d3.scale.linear().domain([-1, 1]).range([height, 0])
-    		mY = d3.scale.linear().domain(moodRange).range([height, 0]);
+		var x = d3.time.scale().domain(timeRange).range([0, width]),
+			y = d3.scale.linear().domain([-1, 1]).range([height, 0])
+			mY = d3.scale.linear().domain(moodRange).range([height, 0]);
 
-    	// Line 
-    	var line = d3.svg.line()
-    		.interpolate("bundle")
-    		.x(function(d) { return x(d.date); })
-    		.y(function(d) { return mY(d.value); });
+		// Line 
+		var line = d3.svg.line()
+			.interpolate(movingAvg(5))
+			.x(function(d) { return x(d.date); })
+			.y(function(d) { return mY(d.value); });
 
-    	// TODO: Add a vertical gradient with blue for sad, yellow for happy and maybe green for neutral
+		// TODO: Add a vertical gradient with blue for sad, yellow for happy and maybe green for neutral
 
-    	// TODO: Load prophet thoughts via brush selection
+		// TODO: Load prophet thoughts via brush selection
 
-    	// TODO: Scatterplot
+		// TODO: Scatterplot
 		svg.selectAll("dot")
 			.data(mood)
 			.enter().append("circle")
@@ -95,11 +115,11 @@
 			.attr("d", line);
 
 		field.append("line")
-    		.style("stroke", "black")  // colour the line
-			.attr("x1", 0)     // x position of the first end of the line
-			.attr("y1", height / 2)      // y position of the first end of the line
-			.attr("x2", width)     // x position of the second end of the line
-			.attr("y2", height / 2);    // y position of the second end of the line
+			.style("stroke", "black")  // colour the line
+			.attr("x1", 0)	 // x position of the first end of the line
+			.attr("y1", height / 2)	  // y position of the first end of the line
+			.attr("x2", width)	 // x position of the second end of the line
+			.attr("y2", height / 2);	// y position of the second end of the line
 
 
 	}
