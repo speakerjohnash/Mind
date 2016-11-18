@@ -26,7 +26,7 @@ from mind.load_model import get_tf_cnn_by_name
 
 SENTIMENT = get_tf_cnn_by_name("sentiment")
 HL_PATTERN = re.compile(r"HL \d+")
-LEAH_PATTERN = re.compile(r"#happy:? \d+")
+LEAH_PATTERN = re.compile(r"#happy:? \d+\.?\d?")
 #LEAH_PATTERN = re.compile(r"#happy.? \d+\.\d+")
 
 def HL(scale, x):
@@ -36,22 +36,11 @@ def HL(scale, x):
 	else: 
 		return ""
 
-def parse_mood(scale, thought):
-
-	if "#happy" in thought["Thought"].lower():
-		tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
-		if tokens[1].replace('.', '', 1).isdigit():
-			value = float(tokens[1]) if float(tokens[1]) <= 10 else 10
-			return scale(value)
-
-	return ""
-
-def parse_happy(scale, x):
+def parse_mood(scale, x):
 	match = re.search(LEAH_PATTERN, x["Thought"].lower())
 	if match:
 		value = float(match.group().split(" ")[1])
 		value = value if value <= 10 else 10
-		print(scale(value))
 		return scale(value)
 	else:
 		return ""
@@ -259,11 +248,9 @@ def preprocess_thoughts(thoughts):
 	elif sys.argv[2] == "matt":
 		for thought in thoughts:
 			thought["mood"] = parse_mood(scale, thought)
-			if thought["mood"] != "":
-				print(thought["mood"])
 	elif sys.argv[2] == "leah":
 		for thought in thoughts:
-			thought["mood"] = parse_happy(scale, thought)
+			thought["mood"] = parse_mood(scale, thought)
 
 	return thoughts
 
