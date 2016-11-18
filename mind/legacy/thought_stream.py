@@ -168,11 +168,23 @@ def buildWordStream(days, ken):
 	sorted_stream = sorted(stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/all_stream.csv")
 
+def parse_mood(scale, thought):
+
+	if "#happy" in thought["Thought"].lower():
+		print(thought["Thought"])
+
+	if "#happy" in thought["Thought"].lower():
+		tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
+		if tokens[1].replace('.', '', 1).isdigit(): 
+			return scale(float(tokens[1]))
+
+	return None
+
 def buildSentimentStream(days):
 	"""Build out a sentiment stream from daily thoughts"""
 
 	sentiment_stream = []
-	scale = interp1d([0,10],[-1,1])
+	scale = interp1d([0,11],[-1,1])
 
 	for day, thoughts in days.items():
 
@@ -181,10 +193,11 @@ def buildSentimentStream(days):
 
 		for thought in thoughts:
 
-			if "#happy" in thought["Thought"].lower():
-				tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
-				if tokens[1].replace('.', '', 1).isdigit(): 
-					reported.append(scale(float(tokens[1])))
+			# Parse out manual tracking
+			happy = parse_mood(scale, thought)
+
+			if happy is not None:
+				reported.append(happy)
 
 			doc = TextBlob(thought["Thought"])
 			polarity.append(doc.sentiment.polarity)
