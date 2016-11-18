@@ -248,8 +248,9 @@ def parse_mood(scale, thought):
 
 	if "#happy" in thought["Thought"].lower():
 		tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
-		if tokens[1].replace('.', '', 1).isdigit(): 
-			return scale(float(tokens[1]))
+		if tokens[1].replace('.', '', 1).isdigit():
+			value = float(tokens[1]) if float(tokens[1]) <= 10 else 10
+			return scale(value)
 
 	return ""
 
@@ -266,8 +267,6 @@ def preprocess_thoughts(thoughts):
 	elif sys.argv[2] == "matt":
 		for thought in thoughts:
 			thought["mood"] = parse_mood(scale, thought)
-			if thought["mood"] != "":
-				print(thought["mood"])
 
 	return thoughts
 
