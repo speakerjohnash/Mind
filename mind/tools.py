@@ -17,11 +17,12 @@ import numpy as np
 
 from sklearn.feature_extraction.text import CountVectorizer
 
-def load_dict_list(file_name, encoding='utf-8', delimiter="|"):
+def load_dict_list(file_name, encoding='utf-8', delimiter=","):
 	"""Loads a dictionary of input from a file into a list."""
-	input_file = open(file_name, encoding=encoding, errors='replace')
-	dict_list = list(csv.DictReader(input_file, delimiter=delimiter, quoting=csv.QUOTE_NONE))
-	input_file.close()
+
+	with open(file_name, 'r', encoding="utf-8", errors='replace') as input_file:
+		dict_list = list(csv.DictReader(input_file, delimiter=","))
+		
 	return dict_list
 
 def to_stdout(string, errors="replace"):

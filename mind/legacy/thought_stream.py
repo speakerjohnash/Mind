@@ -21,30 +21,18 @@ from textblob import TextBlob, Word
 from sklearn.feature_extraction.text import TfidfTransformer
 from scipy.interpolate import interp1d
 
-from mind.tools import vectorize, word_count
+from mind.tools import vectorize, word_count, safe_print, load_dict_list
 from mind.load_model import get_tf_cnn_by_name
 
 SENTIMENT = get_tf_cnn_by_name("sentiment")
+HL_PATTERN = re.compile(r"HL \d+")
 
-def to_stdout(string, errors='replace'):
-	"""Converts a string to stdout compatible encoding"""
-
-	encoded = string.encode(sys.stdout.encoding, errors)
-	decoded = encoded.decode(sys.stdout.encoding)
-	return decoded
-
-def safe_print(*objs, errors="replace"):
-	"""Print without unicode errors"""
-
-	print(*(to_stdout(str(o), errors) for o in objs))
-
-def load_dict_list(file_name):
-	"""Loads a dictoinary of input from a file into a list"""
-
-	with open(file_name, 'r', encoding="utf-8", errors='replace') as input_file:
-		dict_list = list(csv.DictReader(input_file, delimiter=","))
-
-	return dict_list
+def HL(x):
+	match = re.search(HL_PATTERN, x["Thought"])
+	if match:
+		return match.group().split(" ")[1]
+	else: 
+		return ""
 
 def write_dict_list(dict_list, file_name, encoding="utf-8", delimiter=","):
 	""" Saves a lists of dicts with uniform keys to file """
@@ -55,35 +43,6 @@ def write_dict_list(dict_list, file_name, encoding="utf-8", delimiter=","):
 		dict_w = csv.DictWriter(output_file, delimiter=delimiter, fieldnames=column_order, extrasaction='ignore')
 		dict_w.writeheader()
 		dict_w.writerows(dict_list)
-
-def progress(i, list, message=""):
-	"""Display progress percent in a loop"""
-
-	progress = (i / len(list)) * 100
-	progress = str(round(progress, 1)) + "% " + message
-	sys.stdout.write('\r')
-	sys.stdout.write(progress)
-	sys.stdout.flush()
-
-def wordFrequency(vocab, dist, num_samples):
-
-	dist[:] = [x / num_samples for x in dist]
-	dist = numpy.around(dist, decimals=5).tolist()
-	distribution_dict = dict(zip(vocab, dist))
-
-	#safe_print("Word Frequency")
-	#safe_print(distribution_dict, "\n")
-
-	return distribution_dict
-
-def termWeighting(vocab, countVector, corpus):
-	"""Gives intution to word importance"""
-
-	transformer = TfidfTransformer()
-	tfidf = transformer.fit_transform(countVector)
-
-	#safe_print("Weights Per Word:")
-	#safe_print(dict(zip(vocab, numpy.around(transformer.idf_, decimals=5).tolist())), "\n")
 
 def compareMinds(data_a, data_b):
 	"""Compares available words"""
@@ -261,28 +220,6 @@ def buildTypeStream(days):
 	sorted_stream = sorted(type_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/type_stream.csv")
 
-def buildUserStream(thinkers):
-	"""Build a user usage stream"""
-
-	days = collections.defaultdict(lambda : collections.defaultdict(int))
-	user_stream = []
-
-	for thinker, thoughts in thinkers.items():
-		byDay = groupByDay(thoughts)
-		for day, daily in byDay.items():
-			days[day][thinker] = len(daily)
-
-	for date, day in days.items():
-		dated = day
-		dated["Post Date"] = date
-		for key in thinkers.keys():
-			if key not in dated:
-				dated[key] = 0
-		user_stream.append(dated)
-
-	sorted_stream = sorted(user_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
-	write_dict_list(sorted_stream, "data/output/user_stream.csv")
-
 def buildPrivacyStream(days):
 	"""Build out a privacy stream from daily thoughts"""
 
@@ -320,12 +257,24 @@ def buildLookup(days, ken):
 	with open('lookup.json', 'w') as fp:
 		json.dump(lookup, fp)
 
+def preprocess_thoughts(thoughts):
+	"""Perform preprocessing steps"""
+
+	if sys.argv[2] == "pat":
+		for thought in thoughts:
+			thought["mood"] = HL(thought)
+			if thought["mood"] != "":
+				print(thought["mood"])
+
+	return thoughts
+
 def run_from_command():             
 	"""Run if file invoked from command line"""
 	
 	params = {}
 	collective_thoughts = []
 	thoughts = load_dict_list(sys.argv[1])
+	thoughts = preprocess_thoughts(thoughts)
 	thinkers = collectThoughts(thoughts)
 
 	pat_thoughts = thinkers['patch615']
@@ -333,11 +282,9 @@ def run_from_command():
 	prophet_thoughts = thinkers['prophet']
 	work_thoughts = thinkers['msevrens@yodlee.com']
 	leah_thoughts = thinkers['leahdaniels']
-	nestor_thoughts = thinkers['philosoNestor']
 
 	# Automate User Selection
 	if sys.argv[2] == "all":
-		buildUserStream(thinkers)
 		for thinker, thoughts in thinkers.items():
 			collective_thoughts += thoughts
 	if sys.argv[2] == "rossi":
@@ -355,22 +302,14 @@ def run_from_command():
 		collective_thoughts = matt_thoughts
 	elif sys.argv[2] == "leah":
 		collective_thoughts = leah_thoughts
-	elif sys.argv[2] == "nestor":
-		collective_thoughts = nestor_thoughts
-	elif sys.argv[2] == "fox":
-		collective_thoughts = thinkers['fox scarlett']
-	elif sys.argv[2] == "work":
-		collective_thoughts = thinkers['msevrens@yodlee.com'] + thinkers['joeandrewkey@gm...']
-	elif sys.argv[2] == "andy":
-		collective_thoughts = thinkers['joeandrewkey@gm...']
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
 	ken = vectorize(thoughts, min_df=1)
 	days = groupByWeek(collective_thoughts)
 
 	buildSentimentStream(days)
-	buildTypeStream(days)
 	buildWordStream(days, ken)
+	#buildTypeStream(days)
 	#buildPrivacyStream(days)
 
 if __name__ == "__main__":
