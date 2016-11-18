@@ -26,8 +26,8 @@ from mind.load_model import get_tf_cnn_by_name
 
 SENTIMENT = get_tf_cnn_by_name("sentiment")
 HL_PATTERN = re.compile(r"HL \d+")
-LEAH_PATTERN = re.compile(r"#happy:? \d+\.?\d?")
-#LEAH_PATTERN = re.compile(r"#happy.? \d+\.\d+")
+HAPPY_PATTERN = re.compile(r"#happy:? \d+\.?\d?")
+MOOD_PATTERN = re.compile(r"#mood:? \d+\.?\d?")
 
 def HL(scale, x):
 	match = re.search(HL_PATTERN, x["Thought"])
@@ -37,9 +37,14 @@ def HL(scale, x):
 		return ""
 
 def parse_mood(scale, x):
-	match = re.search(LEAH_PATTERN, x["Thought"].lower())
-	if match:
-		value = float(match.group().split(" ")[1])
+	happy_match = re.search(HAPPY_PATTERN, x["Thought"].lower())
+	mood_match = re.search(MOOD_PATTERN, x["Thought"].lower())
+	if happy_match:
+		value = float(happy_match.group().split(" ")[1])
+		value = value if value <= 10 else 10
+		return scale(value)
+	elif mood_match:
+		value = float(mood_match.group().split(" ")[1])
 		value = value if value <= 10 else 10
 		return scale(value)
 	else:
