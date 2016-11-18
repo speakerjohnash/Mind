@@ -26,12 +26,34 @@ from mind.load_model import get_tf_cnn_by_name
 
 SENTIMENT = get_tf_cnn_by_name("sentiment")
 HL_PATTERN = re.compile(r"HL \d+")
+LEAH_PATTERN = re.compile(r"#happy:? \d+")
+#LEAH_PATTERN = re.compile(r"#happy.? \d+\.\d+")
 
 def HL(scale, x):
 	match = re.search(HL_PATTERN, x["Thought"])
 	if match:
 		return scale(float(match.group().split(" ")[1]))
 	else: 
+		return ""
+
+def parse_mood(scale, thought):
+
+	if "#happy" in thought["Thought"].lower():
+		tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
+		if tokens[1].replace('.', '', 1).isdigit():
+			value = float(tokens[1]) if float(tokens[1]) <= 10 else 10
+			return scale(value)
+
+	return ""
+
+def parse_happy(scale, x):
+	match = re.search(LEAH_PATTERN, x["Thought"].lower())
+	if match:
+		value = float(match.group().split(" ")[1])
+		value = value if value <= 10 else 10
+		print(scale(value))
+		return scale(value)
+	else:
 		return ""
 
 def write_dict_list(dict_list, file_name, encoding="utf-8", delimiter=","):
@@ -145,32 +167,12 @@ def buildSentimentStream(days):
 			if happy is not "":
 				reported.append(happy)
 
-			doc = TextBlob(thought["Thought"])
-			polarity.append(doc.sentiment.polarity)
-			vote_strings = thought["Good"].split("\n")
-			good, bad, _ = vote_strings
-			net_good = int(good[1:]) + int(bad)
+		if len(reported) == 0:
+			continue
 
-			if net_good != 0:
-				votes.append(net_good)
-
-		if len(votes) == 0:
-			votes = [0]
-
-		average_vote = sum(votes) / float(len(votes))
-		average_polarity = sum(polarity) / float(len(polarity))
-
-		if len(reported) > 0:
-			average_happy = sum(reported) / float(len(reported))
-			average_mood = (average_vote + average_polarity + average_happy + average_happy + average_happy) / 5
-		else:
-			average_mood = average_polarity
-			average_happy = 0
+		average_happy = sum(reported) / float(len(reported))
 
 		daily_sentiment = {
-			"average" : average_mood,
-			"textBlob": average_polarity,
-			"vote": average_vote,
 			"mood": average_happy
 		}
 
@@ -244,16 +246,6 @@ def buildLookup(days, ken):
 	with open('lookup.json', 'w') as fp:
 		json.dump(lookup, fp)
 
-def parse_mood(scale, thought):
-
-	if "#happy" in thought["Thought"].lower():
-		tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
-		if tokens[1].replace('.', '', 1).isdigit():
-			value = float(tokens[1]) if float(tokens[1]) <= 10 else 10
-			return scale(value)
-
-	return ""
-
 def preprocess_thoughts(thoughts):
 	"""Perform preprocessing steps"""
 
@@ -267,6 +259,11 @@ def preprocess_thoughts(thoughts):
 	elif sys.argv[2] == "matt":
 		for thought in thoughts:
 			thought["mood"] = parse_mood(scale, thought)
+			if thought["mood"] != "":
+				print(thought["mood"])
+	elif sys.argv[2] == "leah":
+		for thought in thoughts:
+			thought["mood"] = parse_happy(scale, thought)
 
 	return thoughts
 
@@ -276,7 +273,6 @@ def run_from_command():
 	params = {}
 	collective_thoughts = []
 	thoughts = load_dict_list(sys.argv[1])
-	thoughts = preprocess_thoughts(thoughts)
 	thinkers = collectThoughts(thoughts)
 
 	pat_thoughts = thinkers['patch615']
@@ -299,10 +295,13 @@ def run_from_command():
 		buildWordStream(days, ken)
 		sys.exit()
 	elif sys.argv[2] == "pat":
+		pat_thoughts = preprocess_thoughts(pat_thoughts)
 		collective_thoughts = pat_thoughts
 	elif sys.argv[2] == "matt":
+		matt_thoughts = preprocess_thoughts(matt_thoughts)
 		collective_thoughts = matt_thoughts
 	elif sys.argv[2] == "leah":
+		leah_thoughts = preprocess_thoughts(leah_thoughts)
 		collective_thoughts = leah_thoughts
 
 	thoughts = [thought['Thought'] for thought in collective_thoughts]
