@@ -27,10 +27,10 @@ from mind.load_model import get_tf_cnn_by_name
 SENTIMENT = get_tf_cnn_by_name("sentiment")
 HL_PATTERN = re.compile(r"HL \d+")
 
-def HL(x):
+def HL(scale, x):
 	match = re.search(HL_PATTERN, x["Thought"])
 	if match:
-		return match.group().split(" ")[1]
+		return scale(float(match.group().split(" ")[1]))
 	else: 
 		return ""
 
@@ -127,23 +127,10 @@ def buildWordStream(days, ken):
 	sorted_stream = sorted(stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/all_stream.csv")
 
-def parse_mood(scale, thought):
-
-	if "#happy" in thought["Thought"].lower():
-		print(thought["Thought"])
-
-	if "#happy" in thought["Thought"].lower():
-		tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
-		if tokens[1].replace('.', '', 1).isdigit(): 
-			return scale(float(tokens[1]))
-
-	return None
-
 def buildSentimentStream(days):
 	"""Build out a sentiment stream from daily thoughts"""
 
 	sentiment_stream = []
-	scale = interp1d([0,11],[-1,1])
 
 	for day, thoughts in days.items():
 
@@ -153,9 +140,9 @@ def buildSentimentStream(days):
 		for thought in thoughts:
 
 			# Parse out manual tracking
-			happy = parse_mood(scale, thought)
+			happy = thought["mood"]
 
-			if happy is not None:
+			if happy is not "":
 				reported.append(happy)
 
 			doc = TextBlob(thought["Thought"])
@@ -257,12 +244,28 @@ def buildLookup(days, ken):
 	with open('lookup.json', 'w') as fp:
 		json.dump(lookup, fp)
 
+def parse_mood(scale, thought):
+
+	if "#happy" in thought["Thought"].lower():
+		tokens = thought["Thought"].lower().replace("#happy", "").split(" ")
+		if tokens[1].replace('.', '', 1).isdigit(): 
+			return scale(float(tokens[1]))
+
+	return ""
+
 def preprocess_thoughts(thoughts):
 	"""Perform preprocessing steps"""
 
+	scale = interp1d([0,10],[-1,1])
+
 	if sys.argv[2] == "pat":
 		for thought in thoughts:
-			thought["mood"] = HL(thought)
+			thought["mood"] = HL(scale, thought)
+			if thought["mood"] != "":
+				print(thought["mood"])
+	elif sys.argv[2] == "matt":
+		for thought in thoughts:
+			thought["mood"] = parse_mood(scale, thought)
 			if thought["mood"] != "":
 				print(thought["mood"])
 
