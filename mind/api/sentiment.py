@@ -12,12 +12,62 @@ import json
 from tornado import gen
 from tornado_json.requesthandlers import APIHandler
 
+from scipy.interpolate import interp1d
+
 from mind.api import schema
+
+HL_PATTERN = re.compile(r"HL \d+")
+HAPPY_PATTERN = re.compile(r"#happy:? \d+\.?\d?")
+MOOD_PATTERN = re.compile(r"#mood:? \d+\.?\d?")
+
+def HL(scale, x):
+	match = re.search(HL_PATTERN, x["Thought"])
+	if match:
+		return scale(float(match.group().split(" ")[1]))
+	else: 
+		return ""
+
+def parse_mood(scale, x):
+	happy_match = re.search(HAPPY_PATTERN, x["Thought"].lower())
+	mood_match = re.search(MOOD_PATTERN, x["Thought"].lower())
+	if happy_match:
+		value = float(happy_match.group().split(" ")[1])
+		value = value if value <= 10 else 10
+		return scale(value)
+	elif mood_match:
+		value = float(mood_match.group().split(" ")[1])
+		value = value if value <= 10 else 10
+		return scale(value)
+	else:
+		return ""
+
+def process_by_day(data):
+	"""Process data by data and return in proper format"""
+
+	output = {"days" : []}
+	scale = interp1d([0, 10], [-1, 1])
+
+	for day in data["days"]:
+
+		thoughts = day["thoughts"]
+		moods = []
+
+		for thought in thougths:
+			mood = parse_mood(scale, thought)
+			if mood != "":
+				moods.append(mood)
+
+		if len(moods) > 0:
+			average_mood = sum(moods) / float(len(moods))
+			today = {"mood": average_mood, "date": day["date"]}
+			output["days"].append(today)
+		else:
+			continue
+
+	return output
 
 class Sentiment_Analysis(APIHandler):
 	"""This class handles Sentiment Analysis for Prophet"""
-
-	thread_pool = concurrent.futures.ThreadPoolExecutor(8)
 
 	with open("schemas/sentiment/schema_input.json") as data_file:
 		schema_input = json.load(data_file)
@@ -38,12 +88,10 @@ class Sentiment_Analysis(APIHandler):
 		output_example=example_output
 	)
 
-	@gen.coroutine
 	def post(self):
-		"""Handle post requests asynchonously"""
+		"""Handle post requests"""
 		data = json.loads(self.request.body.decode())
-		classifier = {}
-		results = yield self.thread_pool.submit(classifier, data)
+		results = process_by_day(data)
 		return results
 
 	def get(self):

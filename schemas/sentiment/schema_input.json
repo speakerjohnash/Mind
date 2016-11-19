@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
-	"title": "Sentiment Analysis Input Schema",
+	"title": "Mood Analysis Input Schema",
 	"definitions": {
 		"thought": {
 			"type": "object",
