@@ -164,7 +164,7 @@
 
 			circle
 		        .attr("opacity", 1)
-		        .attr("cx", mouse[0])
+		        .attr("cx", pos.x)
 		        .attr("cy", pos.y);
 
 			var color = colorScale(cheat(pos.y))
