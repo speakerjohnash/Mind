@@ -162,14 +162,12 @@
 				else                break; //position found
 			}
 
-			console.log(pos.y)
-
 			circle
 		        .attr("opacity", 1)
 		        .attr("cx", mouse[0])
 		        .attr("cy", pos.y);
 
-			var color = colorScale(cheat(mouse[1]));
+			var color = colorScale(cheat(pos.y))
 
 			d3.select(".legend span").style("background", color)
 
