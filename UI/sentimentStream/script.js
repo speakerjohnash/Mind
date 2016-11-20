@@ -58,7 +58,7 @@
 
 	function buildStream(data) {
 
-		globalData = data
+		globalData = data;
 
 		var width = window.innerWidth,
 			height = window.innerHeight / 2.5,
@@ -100,22 +100,6 @@
 			.x(function(d) { return x(d.date); })
 			.y(function(d) { return mY(d.value); });
 
-
-		var cheat = d3.scale.linear().domain([height, 0]).range([-1, 1]);
-
-		// Interactive
-		svg.on("mousemove", function() {
-			var mouse = d3.mouse(this),
-				date = x.invert(mouse[0]),
-				color = colorScale(cheat(mouse[1]));
-
-				d3.select(".legend span").style("background", color)
-				console.log(color)
-
-			// TODO: Get y value at x-position
-			// Cast that number to a color and set the color of the face to the gradient
-  		});
-
 		// TODO: Load prophet thoughts via brush selection
 
 		// Scatterplot
@@ -141,10 +125,57 @@
 			.attr("class", "fat-line")
 			.attr("d", line);
 
-		field.append("path")
+		var path = field.append("path")
 			.datum(mood)
 			.attr("class", "line")
 			.attr("d", line);
+
+		var pathEl = path.node();
+		var pathLength = pathEl.getTotalLength();
+
+		var cheat = d3.scale.linear().domain([height, 0]).range([-1, 1]);
+
+		var circle = 
+        svg.append("circle")
+          .attr("cx", 100)
+          .attr("cy", 350)
+          .attr("r", 3)
+          .attr("fill", "red");
+
+		// Interactive
+		svg.on("mousemove", function() {
+			var mouse = d3.mouse(this),
+				date = x.invert(mouse[0]),
+				beginning = mouse[0], 
+				end = pathLength;
+				
+			var target;
+
+			while (true) {
+				target = Math.floor((beginning + end) / 2);
+				pos = pathEl.getPointAtLength(target);
+				if ((target === end || target === beginning) && pos.x !== x) {
+					break;
+				}
+				if (pos.x > x) end = target;
+				else if (pos.x < x) beginning = target;
+				else                break; //position found
+			}
+
+			console.log(pos.y)
+
+			circle
+		        .attr("opacity", 1)
+		        .attr("cx", mouse[0])
+		        .attr("cy", pos.y);
+
+			var color = colorScale(cheat(mouse[1]));
+
+			d3.select(".legend span").style("background", color)
+
+			// TODO: Get y value at x-position
+			// Cast that number to a color and set the color of the face to the gradient
+  		});
 
 		field.append("line")
 			.style("stroke", "black")  // colour the line
