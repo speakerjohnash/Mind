@@ -6,6 +6,10 @@ p {
   font: 12px helvetica;
 }
 
+svg {
+  float: right;
+}
+
 .chart { 
   background: #fff;
 }
@@ -23,6 +27,15 @@ p {
   stroke-width: 1px;
 }
 
+.legend span {
+  width: 30px;
+  height: 30px;
+  border-radius: 20px;
+  background: #e8e8e8;
+  display: block;
+  margin-left: 7px;
+}
+
 .fat-line {
   fill: none;
   stroke: url(#temperature-gradient);
@@ -33,6 +46,10 @@ p {
 .widget {
   margin-left: 25px;
   margin-top: 15px;
+}
+
+.legend {
+  float: left;
 }
 
 .brush .extent {

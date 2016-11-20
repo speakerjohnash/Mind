@@ -1,6 +1,7 @@
 (function sentimentStream() {
 
-	var csvpath = "../../data/output/sentiment_stream.csv";
+	var csvpath = "../../data/output/sentiment_stream.csv",
+		globalData = {};
 	
 	d3.csv(csvpath, buildStream);
 
@@ -57,12 +58,29 @@
 
 	function buildStream(data) {
 
-		var width = 800,
-			height = 200;
+		globalData = data
+
+		var width = window.innerWidth,
+			height = window.innerHeight / 2.5,
+			legendWidth = 60,
+			axisHeight = 20;
 
 		var svg = d3.select(".canvas-frame").append("svg")
-			.attr("width", width)
-			.attr("height", height + 20);
+			.attr("width", width - legendWidth)
+			.attr("height", height + axisHeight);
+
+		var legend = d3.select(".canvas-frame").append("div")
+			.attr("class", "legend")
+			.style("height", height + "px")
+			.style("width", 35 + "px");
+
+		legend.append("span")
+			.attr("class", "positive")
+			.style("margin-top", height / 4.8 + "px")
+
+		legend.append("span")
+			.attr("class", "negative")
+			.style("margin-top", height / 2.5 + "px")
 
 		// Data
 		var moodAndPositivity = formatData(data),
@@ -73,19 +91,25 @@
 		var positivityRange = d3.extent(positivity, function(d) { return d["value"] }),
 			moodRange = d3.extent(mood, function(d) { return d["value"] }),
 			format = d3.time.format("%m/%d/%Y"),
-			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])});
+			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
+			colorScale = d3.scale.linear().domain([-1, 0, 1]).range(['#694a69', 'steelblue', 'yellow']);
 
 		var x = d3.time.scale().domain(timeRange).range([0, width]),
 			y = d3.scale.linear().domain([-1, 1]).range([height, 0])
 			mY = d3.scale.linear().domain(moodRange).range([height, 0]);
 
+		// Interactive
+		svg.on("mousemove", function() {
+			var mouse = d3.mouse(this);
+			// TODO: Get y value at x-position
+			// Cast that number to a color and set the color of the face to the gradient
+  		});
+
 		// Line 
 		var line = d3.svg.line()
-			.interpolate(movingAvg(5))
+			.interpolate(movingAvg(4))
 			.x(function(d) { return x(d.date); })
 			.y(function(d) { return mY(d.value); });
-
-		// TODO: Add a vertical gradient with blue for sad, yellow for happy and maybe green for neutral
 
 		// TODO: Load prophet thoughts via brush selection
 
@@ -93,7 +117,7 @@
 		svg.selectAll("dot")
 			.data(mood)
 			.enter().append("circle")
-			.attr("r", 2)
+			.attr("r", 1.5)
 			.attr("cx", function(d) { return x(d.date); })
 			.attr("cy", function(d) { return mY(d.value); });
 		
@@ -121,7 +145,7 @@
 			.style("stroke", "black")  // colour the line
 			.attr("x1", 0)	 // x position of the first end of the line
 			.attr("y1", height / 2)	  // y position of the first end of the line
-			.attr("x2", width)	 // x position of the second end of the line
+			.attr("x2", width - legendWidth)	 // x position of the second end of the line
 			.attr("y2", height / 2);	// y position of the second end of the line
 
 		// Gradient
