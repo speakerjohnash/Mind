@@ -106,7 +106,7 @@
 		svg.selectAll("dot")
 			.data(mood)
 			.enter().append("circle")
-			.attr("r", 1.5)
+			.attr("r", 2)
 			.attr("cx", function(d) { return x(d.date); })
 			.attr("cy", function(d) { return mY(d.value); });
 		
@@ -140,16 +140,17 @@
           .attr("cx", 100)
           .attr("cy", 350)
           .attr("r", 3)
-          .attr("fill", "red");
+          .attr("fill", "steelblue");
 
 		// Interactive
 		svg.on("mousemove", function() {
 			var mouse = d3.mouse(this),
-				date = x.invert(mouse[0]),
+				x = mouse[0],
 				beginning = mouse[0], 
 				end = pathLength;
 				
 			var target;
+			var pos;
 
 			while (true) {
 				target = Math.floor((beginning + end) / 2);
