@@ -75,12 +75,8 @@
 			.style("width", 35 + "px");
 
 		legend.append("span")
-			.attr("class", "positive")
-			.style("margin-top", height / 4.8 + "px")
-
-		legend.append("span")
-			.attr("class", "negative")
-			.style("margin-top", height / 2.5 + "px")
+			.attr("class", "face")
+			.style("margin-top", height / 2 + "px")
 
 		// Data
 		var moodAndPositivity = formatData(data),
@@ -98,18 +94,27 @@
 			y = d3.scale.linear().domain([-1, 1]).range([height, 0])
 			mY = d3.scale.linear().domain(moodRange).range([height, 0]);
 
-		// Interactive
-		svg.on("mousemove", function() {
-			var mouse = d3.mouse(this);
-			// TODO: Get y value at x-position
-			// Cast that number to a color and set the color of the face to the gradient
-  		});
-
 		// Line 
 		var line = d3.svg.line()
 			.interpolate(movingAvg(4))
 			.x(function(d) { return x(d.date); })
 			.y(function(d) { return mY(d.value); });
+
+
+		var cheat = d3.scale.linear().domain([height, 0]).range([-1, 1]);
+
+		// Interactive
+		svg.on("mousemove", function() {
+			var mouse = d3.mouse(this),
+				date = x.invert(mouse[0]),
+				color = colorScale(cheat(mouse[1]));
+
+				d3.select(".legend span").style("background", color)
+				console.log(color)
+
+			// TODO: Get y value at x-position
+			// Cast that number to a color and set the color of the face to the gradient
+  		});
 
 		// TODO: Load prophet thoughts via brush selection
 
