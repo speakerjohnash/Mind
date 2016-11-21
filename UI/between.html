@@ -38,16 +38,16 @@ svg.append("circle")
     .attr("r", 4)
     .attr("fill", "black");
 
-var d0 = "M 13 21 C 13 43 50 43 50 21",
-    d1 = "M 19 34 S 27 41 46 35 50 33",
-    d2 = "M 26 35 S 27 36 40 35 41 29";
+var happy = "M 13 21 C 13 43 50 43 50 21",
+    pleasant = "M 19 34 S 27 41 46 35 50 33",
+    neutral = "M 26 35 S 27 36 40 35 41 29";
   
 var unpleasant = "M 19 34 S 29 30 46 35 50 33";
 
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
-    .attr("d", d0)
-    .call(transition, d0, d1);
+    .attr("d", happy)
+    .call(transition, happy, pleasant);
 
 /*
 svg.append("path")
