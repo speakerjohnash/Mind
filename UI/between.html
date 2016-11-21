@@ -20,24 +20,45 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var d0 = "M 664 453 c -12 -58 -28 -85 -71 -123 c -97 -85 -272 -74 -345 22 c -28 36 -50 102 -40 114 c 4 4 -1 4 -11 1 c -10 -4 -20 -7 -22 -7 c -6 0 13 -63 27 -90 c 52 -101 191 -149 324 -112 c 47 14 118 71 141 116 c 20 38 29 106 14 106 c -6 0 -13 -12 -17 -27 Z"
+svg.append("circle")
+    .attr("cx", 245)
+    .attr("cy", 180)
+    .attr("r", 75)
+    .attr("fill", "#dddddd");
 
-var d1 = "M 617 316 c -55 -63 -124 -98 -200 -99 c -82 -1 -130 22 -163 79 c -25 43 -44 56 -44 32 c 0 -6 11 -30 25 -54 c 51 -87 175 -112 298 -59 c 36 15 137 108 137 126 c 0 23 -21 14 -53 -25 Z"
+svg.append("circle")
+    .attr("cx", 215)
+    .attr("cy", 165)
+    .attr("r", 4)
+    .attr("fill", "black");
 
-var d0 = "M 10 13 C 10 43 50 43 50 13",
-    d2 = "M 13 21 C 13 43 50 43 50 21";
-    d1 = "M 18 30 C 18 43 50 43 50 30";
+svg.append("circle")
+    .attr("cx", 275)
+    .attr("cy", 165)
+    .attr("r", 4)
+    .attr("fill", "black");
+
+var d0 = "M 13 21 C 13 43 50 43 50 21",
+    d1 = "M 19 34 S 27 41 46 35 50 33",
+    d2 = "M 26 35 S 27 36 40 35 41 29";
   
+var unpleasant = "M 19 34 S 29 30 46 35 50 33";
+
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
     .attr("d", d0)
     .call(transition, d0, d1);
 
+/*
+svg.append("path")
+    .attr("transform", "translate(180,150)scale(2,2)")
+    .attr("d", unpleasant) */
+
 function transition(path, d0, d1) {
   path.transition()
       .duration(2000)
       .attrTween("d", pathTween(d1, 4))
-      .each("end", function() { d3.select(this).call(transition, d1, d0); });
+      .each("end", function() { d3.select(this).call(transition, d1, unpleasant); });
 }
 
 function pathTween(d1, precision) {
