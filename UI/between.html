@@ -48,19 +48,19 @@ var beaming = "M 13 21 C 13 43 50 43 50 21",
 
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
-    .attr("d", sad)
-    .call(transition, sad, unpleasant, neutral, pleasant, happy);
+    .attr("d", beaming)
+    .call(transition, beaming, happy, pleasant, neutral, unpleasant, sad);
 
 /*
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
     .attr("d", depressed); */
 
-function transition(path, f0, f1, f2, f3, f4) {
+function transition(path, f0, f1, f2, f3, f4, f5) {
   path.transition()
       .duration(1000)
       .attrTween("d", pathTween(f1, 4))
-      .each("end", function() { d3.select(this).call(transition, f1, f2, f3, f4, beaming); });
+      .each("end", function() { d3.select(this).call(transition, f1, f2, f3, f4, f5, depressed); });
 }
 
 function pathTween(d1, precision) {
