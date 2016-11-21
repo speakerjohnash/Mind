@@ -150,13 +150,20 @@ def buildSentimentStream(days):
 
 	for day, thoughts in days.items():
 
-		votes, polarity, reported = [], [], []
-		analysis = [float(x['CNN']) for x in SENTIMENT(thoughts)]
+		positivity, reported = [], []
+		#analysis = [float(x['CNN']) for x in SENTIMENT(thoughts)]
 
 		for thought in thoughts:
 
 			# Parse out manual tracking
 			happy = thought["mood"]
+			votes = thought["Good"].split("\n")
+			good = int(votes[0])
+			bad = int(votes[1])
+			net_good = good + bad
+
+			if good != 0 or bad != 0:
+				positivity.append(net_good)
 
 			if happy is not "":
 				reported.append(happy)
@@ -164,10 +171,15 @@ def buildSentimentStream(days):
 		if len(reported) == 0:
 			continue
 
+		if len(positivity) == 0:
+			positivity = [0]
+
 		average_happy = sum(reported) / float(len(reported))
+		average_positivity = sum(positivity) / float(len(positivity))
 
 		daily_sentiment = {
-			"mood": average_happy
+			"mood": average_happy,
+			"positivity": average_positivity
 		}
 
 		daily_sentiment['Post Date'] = day
