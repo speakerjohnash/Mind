@@ -39,7 +39,7 @@ svg.append("circle")
     .attr("fill", "black");
 
 var beaming = "M 13 21 C 13 43 50 43 50 21",
-    happy = "M 15 30 S 28 48 46 31 52 34",
+    happy = "M 17 30 S 28 48 48 30 53 34",
     pleasant = "M 19 34 S 27 41 46 35 50 33",
     neutral = "M 26 35 S 27 36 40 35 41 29",
     unpleasant = "M 19 34 S 29 30 46 35 50 33",
@@ -49,18 +49,18 @@ var beaming = "M 13 21 C 13 43 50 43 50 21",
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
     .attr("d", unpleasant)
-    .call(transition, unpleasant, pleasant, neutral);
+    .call(transition, unpleasant, neutral, pleasant, happy);
 
 /*
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
-    .attr("d", beaming); */
+    .attr("d", happy); */
 
-function transition(path, d0, d1, d2) {
+function transition(path, f0, f1, f2, f3) {
   path.transition()
       .duration(2000)
-      .attrTween("d", pathTween(d1, 4))
-      .each("end", function() { d3.select(this).call(transition, d1, d2, beaming); });
+      .attrTween("d", pathTween(f1, 4))
+      .each("end", function() { d3.select(this).call(transition, f1, f2, f3, beaming); });
 }
 
 function pathTween(d1, precision) {
