@@ -23,19 +23,19 @@ var svg = d3.select("body").append("svg")
 svg.append("circle")
     .attr("cx", 245)
     .attr("cy", 180)
-    .attr("r", 75)
+    .attr("r", 35)
     .attr("fill", "#dddddd");
 
 svg.append("circle")
-    .attr("cx", 215)
-    .attr("cy", 165)
-    .attr("r", 4)
+    .attr("cx", 230)
+    .attr("cy", 170)
+    .attr("r", 2.5)
     .attr("fill", "black");
 
 svg.append("circle")
-    .attr("cx", 275)
-    .attr("cy", 165)
-    .attr("r", 4)
+    .attr("cx", 260)
+    .attr("cy", 170)
+    .attr("r", 2.5)
     .attr("fill", "black");
 
 var beaming = "M 13 21 C 13 43 50 43 50 21",
@@ -47,7 +47,8 @@ var beaming = "M 13 21 C 13 43 50 43 50 21",
     depressed = "M17, 35 C23,12 51,22 51,35";
 
 svg.append("path")
-    .attr("transform", "translate(180,150)scale(2,2)")
+    .attr("class", "mouth")
+    .attr("transform", "translate(213,163)scale(1,1)")
     .attr("d", beaming)
     .call(transition, beaming, happy, pleasant, neutral, unpleasant, sad);
 
@@ -65,7 +66,7 @@ function transition(path, f0, f1, f2, f3, f4, f5) {
 
 function pathTween(d1, precision) {
   return function() {
-    var path0 = this,
+    var path0 = d3.select(".mouth").node(),
         path1 = path0.cloneNode(),
         n0 = path0.getTotalLength(),
         n1 = (path1.setAttribute("d", d1), path1).getTotalLength();
