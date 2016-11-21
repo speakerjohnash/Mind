@@ -2,6 +2,14 @@
 
 	var csvpath = "../../data/output/sentiment_stream.csv",
 		globalData = {};
+
+	var beaming = "M 13 21 C 13 43 50 43 50 21",
+		happy = "M 17 30 S 28 48 48 30 53 34",
+		pleasant = "M 19 34 S 27 41 46 35 50 33",
+		neutral = "M 26 35 S 27 36 40 35 41 29",
+		unpleasant = "M 19 34 S 29 30 46 35 50 33",
+		sad = "M17, 35 C29,18 51,30 51,35",
+		depressed = "M17, 35 C23,12 51,22 51,35";
 	
 	d3.csv(csvpath, buildStream);
 
@@ -160,20 +168,20 @@
 				}
 				if (pos.x > x) end = target;
 				else if (pos.x < x) beginning = target;
-				else                break; //position found
+				else				break; //position found
 			}
 
 			circle
-		        .attr("opacity", 1)
-		        .attr("cx", pos.x)
-		        .attr("cy", pos.y);
+				.attr("opacity", 1)
+				.attr("cx", pos.x)
+				.attr("cy", pos.y);
 
 			var color = colorScale(cheat(pos.y))
 
 			d3.select(".legend span").style("background", color)
 
-			// TODO: Get y value at x-position
-			// Cast that number to a color and set the color of the face to the gradient
+			// TODO: Set smile correct position
+
   		});
 
 		field.append("line")
