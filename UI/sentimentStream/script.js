@@ -87,7 +87,8 @@
 
 		var width = window.innerWidth,
 			height = window.innerHeight / 2.5,
-			legendWidth = 60,
+			faceSize = 70;
+			legendWidth = 100,
 			axisHeight = 20;
 
 		var svg = d3.select(".canvas-frame").append("svg")
@@ -101,7 +102,9 @@
 
 		legend.append("span")
 			.attr("class", "face")
-			.style("margin-top", height / 2 + "px")
+			.style("width", faceSize + "px")
+			.style("height", faceSize + "px")
+			.style("margin-top", (height / 2) - (faceSize / 2)+ "px")
 
 		// Data
 		var mood = formatData(data);
