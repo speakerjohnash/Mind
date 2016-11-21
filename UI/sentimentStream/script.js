@@ -17,20 +17,10 @@
 
 	function formatData(data) {
 
-		var positivity = [],
-			mood = [],
-			format = d3.time.format("%m/%d/%Y"),
-			row = "";
+		var mood = [],
+			format = d3.time.format("%m/%d/%Y");
 
 		data.forEach(function(day) {
-			p_row = {
-				"value" : parseFloat(day["vote"], 10), 
-				"key" : "positivity", 
-				"date" : format.parse(day["Post Date"])
-			}
-
-			positivity.push(p_row)
-
 			if (parseFloat(day["mood"], 10) != 0) {
 				m_row = {
 					"value" : parseFloat(day["mood"], 10), 
@@ -42,7 +32,7 @@
 				 
 		})
 
-		return [positivity, mood]
+		return mood
 
 	}
 
@@ -62,6 +52,31 @@
 			pathDesc = d3.svg.line().interpolate("basis")(points)
 			return pathDesc.slice(1, pathDesc.length);
 		}
+	}
+
+	function pathTween(d1, precision) {
+		return function() {
+		    var path0 = d3.select(".mouth").node(),
+				path1 = path0.cloneNode(),
+				n0 = path0.getTotalLength(),
+				n1 = (path1.setAttribute("d", d1), path1).getTotalLength();
+
+			// Uniform sampling of distance based on specified precision.
+			var distances = [0], i = 0, dt = precision / Math.max(n0, n1);
+			while ((i += dt) < 1) distances.push(i);
+			distances.push(1);
+
+			// Compute point-interpolators at each distance.
+			var points = distances.map(function(t) {
+				var p0 = path0.getPointAtLength(t * n0),
+					p1 = path1.getPointAtLength(t * n1);
+				return d3.interpolate([p0.x, p0.y], [p1.x, p1.y]);
+			});
+
+			return function(t) {
+				return t < 1 ? "M" + points.map(function(p) { return p(t); }).join("L") : d1;
+			};
+		};
 	}
 
 	function buildStream(data) {
@@ -87,13 +102,10 @@
 			.style("margin-top", height / 2 + "px")
 
 		// Data
-		var moodAndPositivity = formatData(data),
-			positivity = moodAndPositivity[0],
-			mood = moodAndPositivity[1];
+		var mood = formatData(data);
 
 		// Gradients
-		var positivityRange = d3.extent(positivity, function(d) { return d["value"] }),
-			moodRange = d3.extent(mood, function(d) { return d["value"] }),
+		var moodRange = d3.extent(mood, function(d) { return d["value"] }),
 			format = d3.time.format("%m/%d/%Y"),
 			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
 			colorScale = d3.scale.linear().domain([-1, 0, 1]).range(['#694a69', 'steelblue', 'yellow']);
@@ -141,8 +153,7 @@
 		var pathEl = path.node();
 		var pathLength = pathEl.getTotalLength();
 
-		var cheat = d3.scale.linear().domain([height, 0]).range([-1, 1]);
-
+		// Track Line
 		var circle = 
         svg.append("circle")
           .attr("cx", 100)
@@ -150,7 +161,7 @@
           .attr("r", 3)
           .attr("fill", "steelblue");
 
-		// Interactive
+		// Interactive Face
 		svg.on("mousemove", function() {
 			var mouse = d3.mouse(this),
 				x = mouse[0],
@@ -176,7 +187,7 @@
 				.attr("cx", pos.x)
 				.attr("cy", pos.y);
 
-			var color = colorScale(cheat(pos.y))
+			var color = colorScale(y.invert(pos.y))
 
 			d3.select(".legend span").style("background", color)
 
@@ -184,6 +195,7 @@
 
   		});
 
+		// Baseline
 		field.append("line")
 			.style("stroke", "black")  // colour the line
 			.attr("x1", 0)	 // x position of the first end of the line
