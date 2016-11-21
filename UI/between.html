@@ -44,13 +44,13 @@ var beaming = "M 13 21 C 13 43 50 43 50 21",
     neutral = "M 26 35 S 27 36 40 35 41 29",
     unpleasant = "M 19 34 S 29 30 46 35 50 33",
     sad,
-    depressed = "M17, 35 C20,12 53,22 50,35";
+    depressed = "M17, 35 C23,12 51,22 51,35";
 
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
     .attr("d", depressed)
     .call(transition, depressed, unpleasant, neutral, pleasant, happy);
-    
+
 /*
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
