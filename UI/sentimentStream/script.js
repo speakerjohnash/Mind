@@ -32,6 +32,8 @@
 				 
 		})
 
+		console.log(mood)
+
 		return mood
 
 	}
@@ -110,9 +112,11 @@
 			timeRange = d3.extent(data, function(d) { return format.parse(d["Post Date"])}),
 			colorScale = d3.scale.linear().domain([-1, 0, 1]).range(['#694a69', 'steelblue', 'yellow']);
 
-		var x = d3.time.scale().domain(timeRange).range([0, width]),
+		var x = d3.time.scale().domain(timeRange).range([0, width - legendWidth]),
 			y = d3.scale.linear().domain([-1, 1]).range([height, 0])
 			mY = d3.scale.linear().domain(moodRange).range([height, 0]);
+
+		console.log(moodRange)
 
 		// Line 
 		var line = d3.svg.line()
