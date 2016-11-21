@@ -47,18 +47,18 @@ var unpleasant = "M 19 34 S 29 30 46 35 50 33";
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
     .attr("d", happy)
-    .call(transition, happy, pleasant);
+    .call(transition, happy, pleasant, neutral);
 
 /*
 svg.append("path")
     .attr("transform", "translate(180,150)scale(2,2)")
     .attr("d", unpleasant) */
 
-function transition(path, d0, d1) {
+function transition(path, d0, d1, d2) {
   path.transition()
       .duration(2000)
       .attrTween("d", pathTween(d1, 4))
-      .each("end", function() { d3.select(this).call(transition, d1, unpleasant); });
+      .each("end", function() { d3.select(this).call(transition, d1, d2, unpleasant); });
 }
 
 function pathTween(d1, precision) {
