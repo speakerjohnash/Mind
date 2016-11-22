@@ -108,7 +108,19 @@
 			.attr("cx", faceSize / 2)
 			.attr("cy", height / 2);
 
-		// TODO: Add Eyes
+		// Eyes
+		legend.append("circle")
+			.attr("cx", (faceSize / 2) - (faceSize / 5))
+			.attr("cy", (height / 2) - (faceSize / 6))
+			.attr("r", 2.5)
+			.attr("fill", "black");
+
+		legend.append("circle")
+			.attr("cx", (faceSize / 2) + (faceSize / 5))
+			.attr("cy", (height / 2) - (faceSize / 6))
+			.attr("r", 2.5)
+			.attr("fill", "black");
+
 		// TODO: Set base face to neutral
 
 		// Data
