@@ -27,9 +27,12 @@ svg {
   stroke-width: 1px;
 }
 
-.legend .face {
+.legend .face{
   opacity: 0.5;
-  display: block;
+}
+
+.legend .eye {
+  opacity: 0.6;
 }
 
 .fat-line {

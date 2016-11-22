@@ -110,12 +110,14 @@
 
 		// Eyes
 		legend.append("circle")
+			.attr("class", "eye")
 			.attr("cx", (faceSize / 2) - (faceSize / 5))
 			.attr("cy", (height / 2) - (faceSize / 6))
 			.attr("r", 2.5)
 			.attr("fill", "black");
 
 		legend.append("circle")
+			.attr("class", "eye")
 			.attr("cx", (faceSize / 2) + (faceSize / 5))
 			.attr("cy", (height / 2) - (faceSize / 6))
 			.attr("r", 2.5)
