@@ -41,6 +41,11 @@
 		};
 	}
 
+	/* Produce all transition functions */
+	function stateLookup(states) {
+
+	}
+
 	/* Prepare data for visualization */
 
 	function formatData(data) {
@@ -123,7 +128,13 @@
 			.attr("r", 2.5)
 			.attr("fill", "black");
 
-		// TODO: Set base face to neutral
+		// Set base face to neutral
+		var mouthPos = (height / 2) - (faceSize / 2) + (faceSize / 4.5)
+
+		legend.append("path")
+			.attr("class", "mouth")
+			.attr("transform", "translate(2," + mouthPos + ")scale(1,1)")
+			.attr("d", neutral)
 
 		// Data
 		var mood = formatData(data);

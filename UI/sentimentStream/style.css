@@ -35,6 +35,12 @@ svg {
   opacity: 0.6;
 }
 
+.mouth {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
 .fat-line {
   fill: none;
   stroke: url(#temperature-gradient);
