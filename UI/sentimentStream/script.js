@@ -49,7 +49,7 @@
 			tFunc;
 
 		for (var i = 0; i < states.length; i++) {
-			if (i == states.length) break
+			if (i == states.length - 1) break
 			path.attr("d", states[i])
 			tFunc = pathTween(states[i + 1] , 4)()
 			tFuncs.push(tFunc)
@@ -214,6 +214,8 @@
           .attr("r", 3)
           .attr("fill", "steelblue");
 
+        var funcScale = d3.scale.linear().domain([-1, 1]).range([0, 6]);
+
 		// Interactive Face
 		svg.on("mousemove", function() {
 			var mouse = d3.mouse(this),
@@ -241,12 +243,17 @@
 				.attr("cy", pos.y);
 
 			var scaledY = y.invert(pos.y),
-				color = colorScale(scaledY)
+				color = colorScale(scaledY),
+				scaledIndex = funcScale(scaledY),
+				funcToUse = Math.floor(scaledIndex),
+				t = scaledIndex % 1,
+				newMouthLine = stateMap[funcToUse](t);
 
-			d3.select(".legend .face").attr("fill", color)
+			d3.select(".mouth")
+				.attr("d", newMouthLine)
 
-			// TODO: Cast scaled Y to arc position
-			// TODO: Set smile correct position
+			d3.select(".legend .face")
+				.attr("fill", color);
 
   		});
 
