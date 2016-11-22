@@ -44,6 +44,21 @@
 	/* Produce all transition functions */
 	function stateLookup(states) {
 
+		var path = d3.select(".mouth"),
+			tFuncs = [],
+			tFunc;
+
+		for (var i = 0; i < states.length; i++) {
+			if (i == states.length) break
+			path.attr("d", states[i])
+			tFunc = pathTween(states[i + 1] , 4)()
+			tFuncs.push(tFunc)
+		}
+
+		path.attr("d", neutral)
+
+		return tFuncs
+
 	}
 
 	/* Prepare data for visualization */
@@ -129,12 +144,15 @@
 			.attr("fill", "black");
 
 		// Set base face to neutral
-		var mouthPos = (height / 2) - (faceSize / 2) + (faceSize / 4.5)
+		var mouthPos = (height / 2) - (faceSize / 2) + (faceSize / 4)
 
 		legend.append("path")
 			.attr("class", "mouth")
-			.attr("transform", "translate(2," + mouthPos + ")scale(1,1)")
+			.attr("transform", "translate(3," + mouthPos + ")scale(1,1)")
 			.attr("d", neutral)
+
+		// Get Facial State Map
+		var stateMap = stateLookup(states);
 
 		// Data
 		var mood = formatData(data);
