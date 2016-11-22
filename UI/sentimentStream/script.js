@@ -11,51 +11,11 @@
 		sad = "M17, 35 C29,18 51,30 51,35",
 		depressed = "M17, 35 C23,12 51,22 51,35";
 	
+	var states = [depressed, sad, unpleasant, neutral, pleasant, happy, beaming];
+
 	d3.csv(csvpath, buildStream);
 
-	/* Prepare data for visualization */
-
-	function formatData(data) {
-
-		var mood = [],
-			format = d3.time.format("%m/%d/%Y");
-
-		data.forEach(function(day) {
-			if (parseFloat(day["mood"], 10) != 0) {
-				m_row = {
-					"value" : parseFloat(day["mood"], 10), 
-					"key" : "mood", 
-					"date" : format.parse(day["Post Date"])
-				}
-				mood.push(m_row)
-			}
-				 
-		})
-
-		console.log(mood)
-
-		return mood
-
-	}
-
-	movingAvg = function(n) {
-		return function (points) {
-			points = points.map(function(each, index, array) {
-				var to = index + n - 1;
-				var subSeq, sum;
-				if (to < points.length) {
-					subSeq = array.slice(index, to + 1);
-					sum = subSeq.reduce(function(a,b) { return [a[0] + b[0], a[1] + b[1]]; });
-					return sum.map(function(each) { return each / n; });
-				}
-				return undefined;
-			});
-			points = points.filter(function(each) { return typeof each !== 'undefined' });
-			pathDesc = d3.svg.line().interpolate("basis")(points)
-			return pathDesc.slice(1, pathDesc.length);
-		}
-	}
-
+	/* Find intermediate states between paths */
 	function pathTween(d1, precision) {
 		return function() {
 		    var path0 = d3.select(".mouth").node(),
@@ -81,6 +41,47 @@
 		};
 	}
 
+	/* Prepare data for visualization */
+
+	function formatData(data) {
+
+		var mood = [],
+			format = d3.time.format("%m/%d/%Y");
+
+		data.forEach(function(day) {
+			if (parseFloat(day["mood"], 10) != 0) {
+				m_row = {
+					"value" : parseFloat(day["mood"], 10), 
+					"key" : "mood", 
+					"date" : format.parse(day["Post Date"])
+				}
+				mood.push(m_row)
+			}
+				 
+		})
+
+		return mood
+
+	}
+
+	movingAvg = function(n) {
+		return function (points) {
+			points = points.map(function(each, index, array) {
+				var to = index + n - 1;
+				var subSeq, sum;
+				if (to < points.length) {
+					subSeq = array.slice(index, to + 1);
+					sum = subSeq.reduce(function(a,b) { return [a[0] + b[0], a[1] + b[1]]; });
+					return sum.map(function(each) { return each / n; });
+				}
+				return undefined;
+			});
+			points = points.filter(function(each) { return typeof each !== 'undefined' });
+			pathDesc = d3.svg.line().interpolate("basis")(points)
+			return pathDesc.slice(1, pathDesc.length);
+		}
+	}
+
 	function buildStream(data) {
 
 		globalData = data;
@@ -95,16 +96,20 @@
 			.attr("width", width - legendWidth)
 			.attr("height", height + axisHeight);
 
-		var legend = d3.select(".canvas-frame").append("div")
+		var legend = d3.select(".canvas-frame").append("svg")
 			.attr("class", "legend")
-			.style("height", height + "px")
-			.style("width", 35 + "px");
+			.attr("height", height)
+			.attr("width", faceSize);
 
-		legend.append("span")
+		legend.append("circle")
 			.attr("class", "face")
-			.style("width", faceSize + "px")
-			.style("height", faceSize + "px")
-			.style("margin-top", (height / 2) - (faceSize / 2)+ "px")
+			.attr("fill", "#e8e8e8")
+			.attr("r", faceSize / 2)
+			.attr("cx", faceSize / 2)
+			.attr("cy", height / 2);
+
+		// TODO: Add Eyes
+		// TODO: Set base face to neutral
 
 		// Data
 		var mood = formatData(data);
@@ -118,8 +123,6 @@
 		var x = d3.time.scale().domain(timeRange).range([0, width - legendWidth]),
 			y = d3.scale.linear().domain([-1, 1]).range([height, 0])
 			mY = d3.scale.linear().domain(moodRange).range([height, 0]);
-
-		console.log(moodRange)
 
 		// Line 
 		var line = d3.svg.line()
@@ -194,10 +197,12 @@
 				.attr("cx", pos.x)
 				.attr("cy", pos.y);
 
-			var color = colorScale(y.invert(pos.y))
+			var scaledY = y.invert(pos.y),
+				color = colorScale(scaledY)
 
-			d3.select(".legend span").style("background", color)
+			d3.select(".legend .face").attr("fill", color)
 
+			// TODO: Cast scaled Y to arc position
 			// TODO: Set smile correct position
 
   		});

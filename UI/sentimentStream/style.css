@@ -28,8 +28,6 @@ svg {
 }
 
 .legend .face {
-  border-radius: 50px;
-  background: #e8e8e8;
   opacity: 0.5;
   display: block;
 }
