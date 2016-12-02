@@ -50,7 +50,11 @@ def process_by_day(data):
 	for day in data["days"]:
 
 		today = {"word_list": [], "date": day["date"]}
-		counted = vectorize(day["thoughts"])
+
+		try:
+			counted = vectorize(day["thoughts"])
+		except:
+			continue;
 
 		for word, count in counted.items():
 			today["word_list"].append({"word": word, "count": count})
