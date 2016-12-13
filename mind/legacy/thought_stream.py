@@ -188,14 +188,14 @@ def buildSentimentStream(days):
 	sorted_stream = sorted(sentiment_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
 	write_dict_list(sorted_stream, "data/output/sentiment_stream.csv")
 
-def buildTypeStream(days):
-	"""Build stream data from thought type count"""
+def buildPerspectiveAnalysis(days):
+	"""Build perspective analysis from thought type counts"""
 
-	type_stream = []
+	perspective = []
 
 	for day, thoughts in days.items():
 
-		day_type_counts = {
+		dtc = {
 			"State" : 0,
 			"Ask" : 0,
 			"Predict" : 0,
@@ -203,39 +203,34 @@ def buildTypeStream(days):
 			"Thought" : 0
 		}
 
-		for thought in thoughts:
-			thought_type = thought['Type']
-			if thought_type == "":
-				thought_type = "Thought"
-			day_type_counts[thought_type] += 1
-
-		day_type_counts['Post Date'] = day
-		type_stream.append(day_type_counts)
-
-	sorted_stream = sorted(type_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
-	write_dict_list(sorted_stream, "data/output/type_stream.csv")
-
-def buildPrivacyStream(days):
-	"""Build out a privacy stream from daily thoughts"""
-
-	privacy_stream = []
-
-	for day, thoughts in days.items():
-
-		privacy_counts = {
-			"Private" : 0,
-			"Public" : 0,
+		privacy = {
+			"0" : 0,
+			"1" : 0,
 			"" : 0
 		}
 
 		for thought in thoughts:
-			privacy_counts[thought['Privacy']] += 1
+			thought_type = thought['Type']
+			if thought_type == "":
+				thought_type = "Thought"
+			dtc[thought_type] += 1
+			privacy[thought['Privacy']] += 1
 
-		privacy_counts['Post Date'] = day
-		privacy_stream.append(privacy_counts)
+		# Calculate Temporal Focus and Uncertainty
+		total = sum(dtc.values())
+		time_total = sum([dtc['Reflect'], dtc['State'], dtc['Predict']])
+		predictive_share = dtc['Predict'] / time_total
+		reflective_share = dtc['Reflect'] / time_total
+		temporal_focus = predictive_share - reflective_share
+		uncertainty = dtc["Ask"] / total
+		privateness = privacy["1"] / total
+		row = {"temporal_focus": temporal_focus, "uncertainty": uncertainty, "privacy": privateness}
 
-	sorted_stream = sorted(privacy_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
-	write_dict_list(sorted_stream, "data/output/privacy_stream.csv")
+		row['Post Date'] = day
+		perspective.append(row)
+
+	sorted_perspective = sorted(perspective, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
+	write_dict_list(perspective, "data/output/perspective.csv")
 
 def buildLookup(days, ken):
 	"""Build a lookuptable for search"""
@@ -314,8 +309,7 @@ def run_from_command():
 
 	buildSentimentStream(days)
 	buildWordStream(days, ken)
-	#buildTypeStream(days)
-	#buildPrivacyStream(days)
+	buildPerspectiveAnalysis(days)
 
 if __name__ == "__main__":
 	run_from_command()
