@@ -230,7 +230,7 @@ def buildPerspectiveAnalysis(days):
 		perspective.append(row)
 
 	sorted_perspective = sorted(perspective, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
-	write_dict_list(perspective, "data/output/perspective.csv")
+	write_dict_list(sorted_perspective, "data/output/perspective.csv")
 
 def buildLookup(days, ken):
 	"""Build a lookuptable for search"""
