@@ -25,7 +25,6 @@
 					{"$ref": "#/definitions/day"}
 				]
 			},
-			"minItems": 1,
 			"uniqueItems": true
 		}
 	},
