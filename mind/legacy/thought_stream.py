@@ -117,6 +117,7 @@ def processByDay(days, ken):
 
 	for day, thoughts in days.items():
 		thoughts = [thought['Thought'] for thought in thoughts]
+		if len(thoughts) == 0: continue
 		word_count = vectorize(thoughts)
 		daily_ken = {'Post Date' : day}
 	
@@ -275,9 +276,8 @@ def run_from_command():
 	thinkers = collectThoughts(thoughts)
 
 	pat_thoughts = thinkers['patch615']
-	matt_thoughts = thinkers['msevrens']
+	matt_thoughts = thinkers['msevrens'] + thinkers['prophet'] + thinkers['researchLog']
 	prophet_thoughts = thinkers['prophet']
-	work_thoughts = thinkers['msevrens@yodlee.com']
 	leah_thoughts = thinkers['leahdaniels']
 
 	# Automate User Selection
