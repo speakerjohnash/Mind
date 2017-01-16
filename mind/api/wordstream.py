@@ -28,7 +28,7 @@ def vectorize(corpus, min_df=1):
 
 	def tokenizer(thought):
 		output = tknzr(thought)
-		output = [o for o in output if len(o) > 1]
+		output = [o for o in output if len(o) > 2]
 		return output
 
 	vectorizer = CountVectorizer(min_df=min_df, tokenizer=tokenizer, ngram_range=(1,1), stop_words='english')
