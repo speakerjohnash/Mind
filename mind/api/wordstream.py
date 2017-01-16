@@ -15,6 +15,7 @@ Created on Sep 04, 2015
 import json
 
 import numpy as np
+from nltk.tokenize import TweetTokenizer
 from sklearn.feature_extraction.text import CountVectorizer
 
 from tornado_json.requesthandlers import APIHandler
@@ -23,7 +24,14 @@ from mind.api import schema
 def vectorize(corpus, min_df=1):
 	"""Vectorize text corpus"""
 
-	vectorizer = CountVectorizer(min_df=min_df, ngram_range=(1,1), stop_words='english')
+	tknzr = TweetTokenizer().tokenize
+
+	def tokenizer(thought):
+		output = tknzr(thought)
+		output = [o for o in output if len(o) > 1]
+		return output
+
+	vectorizer = CountVectorizer(min_df=min_df, tokenizer=tokenizer, ngram_range=(1,1), stop_words='english')
 	count_vector = vectorizer.fit_transform(corpus).toarray()
 	num_samples, num_features = count_vector.shape
 	vocab = vectorizer.get_feature_names()
