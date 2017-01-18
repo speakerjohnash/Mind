@@ -21,6 +21,7 @@ import json
 import csv
 import operator
 
+import numpy as np
 import editdistance
 import pandas as pd
 from collections import defaultdict
@@ -33,7 +34,7 @@ from mind.tools import dict_2_json, vectorize, word_count, load_json
 def load_ken():
 	"""Load top words in Prophet data"""
 
-	df = pd.read_csv("data/input/thought.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
+	df = pd.read_csv("data/input/thoughts.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
 	seers_grouped = df.groupby('Seer', as_index=False)
 	seers = dict(list(seers_grouped))
 	thoughts = list(seers[sys.argv[1]]["Thought"])
@@ -43,6 +44,38 @@ def load_ken():
 
 	return sorted_ken
 
+def averageWordVecs(words, model):
+    # Function to average all of the word vectors in a given
+    # paragraph
+    #
+    # Pre-initialize an empty numpy array (for speed)
+    featureVec = np.zeros(model["truth"].shape, dtype="float32")
+    #
+    nwords = 0.
+    # 
+    # Index2word is a list that contains the names of the words in 
+    # the model's vocabulary. Convert it to a set, for speed 
+    index2word_set = set(model.index2word)
+    #
+    # Loop over each word in the review and, if it is in the model's
+    # vocaublary, add its feature vector to the total
+    for word in words:
+        if word in index2word_set: 
+            nwords = nwords + 1.
+            featureVec = np.add(featureVec,model[word])
+    # 
+    # Divide the result by the number of words to get the average
+    featureVec = np.divide(featureVec, nwords)
+
+    return featureVec
+
+def average_words(model):
+
+	nearest_words = model.most_similar_cosmul(positive=["thought", "truth", "mind", "time"])
+	print(nearest_words)
+
+	sys.exit()
+
 def knowledge_tree(ken):
 	"""Build JSON for Tree of Knowledge"""
 	
@@ -50,6 +83,8 @@ def knowledge_tree(ken):
 	print("Loading model...")
 	model = gensim.models.Word2Vec.load('models/prophet_word2vec')  # C binary format
 	print("Loading model: Done")
+
+	average_words(model)
 
 	keys_in_word2vec = model.vocab.keys()
 	tokens = [x[0] for x in ken[0:5000] if x[0] in keys_in_word2vec]

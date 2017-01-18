@@ -169,7 +169,7 @@
 
 		// Line 
 		var line = d3.svg.line()
-			.interpolate(movingAvg(4))
+			.interpolate(movingAvg(3))
 			.x(function(d) { return x(d.date); })
 			.y(function(d) { return mY(d.value); });
 
@@ -259,7 +259,8 @@
 
 		// Baseline
 		field.append("line")
-			.style("stroke", "black")  // colour the line
+			.style("stroke", "black")
+			.style("opacity", 0.1)  // colour the line
 			.attr("x1", 0)	 // x position of the first end of the line
 			.attr("y1", height / 2)	  // y position of the first end of the line
 			.attr("x2", width - legendWidth)	 // x position of the second end of the line

@@ -224,7 +224,7 @@ $(document).ready(function() {
 				focusLayers = stack(nest.entries(formattedFocus));
 
 			// Scale Adjustments
-			var color = d3.scale.linear().domain([0, wordList.length]).range(["#457a8b", "#455a8b"]);
+			var color = d3.scale.linear().domain([0, (wordList.length / 4), wordList.length]).range(["#443462", "#455a8b", "#457a8b"]);
 
     		contextYScale.domain([0, d3.max(contextData, function(d) { return d["Total"]; })]);
     		focusYScale.domain([0, d3.max(formattedFocus, function(d) { return d.y0 + d.y; })]);

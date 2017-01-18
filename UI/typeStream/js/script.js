@@ -229,6 +229,8 @@ $(document).ready(function() {
 				formattedFocus = formatData(lata, wordList),
 				focusLayers = stack(nest.entries(formattedFocus));
 
+			console.log(formattedFocus)
+
 			// Scale Adjustments
 			var color = d3.scale.linear().domain([0, wordList.length]).range(["#457a8b", "#455a8b"]);
 
@@ -317,7 +319,7 @@ $(document).ready(function() {
 
 	}
     
-    var csvpath = "../../data/output/type_stream.csv";
+    var csvpath = "../../data/output/perspective.csv";
 	
 	d3.csv(csvpath, fillInDays);
 
