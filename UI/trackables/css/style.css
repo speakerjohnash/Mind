@@ -57,6 +57,10 @@ svg {
   float: left;
 }
 
+.toggle {
+  margin: 15px;
+}
+
 .brush .extent {
   fill-opacity: .125;
   shape-rendering: crispEdges;

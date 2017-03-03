@@ -1,4 +1,4 @@
-buildTrackablesVisualization = function(){
+$(document).ready(function() {
 
 	var csvpath = "../../data/perspective.csv",
 		globalData = {};
@@ -126,6 +126,12 @@ buildTrackablesVisualization = function(){
 
 	function buildChart(data) {
 
+		// Temporary Hack
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = 'https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js';
+		document.head.appendChild(script);
+
 		globalData = data;
 
 		var margin = 15,
@@ -158,9 +164,9 @@ buildTrackablesVisualization = function(){
 		// Set Up Controls
 
 		var tagDefault = "temporalFocus",
-			groupbyDefault = getURLParameter("groupby") ? getURLParameter("groupby") : "week",
+			groupbyDefault = "week",
 			groupbyDefault = groupbyDefault == "week" ? true : false,
-			methodDefault = getURLParameter("method") ? getURLParameter("method") : "average",
+			methodDefault = "average",
 			methodDefault = methodDefault == "sum" ? true : false;
 
 		var tagList = d3.select(".trackables-chart").append("select")
@@ -196,15 +202,6 @@ buildTrackablesVisualization = function(){
 			.attr("data-toggle", "toggle")
 			.attr("data-on", "Weekly")
 			.attr("data-off", "Daily")
-
-		/*
-		var maxMinToggle = d3.select(".trackables-chart").append("input")
-			.attr("class", "max-min-toggle")
-			.style("margin", "15px")
-			.attr("type", "checkbox")
-			.attr("data-toggle", "toggle")
-			.attr("data-on", ":)")
-			.attr("data-off", ":(") */
 
 		// Set Listeners
 		$('.groupby-toggle').change(updateChart)
@@ -422,4 +419,4 @@ buildTrackablesVisualization = function(){
 
 	return buildChart
 
-}();
+});
