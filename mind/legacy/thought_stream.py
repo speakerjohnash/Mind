@@ -1,7 +1,7 @@
 #################### USAGE ####################################
 
 # python3 -m mind.legacy.thought_stream [input_file] [user]
-# python3 -m mind.legacy.thought_stream data/input/thought.csv matt
+# python3 -m mind.legacy.thought_stream data/input/thoughts.csv matt
 
 ###############################################################
 
@@ -142,7 +142,7 @@ def buildWordStream(days, ken):
 
 	stream = processByDay(days, sorted(ken))
 	sorted_stream = sorted(stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
-	write_dict_list(sorted_stream, "data/output/all_stream.csv")
+	write_dict_list(sorted_stream, "data/all_stream.csv")
 
 def buildSentimentStream(days):
 	"""Build out a sentiment stream from daily thoughts"""
@@ -187,7 +187,7 @@ def buildSentimentStream(days):
 		sentiment_stream.append(daily_sentiment)
 
 	sorted_stream = sorted(sentiment_stream, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
-	write_dict_list(sorted_stream, "data/output/sentiment_stream.csv")
+	write_dict_list(sorted_stream, "data/sentiment_stream.csv")
 
 def buildPerspectiveAnalysis(days):
 	"""Build perspective analysis from thought type counts"""
@@ -231,7 +231,7 @@ def buildPerspectiveAnalysis(days):
 		perspective.append(row)
 
 	sorted_perspective = sorted(perspective, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
-	write_dict_list(sorted_perspective, "data/output/perspective.csv")
+	write_dict_list(sorted_perspective, "data/perspective.csv")
 
 def buildLookup(days, ken):
 	"""Build a lookuptable for search"""
@@ -307,7 +307,7 @@ def run_from_command():
 	ken = vectorize(thoughts, min_df=1)
 	days = groupByWeek(collective_thoughts)
 
-	buildSentimentStream(days)
+	# buildSentimentStream(days)
 	buildWordStream(days, ken)
 	buildPerspectiveAnalysis(days)
 
