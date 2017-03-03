@@ -72,12 +72,12 @@ buildTrackablesVisualization = function(){
 	function formatData(data) {
 
 		var trackable = [],
-			format = d3.time.format("%Y-%m-%d");
+			format = d3.time.format("%m/%d/%y");
 
 		data.forEach(function(day) {
-			if (parseFloat(day["temporal_focus"], 10) != 0) {
+			if (parseFloat(day["#temporalFocus"], 10) != 0) {
 				m_row = {
-					"value" : parseFloat(day["value"], 10), 
+					"value" : parseFloat(day["#temporalFocus"], 10), 
 					"key" : "trackable", 
 					"date" : format.parse(day["date"])
 				}
@@ -247,8 +247,8 @@ buildTrackablesVisualization = function(){
 		var trackable = formatData(data);
 
 		// Gradients
-		var trackableRange = d3.extent(trackable, function(d) { return d["value"] }),
-			format = d3.time.format("%Y-%m-%d"),
+		var trackableRange = d3.extent(trackable, function(d) { return d["#temporalFocus"] }),
+			format = d3.time.format("%m/%d/%y"),
 			timeRange = d3.extent(data, function(d) { return format.parse(d["date"])});
 
 		var tag = "#" + tagDefault,
