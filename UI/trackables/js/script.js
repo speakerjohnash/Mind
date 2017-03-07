@@ -135,7 +135,7 @@ $(document).ready(function() {
 		globalData = data;
 
 		var margin = 15,
-			width = window.innerWidth - margin,
+			width = window.innerWidth,
 			fatLineWidth = width / 35,
 			height = window.innerHeight / 2.5,
 			faceSize = 70;
@@ -178,7 +178,7 @@ $(document).ready(function() {
 			methodDefault = "average",
 			methodDefault = methodDefault == "sum" ? true : false;
 
-		var tagList = d3.select(".trackables-chart").append("select")
+		var tagList = d3.select(".form-controls").append("select")
 			.attr("class", "form-control form-control-sm tag-list")
 			.on("change", updateChart)
 			.style("float", "left")
@@ -194,7 +194,7 @@ $(document).ready(function() {
 			})
 			.text(function(d){return d});
 
-		var methodSelect = d3.select(".trackables-chart").append("input")
+		var methodSelect = d3.select(".form-controls").append("input")
 			.attr("class", "method-toggle")
 			.style("margin", "15px")
 			.attr("type", "checkbox")
@@ -203,7 +203,7 @@ $(document).ready(function() {
 			.attr("data-on", "Sum")
 			.attr("data-off", "Average")
 
-		var groupbyToggle = d3.select(".trackables-chart").append("input")
+		var groupbyToggle = d3.select(".form-controls").append("input")
 			.attr("class", "groupby-toggle")
 			.style("margin", "15px")
 			.attr("type", "checkbox")
