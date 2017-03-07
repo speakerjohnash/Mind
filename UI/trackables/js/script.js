@@ -140,7 +140,9 @@ $(document).ready(function() {
 			height = window.innerHeight / 2.5,
 			faceSize = 70;
 			legendWidth = 100,
-			axisHeight = 20;
+			axisHeight = 20,
+			contextHeight = .2 * height,
+			focusHeight = height - contextHeight;
 
 		var svg = d3.select(".trackables-chart").append("svg")
 			.attr("class", "main-svg")
@@ -152,7 +154,7 @@ $(document).ready(function() {
 
 		var focus = svg.append("g")
     		.attr("class", "focus")
-    		.attr("height", height);
+    		.attr("transform", "translate(0, " + contextHeight + ")");
 
 		var legend = d3.select(".trackables-chart").append("svg")
 			.attr("class", "legend")
@@ -265,8 +267,8 @@ $(document).ready(function() {
 		var colorScale = d3.scale.linear().domain([-1, 0, 1]).range(colorGradient);
 
 		var x = d3.time.scale().domain(timeRange).range([0, width - legendWidth]),
-			y = d3.scale.linear().domain([-1, 1]).range([height, 0])
-			mY = d3.scale.linear().domain(trackableRange).range([height, 0]);
+			y = d3.scale.linear().domain([-1, 1]).range([focusHeight, 0])
+			mY = d3.scale.linear().domain(trackableRange).range([focusHeight, 0]);
 
 		var maSpread = globalData.length < 10 ? 2 : 5
 
@@ -312,7 +314,7 @@ $(document).ready(function() {
 		
   		var axis = focus.append("g")
 			.attr("class", "x axis")
-			.attr("transform", "translate(0, " + height + ")")
+			.attr("transform", "translate(0, " + focusHeight + ")")
 			.call(XAxis);
 
 		focus.append("path")
@@ -398,9 +400,9 @@ $(document).ready(function() {
 			.style("stroke", "black")
 			.style("opacity", 0.1)  // colour the line
 			.attr("x1", 0)	 // x position of the first end of the line
-			.attr("y1", height / 2)	  // y position of the first end of the line
+			.attr("y1", focusHeight / 2)	  // y position of the first end of the line
 			.attr("x2", width - legendWidth)	 // x position of the second end of the line
-			.attr("y2", height / 2);	// y position of the second end of the line
+			.attr("y2", focusHeight / 2);	// y position of the second end of the line
 
 		// Gradient
 		svg.append("linearGradient")
