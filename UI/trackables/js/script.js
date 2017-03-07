@@ -182,8 +182,7 @@ $(document).ready(function() {
 			.attr("class", "form-control form-control-sm tag-list")
 			.on("change", updateChart)
 			.style("float", "left")
-			.style("width", "130px")
-			.style("margin", "15px")
+			.style("width", "130px");
 
 		var options = tagList.selectAll("option")
 			.data(["#temporalFocus", "#curiosity", "#privacy"])

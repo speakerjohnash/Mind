@@ -54,7 +54,13 @@ p {
 }
 
 .toggle {
-  margin: 15px;
+  margin-left: 15px;
+  margin-top: 15px;
+}
+
+.form-controls .form-control.tag-list {
+  margin-left: 15px;
+  margin-top: 15px;
 }
 
 .brush .extent {
