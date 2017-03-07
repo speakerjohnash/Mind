@@ -270,8 +270,10 @@ $(document).ready(function() {
 		var colorScale = d3.scale.linear().domain([-1, 0, 1]).range(colorGradient);
 
 		var x = d3.time.scale().domain(timeRange).range([0, width - legendWidth]),
-			y = d3.scale.linear().domain([-1, 1]).range([focusHeight, 0])
-			mY = d3.scale.linear().domain(trackableRange).range([focusHeight, 0]);
+			y = d3.scale.linear().domain([-1, 1]).range([focusHeight, 0]),
+			mY = d3.scale.linear().domain(trackableRange).range([focusHeight, 0]),
+			cy = d3.scale.linear().domain([-1, 1]).range([contextHeight, 0]),
+			cmy = d3.scale.linear().domain(trackableRange).range([contextHeight, 0]);
 
 		var maSpread = globalData.length < 10 ? 2 : 5
 
@@ -280,6 +282,12 @@ $(document).ready(function() {
 			.interpolate(movingAvg(maSpread))
 			.x(function(d) { return x(d.date); })
 			.y(function(d) { return mY(d.value); });
+
+		// Line 
+		var contextLine = d3.svg.line()
+			.interpolate(movingAvg(maSpread))
+			.x(function(d) { return x(d.date); })
+			.y(function(d) { return cmy(d.value); });
 
 		// TODO: Load prophet thoughts via brush selection
 
@@ -320,16 +328,20 @@ $(document).ready(function() {
 			.attr("transform", "translate(0, " + focusHeight + ")")
 			.call(XAxis);
 
-		focus.append("path")
+		var fatLine = focus.append("path")
 			.datum(trackable)
 			.attr("class", "fat-line")
-			.attr("stroke-width", fatLineWidth + "px")
 			.attr("d", line);
 
 		var path = focus.append("path")
 			.datum(trackable)
 			.attr("class", "line")
 			.attr("d", line);
+
+		var contextPath = context.append("path")
+			.datum(trackable)
+			.attr("class", "line")
+			.attr("d", contextLine);
 
 		var pathEl = path.node();
 		var pathLength = pathEl.getTotalLength();
