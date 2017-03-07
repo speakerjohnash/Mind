@@ -158,7 +158,7 @@ $(document).ready(function() {
 
 		var legend = d3.select(".trackables-chart").append("svg")
 			.attr("class", "legend")
-			.attr("height", height)
+			.attr("height", height + axisHeight)
 			.attr("width", faceSize + 20);
 
 		// Tooltip
@@ -218,7 +218,7 @@ $(document).ready(function() {
 
 		var faceContainer = legend.append("g")
     		.attr("class", "face-container")
-    		.attr("transform", "translate(" + (legendWidth - faceSize) / 2 + ", 0)");
+    		.attr("transform", "translate(" + 10 + ", 0)");
 
 		faceContainer.append("circle")
 			.attr("class", "face")
