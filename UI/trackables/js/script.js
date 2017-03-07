@@ -147,6 +147,13 @@ $(document).ready(function() {
 			.attr("width", width - legendWidth)
 			.attr("height", height + axisHeight);
 
+		var context = svg.append("g")
+    		.attr("class", "context");
+
+		var focus = svg.append("g")
+    		.attr("class", "focus")
+    		.attr("height", height);
+
 		var legend = d3.select(".trackables-chart").append("svg")
 			.attr("class", "legend")
 			.attr("height", height)
@@ -274,7 +281,7 @@ $(document).ready(function() {
 		// Scatterplot
 		var dotSize = (width > 800) ? 2 : 1; 
 
-		svg.selectAll("dot")
+		focus.selectAll("dot")
 			.data(trackable)
 			.enter().append("circle")
 			.attr("r", dotSize)
@@ -302,21 +309,19 @@ $(document).ready(function() {
 		}
 
 		var XAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(multiFormat);
-
-		var field = svg.append("g").attr("height", height);
 		
-  		var axis = svg.append("g")
+  		var axis = focus.append("g")
 			.attr("class", "x axis")
 			.attr("transform", "translate(0, " + height + ")")
 			.call(XAxis);
 
-		field.append("path")
+		focus.append("path")
 			.datum(trackable)
 			.attr("class", "fat-line")
 			.attr("stroke-width", fatLineWidth + "px")
 			.attr("d", line);
 
-		var path = field.append("path")
+		var path = focus.append("path")
 			.datum(trackable)
 			.attr("class", "line")
 			.attr("d", line);
@@ -325,8 +330,7 @@ $(document).ready(function() {
 		var pathLength = pathEl.getTotalLength();
 
 		// Track Line
-		var circle = 
-        svg.append("circle")
+		var circle = focus.append("circle")
           .attr("cx", 100)
           .attr("cy", 350)
           .attr("r", 3)
@@ -336,7 +340,7 @@ $(document).ready(function() {
         	timeFormat = d3.time.format("%m/%d/%Y");
 
 		// Interactive Face
-		svg.on("mousemove", function() {
+		focus.on("mousemove", function() {
 			var mouse = d3.mouse(this),
 				xPos = mouse[0],
 				beginning = mouse[0], 
@@ -356,8 +360,7 @@ $(document).ready(function() {
 				else				break; //position found
 			}
 
-			circle
-				.attr("opacity", 1)
+			circle.attr("opacity", 1)
 				.attr("cx", pos.x)
 				.attr("cy", pos.y);
 
@@ -391,7 +394,7 @@ $(document).ready(function() {
   		});
 
 		// Baseline
-		field.append("line")
+		focus.append("line")
 			.style("stroke", "black")
 			.style("opacity", 0.1)  // colour the line
 			.attr("x1", 0)	 // x position of the first end of the line

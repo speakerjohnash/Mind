@@ -311,7 +311,7 @@ $(document).ready(function() {
 
 	}
     
-    var csvpath = "../../data/output/all_stream.csv";
+    var csvpath = "../../data/all_stream.csv";
 	
 	d3.csv(csvpath, fillInDays);
 
