@@ -150,7 +150,7 @@ $(document).ready(function() {
 			.attr("height", height + axisHeight);
 
 		var context = svg.append("g")
-    		.attr("class", "context");
+			.attr("class", "context");
 
 		var focus = svg.append("g")
     		.attr("class", "focus")
@@ -216,7 +216,11 @@ $(document).ready(function() {
 		$('.groupby-toggle').change(updateChart)
 		$('.method-toggle').change(updateChart)
 
-		legend.append("circle")
+		var faceContainer = legend.append("g")
+    		.attr("class", "face-container")
+    		.attr("transform", "translate(" + (legendWidth - faceSize) / 2 + ", 0)");
+
+		faceContainer.append("circle")
 			.attr("class", "face")
 			.attr("fill", "#e8e8e8")
 			.attr("r", faceSize / 2)
@@ -224,14 +228,14 @@ $(document).ready(function() {
 			.attr("cy", height / 2);
 
 		// Eyes
-		legend.append("circle")
+		faceContainer.append("circle")
 			.attr("class", "eye")
 			.attr("cx", (faceSize / 2) - (faceSize / 5))
 			.attr("cy", (height / 2) - (faceSize / 6))
 			.attr("r", 2.5)
 			.attr("fill", "black");
 
-		legend.append("circle")
+		faceContainer.append("circle")
 			.attr("class", "eye")
 			.attr("cx", (faceSize / 2) + (faceSize / 5))
 			.attr("cy", (height / 2) - (faceSize / 6))
@@ -241,7 +245,7 @@ $(document).ready(function() {
 		// Set base face to neutral
 		var mouthPos = (height / 2) - (faceSize / 2) + (faceSize / 4)
 
-		legend.append("path")
+		faceContainer.append("path")
 			.attr("class", "mouth")
 			.attr("transform", "translate(3," + mouthPos + ")scale(1,1)")
 			.attr("d", neutral)
