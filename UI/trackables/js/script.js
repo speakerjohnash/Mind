@@ -470,10 +470,10 @@ $(document).ready(function() {
 
 		var horizontalGradData = [];
 
-		for (var i=0; i < chartWidth; i++) {
+		for (var i=0; i < 10; i++) {
 
-			var percent = (i / chartWidth) * 100,
-				pos = getYAtX(i, pathEl),
+			var percent = (i / 10) * 100,
+				pos = getYAtX(i * 100, pathEl),
 				scaledY = y.invert(pos.y)
 				date = x.invert(i);
 				colorAtX = colorScale(scaledY);
