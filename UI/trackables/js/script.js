@@ -301,24 +301,38 @@ $(document).ready(function() {
 
 		var colorScale = d3.scale.linear().domain([-1, 0, 1]).range(colorGradient);
 
-		var x = d3.time.scale().domain(timeRange).range([0, chartWidth]),
+		var focusXScale = d3.time.scale().domain(timeRange).range([0, chartWidth]),
+			contextXScale = d3.time.scale().domain(timeRange).range([0, chartWidth]),
 			y = d3.scale.linear().domain([-1, 1]).range([focusHeight, 0]),
 			mY = d3.scale.linear().domain(trackableRange).range([focusHeight, 0]),
 			cy = d3.scale.linear().domain([-1, 1]).range([contextHeight, 0]),
 			cmy = d3.scale.linear().domain(trackableRange).range([contextHeight, 0]);
+
+		// Selection and Brushing
+		var brush = d3.svg.brush()
+    		.x(contextXScale)
+    		.on("brush", function() {
+    			focusXScale.domain(brush.empty() ? timeRange : brush.extent());
+    			focus.selectAll("path").attr("d", line);
+    			focus.selectAll("circle")
+    				.attr("r", dotSize)
+					.attr("cx", function(d) { return focusXScale(d.date); })
+					.attr("cy", function(d) { return mY(d.value); });
+    			focus.select(".x.axis").call(XAxis);
+    		});
 
 		var maSpread = globalData.length < 10 ? 2 : 5
 
 		// Line 
 		var line = d3.svg.line()
 			.interpolate(movingAvg(maSpread))
-			.x(function(d) { return x(d.date); })
+			.x(function(d) { return focusXScale(d.date); })
 			.y(function(d) { return mY(d.value); });
 
 		// Line 
 		var contextLine = d3.svg.line()
 			.interpolate(movingAvg(maSpread))
-			.x(function(d) { return x(d.date); })
+			.x(function(d) { return focusXScale(d.date); })
 			.y(function(d) { return cmy(d.value); });
 
 		// TODO: Load prophet thoughts via brush selection
@@ -330,7 +344,7 @@ $(document).ready(function() {
 			.data(trackable)
 			.enter().append("circle")
 			.attr("r", dotSize)
-			.attr("cx", function(d) { return x(d.date); })
+			.attr("cx", function(d) { return focusXScale(d.date); })
 			.attr("cy", function(d) { return mY(d.value); });
 		
 		// Draw Axes
@@ -353,7 +367,7 @@ $(document).ready(function() {
 		      : formatYear)(date);
 		}
 
-		var XAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(multiFormat);
+		var XAxis = d3.svg.axis().scale(focusXScale).orient("bottom").tickFormat(multiFormat);
 		
   		var axis = focus.append("g")
 			.attr("class", "x axis")
@@ -372,15 +386,25 @@ $(document).ready(function() {
 
 		var contextPath = context.append("path")
 			.datum(trackable)
-			.attr("class", "line")
+			.style("stroke-width", "3px")
+			.style("stroke", "#ececec")
+			.style("fill", "none")
 			.attr("d", contextLine);
 
+		// Add Brush
+		context.append("g")
+	    	.attr("class", "x brush")
+	    	.call(brush)
+			.selectAll("rect")
+  			.attr("height", contextHeight);
+
+		/*
 		var contextGrad = context.append("rect")
 			.attr("x", 0)
 			.attr("y", 0)
 			.attr("width", chartWidth)
 			.attr("height", contextHeight)
-			.style("fill", "url(#horizontal-gradient)");
+			.style("fill", "url(#horizontal-gradient)"); */
 
 		var pathEl = path.node();
 		var pathLength = pathEl.getTotalLength();
@@ -406,7 +430,7 @@ $(document).ready(function() {
 				.attr("cy", pos.y);
 
 			var scaledY = y.invert(pos.y),
-				date = x.invert(pos.x),
+				date = focusXScale.invert(pos.x),
 				color = colorScale(scaledY),
 				scaledIndex = funcScale(scaledY),
 				funcToUse = Math.floor(scaledIndex),
@@ -475,7 +499,7 @@ $(document).ready(function() {
 			var percent = (i / 10) * 100,
 				pos = getYAtX(i * 100, pathEl),
 				scaledY = y.invert(pos.y)
-				date = x.invert(i);
+				date = focusXScale.invert(i);
 				colorAtX = colorScale(scaledY);
 
 			horizontalGradData.push({offset: percent + "%", color: colorAtX})

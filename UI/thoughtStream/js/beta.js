@@ -189,10 +189,10 @@ $(document).ready(function() {
 
     	// Add Brush
 		context.append("g")
-	    	.attr("class", "x brush")
-	    	.call(brush)
+			.attr("class", "x brush")
+			.call(brush)
 			.selectAll("rect")
-  			.attr("height", contextHeight);
+			.attr("height", contextHeight);
 
   		// Draw Axes
   		focus.append("g")
