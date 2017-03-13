@@ -48,6 +48,7 @@ $(document).ready(function() {
 	}
 
 	/* Produce all transition functions */
+
 	function stateLookup(states) {
 
 		var path = d3.select(".mouth"),
@@ -90,6 +91,8 @@ $(document).ready(function() {
 
 	}
 
+	/* Calculate Moving Average */
+
 	movingAvg = function(n) {
 		return function (points) {
 			points = points.map(function(each, index, array) {
@@ -108,6 +111,8 @@ $(document).ready(function() {
 		}
 	}
 
+	/* Update Chart with new Data */
+
 	function updateChart() {
 
 		var tag = $("select.tag-list").val(),
@@ -124,6 +129,32 @@ $(document).ready(function() {
 
 	}
 
+	/* Get Point At Position */
+
+	function getYAtX(xPos, pathEl) {
+
+		var target,
+			pos,
+			beginning = xPos,
+			end = pathEl.getTotalLength();
+
+		while (true) {
+			target = Math.floor((beginning + end) / 2);
+			pos = pathEl.getPointAtLength(target);
+			if ((target === end || target === beginning) && pos.x !== xPos) {
+				break;
+			}
+			if (pos.x > xPos) end = target;
+			else if (pos.x < xPos) beginning = target;
+			else break;
+		}
+
+		return pos;
+
+	}
+
+	/* Process Data and Visualize */
+
 	function buildChart(data) {
 
 		// Temporary Hack
@@ -136,17 +167,18 @@ $(document).ready(function() {
 
 		var margin = 15,
 			width = window.innerWidth,
+			legendWidth = 100,
+			chartWidth = width - legendWidth,
 			fatLineWidth = width / 35,
 			height = window.innerHeight / 2.5,
 			faceSize = 70;
-			legendWidth = 100,
 			axisHeight = 20,
-			contextHeight = .2 * height,
+			contextHeight = .15 * height,
 			focusHeight = height - contextHeight;
 
 		var svg = d3.select(".trackables-chart").append("svg")
 			.attr("class", "main-svg")
-			.attr("width", width - legendWidth)
+			.attr("width", chartWidth)
 			.attr("height", height + axisHeight);
 
 		var context = svg.append("g")
@@ -269,7 +301,7 @@ $(document).ready(function() {
 
 		var colorScale = d3.scale.linear().domain([-1, 0, 1]).range(colorGradient);
 
-		var x = d3.time.scale().domain(timeRange).range([0, width - legendWidth]),
+		var x = d3.time.scale().domain(timeRange).range([0, chartWidth]),
 			y = d3.scale.linear().domain([-1, 1]).range([focusHeight, 0]),
 			mY = d3.scale.linear().domain(trackableRange).range([focusHeight, 0]),
 			cy = d3.scale.linear().domain([-1, 1]).range([contextHeight, 0]),
@@ -343,6 +375,13 @@ $(document).ready(function() {
 			.attr("class", "line")
 			.attr("d", contextLine);
 
+		var contextGrad = context.append("rect")
+			.attr("x", 0)
+			.attr("y", 0)
+			.attr("width", chartWidth)
+			.attr("height", contextHeight)
+			.style("fill", "url(#horizontal-gradient)");
+
 		var pathEl = path.node();
 		var pathLength = pathEl.getTotalLength();
 
@@ -358,24 +397,9 @@ $(document).ready(function() {
 
 		// Interactive Face
 		focus.on("mousemove", function() {
-			var mouse = d3.mouse(this),
-				xPos = mouse[0],
-				beginning = mouse[0], 
-				end = pathLength;
-				
-			var target;
-			var pos;
 
-			while (true) {
-				target = Math.floor((beginning + end) / 2);
-				pos = pathEl.getPointAtLength(target);
-				if ((target === end || target === beginning) && pos.x !== xPos) {
-					break;
-				}
-				if (pos.x > xPos) end = target;
-				else if (pos.x < xPos) beginning = target;
-				else				break; //position found
-			}
+			var mouse = d3.mouse(this),
+				pos = getYAtX(mouse[0], pathEl);
 
 			circle.attr("opacity", 1)
 				.attr("cx", pos.x)
@@ -416,10 +440,19 @@ $(document).ready(function() {
 			.style("opacity", 0.1)  // colour the line
 			.attr("x1", 0)	 // x position of the first end of the line
 			.attr("y1", focusHeight / 2)	  // y position of the first end of the line
-			.attr("x2", width - legendWidth)	 // x position of the second end of the line
+			.attr("x2", chartWidth)	 // x position of the second end of the line
 			.attr("y2", focusHeight / 2);	// y position of the second end of the line
 
-		// Gradient
+		// Bottom of Context
+		context.append("line")
+			.style("stroke", "black")
+			.style("opacity", 0.2)
+			.attr("x1", 100)
+			.attr("y1", contextHeight)
+			.attr("x2", chartWidth - 100)
+			.attr("y2", contextHeight);
+
+		// Gradients
 		svg.append("linearGradient")
 			.attr("id", "temperature-gradient")
 			.attr("gradientUnits", "userSpaceOnUse")
@@ -427,10 +460,37 @@ $(document).ready(function() {
 			.attr("x2", 0).attr("y2", y(1))
 			.selectAll("stop")
 			.data([
-				{offset: "0%", color: colorGradient[0]}, // black, red, purple
+				{offset: "0%", color: colorGradient[0]},
 				{offset: "50%", color: colorGradient[1]},
 				{offset: "100%", color: colorGradient[2]}
 			])
+			.enter().append("stop")
+			.attr("offset", function(d) { return d.offset; })
+			.attr("stop-color", function(d) { return d.color; });
+
+		var horizontalGradData = [];
+
+		for (var i=0; i < chartWidth; i++) {
+
+			var percent = (i / chartWidth) * 100,
+				pos = getYAtX(i, pathEl),
+				scaledY = y.invert(pos.y)
+				date = x.invert(i);
+				colorAtX = colorScale(scaledY);
+
+			horizontalGradData.push({offset: percent + "%", color: colorAtX})
+
+		}
+
+		svg.append("linearGradient")
+			.attr("id", "horizontal-gradient")
+			.attr("gradientUnits", "userSpaceOnUse")
+			.attr("x1", "0%")
+    		.attr("y1", "0%")
+    		.attr("x2", "100%")
+    		.attr("y2", "0%")
+			.selectAll("stop")
+			.data(horizontalGradData)
 			.enter().append("stop")
 			.attr("offset", function(d) { return d.offset; })
 			.attr("stop-color", function(d) { return d.color; });

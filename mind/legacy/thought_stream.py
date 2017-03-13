@@ -1,7 +1,7 @@
 #################### USAGE ####################################
 
 # python3 -m mind.legacy.thought_stream [input_file] [user]
-# python3 -m mind.legacy.thought_stream data/input/thoughts.csv matt
+# python3 -m mind.legacy.thought_stream data/thoughts.csv matt
 
 ###############################################################
 
@@ -220,17 +220,28 @@ def buildPerspectiveAnalysis(days):
 		# Calculate Temporal Focus and Uncertainty
 		total = sum(dtc.values())
 		time_total = sum([dtc['Reflect'], dtc['State'], dtc['Predict']])
-		predictive_share = dtc['Predict'] / time_total
-		reflective_share = dtc['Reflect'] / time_total
-		temporal_focus = predictive_share - reflective_share
+
+		if time_total < 1:
+			continue
+
+		percent_predictions = dtc['Predict'] / time_total
+		percent_reflections = dtc['Reflect'] / time_total
+		percent_statements = dtc['State'] / time_total
+		temporal_focus = percent_predictions - percent_reflections;
+
+		if percent_statements == 1:
+			temporal_focus = 0
+		else:
+			temporal_focus = temporal_focus / (1 - percent_statements);
+
 		uncertainty = dtc["Ask"] / total
 		privateness = privacy["1"] / total
-		row = {"temporal_focus": temporal_focus, "uncertainty": uncertainty, "privacy": privateness}
+		row = {"#temporalFocus": temporal_focus, "#curiosity": uncertainty, "#privacy": privateness}
 
-		row['Post Date'] = day
+		row["date"] = day
 		perspective.append(row)
 
-	sorted_perspective = sorted(perspective, key=lambda k: datetime.datetime.strptime(k['Post Date'], '%m/%d/%y').date());
+	sorted_perspective = sorted(perspective, key=lambda k: datetime.datetime.strptime(k['date'], '%m/%d/%y').date());
 	write_dict_list(sorted_perspective, "data/perspective.csv")
 
 def buildLookup(days, ken):
