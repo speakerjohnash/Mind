@@ -1,11 +1,11 @@
-var width = 960;
-var height = 500;
-var radius = 20;
-var margin = 100;
+var width = 960,
+    height = 500,
+    radius = 20,
+    margin = 100;
 
-var x1 = margin;
-var x2 = width - margin;
-var y = height / 2;
+var x1 = margin,
+    x2 = width - margin,
+    y = height / 2;
     
 var drag = d3.behavior.drag()
   .origin(function(d) { return d; })
@@ -24,16 +24,18 @@ var line = svg.append("line")
   .attr("x2", x2)
   .attr("y1", y)
   .attr("y2", y)
-  .style("stroke", "black")
+  .style("stroke", "#f2f2f2")
   .style("stroke-linecap", "round")
-  .style("stroke-width", 5);
+  .style("stroke-width", 40);
 
 var beginCap = svg.append("circle")
+  .attr("fill", "#f1e886")
   .attr("r", radius)
   .attr("cy", y)
   .attr("cx", margin)
 
-var circle = svg.append("circle")
+var endCap = svg.append("circle")
+  .attr("fill", "#f1e886")
   .attr("r", radius)
   .attr("cy", function(d) { return d.y; })
   .attr("cx", function(d) { return d.x; })
@@ -53,5 +55,5 @@ function dragmove(d) {
   d.x = x;
   
   // Update the circle location.
-  circle.attr("cx", x);
+  endCap.attr("cx", x);
 }
