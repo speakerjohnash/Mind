@@ -166,11 +166,11 @@ $(document).ready(function() {
 		globalData = data;
 
 		var margin = 15,
+			height = window.innerHeight / 2.5,
 			width = window.innerWidth,
 			legendWidth = 100,
 			chartWidth = width - legendWidth,
-			fatLineWidth = width / 35,
-			height = window.innerHeight / 2.5,
+			fatLineWidth = width / 40,
 			faceSize = 70;
 			axisHeight = 20,
 			contextHeight = .15 * height,
@@ -301,10 +301,11 @@ $(document).ready(function() {
 
 		var colorScale = d3.scale.linear().domain([-1, 0, 1]).range(colorGradient);
 
-		var focusXScale = d3.time.scale().domain(timeRange).range([0, chartWidth]),
+		var scaleMargin = fatLineWidth / 3,
+			focusXScale = d3.time.scale().domain(timeRange).range([scaleMargin, chartWidth - scaleMargin]),
 			contextXScale = d3.time.scale().domain(timeRange).range([0, chartWidth]),
-			y = d3.scale.linear().domain([-1, 1]).range([focusHeight, 0]),
-			mY = d3.scale.linear().domain(trackableRange).range([focusHeight, 0]),
+			y = d3.scale.linear().domain([-1, 1]).range([focusHeight - scaleMargin, scaleMargin]),
+			mY = d3.scale.linear().domain(trackableRange).range([focusHeight - scaleMargin, scaleMargin]),
 			cy = d3.scale.linear().domain([-1, 1]).range([contextHeight, 0]),
 			cmy = d3.scale.linear().domain(trackableRange).range([contextHeight, 0]);
 
@@ -377,6 +378,7 @@ $(document).ready(function() {
 		var fatLine = focus.append("path")
 			.datum(trackable)
 			.attr("class", "fat-line")
+			.style("stroke-width", fatLineWidth + "px")
 			.attr("d", line);
 
 		var path = focus.append("path")
