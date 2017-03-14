@@ -356,7 +356,7 @@ $(document).ready(function() {
 		    formatDay = d3.time.format("%a %d"),
 		    formatWeek = d3.time.format("%b %d"),
 		    formatMonth = d3.time.format("%b"),
-		    formatYear = d3.time.format("%Y");
+		    formatYear = d3.time.format("'%y");
 
 		function multiFormat(date) {
 		  return (d3.time.second(date) < date ? formatMillisecond
