@@ -2,16 +2,16 @@ gradientVote = function () {
 
   var width = window.innerWidth,
     widgetWidth = 175,
-    height = 500,
+    height = 50,
     radius = 10,
-    margin = 100;
+    margin = 25;
 
   var x1 = margin,
     x2 = widgetWidth + margin,
     y = height / 2;
 
   var svg = d3.select("body").append("svg")
-    .attr("width", width)
+    .attr("width", widgetWidth + (2 * margin))
     .attr("height", height)
     .on("mousemove", hoverMove)
     .datum({
