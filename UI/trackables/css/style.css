@@ -22,8 +22,8 @@ p {
 
 .line {
   fill: none;
-  stroke: steelblue;
-  stroke-width: 1px;
+  stroke: #3b3c0f;
+  stroke-width: 0.5px;
 }
 
 .legend .face{
@@ -43,7 +43,7 @@ p {
 .fat-line {
   fill: none;
   stroke: url(#temperature-gradient);
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .widget {

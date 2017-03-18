@@ -296,8 +296,10 @@ $(document).ready(function() {
 			trackableRange = tag == "#temporalFocus" ? [-1, 1] : trackableRange;
 
 		var moodColors = ['#694a69', 'steelblue', 'yellow'],
+			curiosityColors = ["#f1e886", "#5cb85c", "#147710"],
 			tfColors = ["#8E2B2B", "#3276B1", "#50457B"],
-			colorGradient = tag == "#temporalFocus" ? tfColors : moodColors;
+			colorGradient = tag == "#temporalFocus" ? tfColors : moodColors,
+			colorGradient = tag == "#temporalFocus" ? curiosityColors : colorGradient;
 
 		var colorScale = d3.scale.linear().domain([-1, 0, 1]).range(colorGradient);
 
@@ -496,10 +498,10 @@ $(document).ready(function() {
 
 		var horizontalGradData = [];
 
-		for (var i=0; i < 10; i++) {
+		for (var i=0; i < chartWidth; i++) {
 
-			var percent = (i / 10) * 100,
-				pos = getYAtX(i * 100, pathEl),
+			var percent = (i / chartWidth) * 100,
+				pos = getYAtX(i, pathEl),
 				scaledY = y.invert(pos.y)
 				date = focusXScale.invert(i);
 				colorAtX = colorScale(scaledY);
@@ -512,9 +514,9 @@ $(document).ready(function() {
 			.attr("id", "horizontal-gradient")
 			.attr("gradientUnits", "userSpaceOnUse")
 			.attr("x1", "0%")
-    		.attr("y1", "0%")
-    		.attr("x2", "100%")
-    		.attr("y2", "0%")
+			.attr("y1", "0%")
+			.attr("x2", "100%")
+			.attr("y2", "0%")
 			.selectAll("stop")
 			.data(horizontalGradData)
 			.enter().append("stop")
