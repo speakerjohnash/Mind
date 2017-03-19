@@ -2,3 +2,13 @@ body {
 	margin: 0;
 	padding: 0;
 }
+
+
+.label-1 {
+	display: block;
+	float: right;
+}
+
+#gradient-container {
+	font-family: 'Quicksand';
+}

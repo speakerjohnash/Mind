@@ -1,16 +1,32 @@
-gradientVote = function () {
+gradientVote = function (labels) {
 
   var width = window.innerWidth,
     widgetWidth = 175,
     height = 50,
     radius = 10,
-    margin = 25;
+    margin = 25
+    leftLabel = labels[0],
+    rightLabel = labels[1];
 
   var x1 = margin,
     x2 = widgetWidth + margin,
     y = height / 2;
 
-  var svg = d3.select("body").append("svg")
+  var container = d3.select("body")
+    .append("div")
+    .attr("id", "gradient-container")
+    .style("width", widgetWidth + (2 * margin) + "px")
+
+  var labels = container.append("div")
+    .attr("class", "labels")
+    .selectAll("span")
+    .data(labels)
+    .enter()
+    .append("span")
+    .text(function(d) { return d })
+    .attr("class", function(d, i) { return "label-" + i})
+
+  var svg = container.append("svg")
     .attr("width", widgetWidth + (2 * margin))
     .attr("height", height)
     .on("mousemove", hoverMove)
@@ -19,7 +35,7 @@ gradientVote = function () {
       y: height / 2
     });
 
-  var container = svg.append("line")
+  var empty = svg.append("line")
     .attr("x1", x1)
     .attr("x2", x2)
     .attr("y1", y)
@@ -48,4 +64,4 @@ gradientVote = function () {
 
   }
 
-}()
+}(["False", "True"])
