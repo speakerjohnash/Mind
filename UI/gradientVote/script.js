@@ -71,8 +71,12 @@ gradientVote = function (labels) {
     truth.attr("x2", x);
 
     var percent = (x / (widgetWidth + radius)) * 100,
-        percent = Math.round(rangeScale(percent) * 10) / 10;
+        percent = Math.round(rangeScale(percent) * 10) / 10,
+        opacity = percent / 100,
+        inverseOpacity = 1 - opacity;;
 
+    rightLabel.style("opacity", opacity)
+    leftLabel.style("opacity", inverseOpacity)    
     percentLabel.text(percent + "%")
 
   }
