@@ -8,15 +8,18 @@ text {
 }
 
 #chart {
-  width: 960px;
-  height: 80px;
   padding: 15px;
   border: solid 1px #ccc;
+  margin: 40px auto;
 }
 
 #chart line{
   fill: none;
   stroke: #E0E0E0;
+}
+
+.btn {
+  margin: 10px;
 }
 
 #chart line {
@@ -30,23 +33,6 @@ text {
 
 #chart .axis line {
   stroke: none;
-}
-
-#chart4 {
-  margin-left: -25px;
-  height: 506px;
-}
-
-#chart4 .background {
-  fill: #ddd;
-}
-
-#chart4 .dot {
-  stroke: #000;
-}
-
-#chart4 line {
-  stroke: white;
 }
 
 .brush .extent {

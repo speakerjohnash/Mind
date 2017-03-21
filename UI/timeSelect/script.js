@@ -1,5 +1,5 @@
 (function timeSelect() {
-  var width = 960,
+  var width = window.innerWidth / 1.25,
       height = 80,
       timeSpaceHeight = 60,
       xSteps = d3.range(10, width, 10),
@@ -10,18 +10,20 @@
 
   var now = new Date,
       year = now.getFullYear(),
-      then = (new Date).setFullYear(year + 100),
+      then = (new Date).setFullYear(year + 1),
       timeFisheye = d3.fisheye.scale(d3.time.scale).domain([now, then]).range([0, width]).focus(0);
 
   var xFisheye = d3.fisheye.scale(d3.scale.identity).domain([0, width]).focus(0);
 
+  var chartContainer = d3.select("#chart")
+    .style("width", width + 40 + "px");
+
   var linearTimeScale = d3.time.scale().domain([0, width]).range([now, then]);
 
-  var svg = d3.select("#chart").append("svg")
+  var svg = chartContainer.append("svg")
       .attr("width", width)
       .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(-.5,-.5)");
+      .append("g");
 
   svg.append("rect")
       .attr("class", "background")
@@ -40,7 +42,27 @@
       .attr("class", "y")
       .attr("x2", width);
 
-  var timeLine = d3.svg.axis().scale(timeFisheye).ticks(10).orient("bottom")
+  // Draw Axes
+  var formatMillisecond = d3.time.format(".%L"),
+      formatSecond = d3.time.format(":%S"),
+      formatMinute = d3.time.format("%I:%M"),
+      formatHour = d3.time.format("%I %p"),
+      formatDay = d3.time.format("%a %d"),
+      formatWeek = d3.time.format("%b %d"),
+      formatMonth = d3.time.format("%b"),
+      formatYear = d3.time.format("'%y");
+
+  function multiFormat(date) {
+    return (d3.time.second(date) < date ? formatMillisecond
+        : d3.time.minute(date) < date ? formatSecond
+        : d3.time.hour(date) < date ? formatMinute
+        : d3.time.day(date) < date ? formatHour
+        : d3.time.month(date) < date ? (d3.time.week(date) < date ? formatDay : formatWeek)
+        : d3.time.year(date) < date ? formatMonth
+        : formatYear)(date);
+  }
+
+  var timeLine = d3.svg.axis().scale(timeFisheye).orient("bottom").tickFormat(multiFormat)
 
   // Brush
   var brush = d3.svg.brush().x(xFisheye);
@@ -110,6 +132,24 @@
     .call(timeLine);
 
   redraw();
+
+  // TODO: Fisplay Date Range Values
+  // TODO: Display Temporal Focus
+  // TODO: Add Refine button
+
+  var tools = d3.select("body").append("div")
+    .attr("id", "tools")
+    .style("width", width)
+
+  var refine = tools.append("button")
+    .attr("type", "button")
+    .attr("class", "refine btn btn-default")
+    .text("Refine")
+
+  var expand = tools.append("button")
+    .attr("type", "button")
+    .attr("class", "expand btn btn-default")
+    .text("Expand")
 
   function redraw() {
 
