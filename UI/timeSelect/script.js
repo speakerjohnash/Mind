@@ -75,6 +75,7 @@
     var xPos = d3.mouse(this)[0]
     brushStart = xPos
     dateBegin = new Date(linearTimeScale(brushStart))
+    dateEnd = new Date(linearTimeScale(brushStart))
   })
 
   brush.on("brushend", function(){
@@ -84,29 +85,6 @@
       dateEnd = new Date(dateBegin)
       dateBegin = new Date(tempDate)
     }
-  })
-
-  brush.on("brush", function(){
-
-    var newPixel = timeFisheye(linearTimeScale(brushStart)),
-        xMouse = d3.mouse(this)[0],
-        x,
-        width;
-
-    if (xMouse > brushStart) {
-      x = newPixel
-      width = xMouse - newPixel
-    } else {
-      x = xMouse
-      width = newPixel - xMouse
-    }
-
-    gBrush.selectAll(".extent")
-        .attr("x", x)
-        .attr("width", Math.abs(width))
-
-    brush.extent([x, x + width])
-    
   })
 
   var gBrush = svg.append("g")
@@ -135,8 +113,6 @@
     .attr("transform", "translate(0, " + timeSpaceHeight + ")")
     .call(timeLine);
 
-  redraw();
-
   // TODO: Fisplay Date Range Values
   // TODO: Display Temporal Focus
 
@@ -144,20 +120,35 @@
     .attr("id", "tools")
     .style("width", width)
 
-  var refine = tools.append("button")
-    .attr("type", "button")
-    .attr("class", "refine btn btn-default")
-    .text("Refine")
-    .on("click", function() {
-      timeFisheye.domain([dateBegin, dateEnd])
-      linearTimeScale.range([dateBegin, dateEnd])
-      redraw()
-    })
+  var beginText = tools.append("p"),
+      endText = tools.append("p");
 
-  var expand = tools.append("button")
-    .attr("type", "button")
-    .attr("class", "expand btn btn-default")
-    .text("Expand")
+  brush.on("brush", function(){
+
+    var newPixel = timeFisheye(linearTimeScale(brushStart)),
+        xMouse = d3.mouse(this)[0],
+        x,
+        width;
+
+    if (xMouse > brushStart) {
+      x = newPixel
+      width = xMouse - newPixel
+    } else {
+      x = xMouse
+      width = newPixel - xMouse
+    }
+
+    gBrush.selectAll(".extent")
+        .attr("x", x)
+        .attr("width", Math.abs(width))
+
+    brush.extent([x, x + width])
+
+    beginText.text(timeFormat(dateBegin))
+    
+  })
+
+  redraw();
 
   function redraw() {
 
