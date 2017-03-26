@@ -8,10 +8,14 @@
       dateBegin,
       dateEnd;
 
+  var t = d3.transition()
+    .duration(750);
+
   var now = new Date,
       year = now.getFullYear(),
       then = (new Date).setFullYear(year + 1),
-      timeFisheye = d3.fisheye.scale(d3.time.scale).domain([now, then]).range([0, width]).focus(0);
+      timeFisheye = d3.fisheye.scale(d3.time.scale).domain([now, then]).range([0, width]).focus(0),
+      timeFormat = d3.time.format("%m/%d/%Y");
 
   var xFisheye = d3.fisheye.scale(d3.scale.identity).domain([0, width]).focus(0);
 
@@ -70,15 +74,15 @@
   brush.on("brushstart", function(){
     var xPos = d3.mouse(this)[0]
     brushStart = xPos
-    dateBegin = linearTimeScale(brushStart)
+    dateBegin = new Date(linearTimeScale(brushStart))
   })
 
   brush.on("brushend", function(){
     dateEnd = linearTimeScale(d3.mouse(this)[0])
     if (dateEnd < dateBegin) {
       var tempDate = dateEnd
-      dateEnd = dateBegin
-      dateBegin = tempDate
+      dateEnd = new Date(dateBegin)
+      dateBegin = new Date(tempDate)
     }
   })
 
@@ -99,7 +103,7 @@
 
     gBrush.selectAll(".extent")
         .attr("x", x)
-        .attr("width", width)
+        .attr("width", Math.abs(width))
 
     brush.extent([x, x + width])
     
@@ -135,7 +139,6 @@
 
   // TODO: Fisplay Date Range Values
   // TODO: Display Temporal Focus
-  // TODO: Add Refine button
 
   var tools = d3.select("body").append("div")
     .attr("id", "tools")
@@ -145,6 +148,11 @@
     .attr("type", "button")
     .attr("class", "refine btn btn-default")
     .text("Refine")
+    .on("click", function() {
+      timeFisheye.domain([dateBegin, dateEnd])
+      linearTimeScale.range([dateBegin, dateEnd])
+      redraw()
+    })
 
   var expand = tools.append("button")
     .attr("type", "button")
@@ -159,7 +167,7 @@
 
       gBrush.selectAll(".extent")
         .attr("x", newbStart)
-        .attr("width", newbEnd - newbStart)
+        .attr("width", Math.abs(newbEnd - newbStart))
     }
 
     svg.select(".x.axis").call(timeLine);
