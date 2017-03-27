@@ -1,5 +1,5 @@
 (function timeSelect() {
-  var width = window.innerWidth / 1.45,
+  var width = window.innerWidth / 1.25,
       height = 80,
       timeSpaceHeight = 60,
       xSteps = d3.range(10, width, 10),
@@ -7,9 +7,6 @@
       brushStart,
       dateBegin,
       dateEnd;
-
-  var t = d3.transition()
-    .duration(750);
 
   var now = new Date,
       year = now.getFullYear(),
@@ -90,6 +87,14 @@
     }
   })
 
+  var tools = d3.select("body").append("div")
+    .attr("id", "tools")
+    .style("width", width)
+
+  var beginText = tools.append("p"),
+      tfText = tools.append("p"),
+      endText = tools.append("p");
+
   var gBrush = svg.append("g")
     .attr("class", "brush")
     .call(brush);
@@ -101,6 +106,7 @@
     var mouse = d3.mouse(this);
     xFisheye.focus(mouse[0]);
     timeFisheye.focus(mouse[0]);
+    tfText.text("Temporal Focus: " + timeFormat(new Date(linearTimeScale(mouse[0]))))
     redraw();
   });
 
@@ -108,7 +114,7 @@
     var mouse = d3.mouse(this);
     xFisheye.focus(mouse[0]);
     timeFisheye.focus(mouse[0]);
-    redraw();
+    redraw(mouse);
   });
 
   svg.append("g")
@@ -116,15 +122,7 @@
     .attr("transform", "translate(0, " + timeSpaceHeight + ")")
     .call(timeLine);
 
-  // TODO: Fisplay Date Range Values
   // TODO: Display Temporal Focus
-
-  var tools = d3.select("body").append("div")
-    .attr("id", "tools")
-    .style("width", width)
-
-  var beginText = tools.append("p"),
-      endText = tools.append("p");
 
   brush.on("brush", brushed)
 
