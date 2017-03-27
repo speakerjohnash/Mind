@@ -133,7 +133,9 @@
       var newbStart = timeFisheye(dateBegin),
           newbEnd = timeFisheye(dateEnd);
 
-      console.log([newbStart, newbEnd]);
+      gBrush.selectAll(".selection")
+        .attr("x", newbStart)
+        .attr("width", Math.abs(newbEnd - newbStart))
 
     }
 
