@@ -169,6 +169,7 @@
     svg.select(".x.axis").call(timeLine);
     xLine.attr("x1", xFisheye).attr("x2", xFisheye);
     beginText.text(timeFormat(dateBegin))
+    endText.text(timeFormat(new Date(linearTimeScale(xMouse))))
 
   }
 
