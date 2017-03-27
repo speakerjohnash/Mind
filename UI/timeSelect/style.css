@@ -2,6 +2,11 @@ text {
   font: 10px sans-serif;
 }
 
+#tools {
+  width: 650px;
+  margin: 0 auto;
+}
+
 .background {
   fill: none;
   pointer-events: all;
@@ -26,9 +31,17 @@ text {
   shape-rendering: crispEdges;
 }
 
+.axis text{
+  font-family: 'Quicksand';
+}
+
 .axis path, .axis line {
   fill: none;
   shape-rendering: crispEdges;
+}
+
+p {
+  font-family: 'Quicksand';
 }
 
 #chart .axis line {

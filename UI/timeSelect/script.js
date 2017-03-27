@@ -1,5 +1,5 @@
 (function timeSelect() {
-  var width = window.innerWidth / 1.25,
+  var width = window.innerWidth / 1.45,
       height = 80,
       timeSpaceHeight = 60,
       xSteps = d3.range(10, width, 10),
@@ -168,8 +168,8 @@
     d3.select(this).call(brush.move, [x, x + width]);
     svg.select(".x.axis").call(timeLine);
     xLine.attr("x1", xFisheye).attr("x2", xFisheye);
-    beginText.text(timeFormat(dateBegin))
-    endText.text(timeFormat(new Date(linearTimeScale(xMouse))))
+    beginText.text("Begin: " + timeFormat(dateBegin))
+    endText.text("End: " + timeFormat(new Date(linearTimeScale(xMouse))))
 
   }
 
