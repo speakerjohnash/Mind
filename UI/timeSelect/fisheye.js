@@ -15,6 +15,7 @@
           min = range[0],
           max = range[1],
           m = left ? a - min : max - a;
+
       if (m == 0) m = max - min;
       return (left ? -1 : 1) * m * (d + 1) / (d + (m / Math.abs(x - a))) + a;
     }
@@ -38,6 +39,18 @@
     fisheye.nice = scale.nice;
     fisheye.ticks = scale.ticks;
     fisheye.tickFormat = scale.tickFormat;
-    return d3.rebind(fisheye, scale, "domain", "range");
+    
+    fisheye.domain = function() {
+      var value = scale.domain.apply(scale, arguments);
+      return value === scale ? fisheye : value;
+    }
+
+    fisheye.range = function() {
+      var value = scale.range.apply(scale, arguments);
+      return value === scale ? fisheye : value;
+    }
+
+    return fisheye;
+
   }
 })();
