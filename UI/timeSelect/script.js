@@ -66,7 +66,10 @@
         : formatYear)(date);
   }
 
-  var timeLine = d3.axisBottom().scale(timeFisheye).tickFormat(multiFormat)
+  var numTicks = Math.round(width / 65),
+      timeLine = d3.axisBottom().scale(timeFisheye).ticks(numTicks).tickFormat(multiFormat);
+
+  console.log(numTicks)
 
   // Brush
   var brush = d3.brushX(xFisheye);
