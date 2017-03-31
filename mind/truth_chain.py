@@ -9,7 +9,7 @@ Created on Jan 09, 2017
 
 #################### USAGE ##########################
 
-# python3 -m mind.truth_scoring
+# python3 -m mind.truth_chain
 # http://www.metaculus.com/help/scoring
 
 #####################################################
@@ -30,6 +30,9 @@ def run_from_command_line():
 	scores = load_dict_list("data/input/ubs_votingapi_vote.csv")
 	truth_scores = [x for x in scores if x["tag"] == "Prescience"]
 
+	# TODO
+	# Load associated thoughts and merge data
+
 	print(len(truth_scores))
 
 	#for score in truth_scores:
@@ -48,7 +51,6 @@ def run_from_command_line():
 	# Should penalize less: incorrect alignment with the crowd
 
 	# One vote per day
-	# Reflections and Statements logged as predictions of future truth
 
 if __name__ == "__main__":
 	run_from_command_line()
