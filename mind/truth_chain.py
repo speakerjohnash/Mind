@@ -39,6 +39,31 @@ def run_from_command_line():
 	#	print(score)
 
 	# TODO
+	# Temporal CNN for encoding thoughts using diluted convolutions
+	# Append output of cnn to encodings of [time of day]:
+	# 
+	# df['sin_time'] = np.sin(2*np.pi*df.seconds/seconds_in_day)
+	# df['cos_time'] = np.cos(2*np.pi*df.seconds/seconds_in_day)
+	#
+	# [truth (0, 1)]
+	#
+	# [dissonance]
+	#
+	# [temporal_focus]
+	#  
+	# [day_of_year]
+	#
+	# [sentiment (-1, 0, 1)]
+
+	# TODO
+	# Take concatenated feautures and feed thoughts sequentially into an LSTM
+	# Use the output state at each step as an input to a decoder
+	# Attempt to reconctruct the input thoughts, and to generate subsequent thoughts
+	# yet to be fed into the network
+	# 
+	# The intial loss is just the reconstruction of present, past and future thoughts
+
+	# TODO
 	# Analytics
 	# How many thoughts have more than one truth vote?
 	# How many unique users have logged votes?
