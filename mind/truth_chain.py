@@ -62,6 +62,7 @@ def run_from_command_line():
 	# yet to be fed into the network
 	# 
 	# The intial loss is just the reconstruction of present, past and future thoughts
+	# Some thoughts may have words modified via a thesaurus for the reconstruction signal
 	#
 	# After output sounds somewhat logical the loss will switch to dissonance fedback from the crowd
 	# on thoughts generated
