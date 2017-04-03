@@ -177,7 +177,7 @@ def get_variable(graph, name):
 
 def threshold(tensor):
 	"""ReLU with threshold at 1e-6"""
-	return tf.mul(tf.to_float(tf.greater_equal(tensor, 1e-6)), tensor)
+	return tf.multiply(tf.to_float(tf.greater_equal(tensor, 1e-6)), tensor)
 
 def bias_variable(shape, flat_input_shape):
 	"""Initialize biases"""
@@ -187,7 +187,7 @@ def bias_variable(shape, flat_input_shape):
 
 def weight_variable(config, shape):
 	"""Initialize weights"""
-	weight = tf.Variable(tf.mul(tf.random_normal(shape), config["randomize"]), name="W")
+	weight = tf.Variable(tf.multiply(tf.random_normal(shape), config["randomize"]), name="W")
 	return weight
 
 def conv2d(input_x, weights):
@@ -334,7 +334,7 @@ def build_graph(config):
 		network = encoder(thoughts_placeholder, "network", train=True)
 		trained_model = encoder(thoughts_placeholder, "model", train=False)
 
-		loss = tf.neg(tf.reduce_mean(tf.reduce_sum(network * labels_placeholder, 1)), name="loss")
+		loss = tf.negative(tf.reduce_mean(tf.reduce_sum(network * labels_placeholder, 1)), name="loss")
 		optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9).minimize(loss, name="optimizer")
 
 		bn_updates = tf.group(*bn_assigns)

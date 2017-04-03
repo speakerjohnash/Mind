@@ -1,6 +1,6 @@
 {
 	"model_path": "",
-	"dataset": "data/input/thought.csv",
+	"dataset": "data/thoughts.csv",
 	"alphabet": "abcdefghijklmnopqrstuvwxyz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
 	"embeddings": "/home/ubuntu/git/embeddings/en.polyglot.txt",
 	"tag_map": {
