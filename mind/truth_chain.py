@@ -45,15 +45,18 @@ def run_from_command_line():
 	# df['sin_time'] = np.sin(2*np.pi*df.seconds/seconds_in_day)
 	# df['cos_time'] = np.cos(2*np.pi*df.seconds/seconds_in_day)
 	#
+	# [day_of_year]
+	#
 	# [truth (0, 1)]
 	#
 	# [dissonance]
 	#
-	# [temporal_focus]
-	#  
-	# [day_of_year]
+	# [temporal_focus {-1, 0, 1}] 
 	#
-	# [sentiment (-1, 0, 1)]
+	# [sentiment (-1, 1)]
+	#
+	# [speaker]
+	# Speaker embedding 
 
 	# TODO
 	# Take concatenated feautures and feed thoughts sequentially into an LSTM
