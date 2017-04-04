@@ -254,32 +254,34 @@ def build_graph(config):
 		running_var = [tf.Variable(tf.ones([l]), trainable=False) for l in layer_sizes]
 		bn_assigns = []
 
-		def layer(input_h, details, layer_type, train, weights=None, biases=None):
+		def layer(input_h, details, scope, train, weights=None, biases=None):
 			"""Apply all necessary steps in a layer"""
 
-			# Preactivation
-			if layer_type == "conv":
-				z_pre = conv2d(input_h, weights)
-			elif layer_type == "pool":
-				z_pre = max_pool(input_h)
-			elif layer_type == "fc":
-				z_pre = tf.matmul(input_h, weights)
+			with tf.variable_scope(scope):
 
-			details["layer_count"] += 1
-			layer_n = details["layer_count"]
+				# Preactivation
+				if "conv" in scope:
+					z_pre = conv2d(input_h, weights)
+				elif "pool" in scope:
+					z_pre = max_pool(input_h)
+				elif "fc" in scope:
+					z_pre = tf.matmul(input_h, weights)
 
-			if train:
-				z = update_batch_normalization(z_pre, layer_n)
-			else:
-				mean = ewma.average(running_mean[layer_n-1])
-				var = ewma.average(running_var[layer_n-1])
-				z = batch_normalization(z_pre, mean=mean, var=var)
+				details["layer_count"] += 1
+				layer_n = details["layer_count"]
 
-			# Apply Activation
-			if layer_type == "conv" or layer_type == "fc":
-				layer = threshold(z + biases)
-			else:
-				layer = z
+				if train:
+					z = update_batch_normalization(z_pre, layer_n)
+				else:
+					mean = ewma.average(running_mean[layer_n-1])
+					var = ewma.average(running_var[layer_n-1])
+					z = batch_normalization(z_pre, mean=mean, var=var)
+
+				# Apply Activation
+				if "conv" in scope or "fc" in scope:
+					layer = threshold(z + biases)
+				else:
+					layer = z
 
 			return layer
 
@@ -305,26 +307,26 @@ def build_graph(config):
 
 			details = {"layer_count": 0}
 
-			h_conv1 = layer(inputs, details, "conv", train, weights=w_conv1, biases=b_conv1)
-			h_pool1 = layer(h_conv1, details, "pool", train)
+			h_conv1 = layer(inputs, details, "conv0", train, weights=w_conv1, biases=b_conv1)
+			h_pool1 = layer(h_conv1, details, "pool0", train)
 
-			h_conv2 = layer(h_pool1, details, "conv", train, weights=w_conv2, biases=b_conv2)
-			h_pool2 = layer(h_conv2, details, "pool", train)
+			h_conv2 = layer(h_pool1, details, "conv1", train, weights=w_conv2, biases=b_conv2)
+			h_pool2 = layer(h_conv2, details, "pool1", train)
 
-			h_conv3 = layer(h_pool2, details, "conv", train, weights=w_conv3, biases=b_conv3)
+			h_conv3 = layer(h_pool2, details, "conv2", train, weights=w_conv3, biases=b_conv3)
 
-			h_conv4 = layer(h_conv3, details, "conv", train, weights=w_conv4, biases=b_conv4)
+			h_conv4 = layer(h_conv3, details, "conv3", train, weights=w_conv4, biases=b_conv4)
 
-			h_conv5 = layer(h_conv4, details, "conv", train, weights=w_conv5, biases=b_conv5)
-			h_pool5 = layer(h_conv5, details, "pool", train)
+			h_conv5 = layer(h_conv4, details, "conv4", train, weights=w_conv5, biases=b_conv5)
+			h_pool5 = layer(h_conv5, details, "pool2", train)
 
 			h_reshape = tf.reshape(h_pool5, [-1, reshape])
 
-			h_fc1 = layer(h_reshape, details, "fc", train, weights=w_fc1, biases=b_fc1)
+			h_fc1 = layer(h_reshape, details, "fc0", train, weights=w_fc1, biases=b_fc1)
 
 			dropout = tf.layers.dropout(h_fc1, 0.5, training=phase)
 
-			h_fc2 = layer(dropout, details, "fc", train, weights=w_fc2, biases=b_fc2)
+			h_fc2 = layer(dropout, details, "fc1", train, weights=w_fc2, biases=b_fc2)
 
 			softmax = tf.nn.softmax(bn_scaler * h_fc2)
 			network = tf.log(tf.clip_by_value(softmax, 1e-10, 1.0), name=name)
