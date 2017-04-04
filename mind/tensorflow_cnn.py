@@ -116,13 +116,23 @@ def encode_time_features(config, batch):
 	"""Encode time from batch into usable features"""
 
 	times = batch["Post date"].tolist()
+	seconds_in_day = 24*60*60
+	encoded = []
 	
 	for time in times:
+
+		# Convert to seconds past midnight
 		parsed = datetime.datetime.strptime(time, '%m/%d/%y %I:%M %p')
+		midnight = parsed.replace(hour=0, minute=0, second=0, microsecond=0)
+		seconds_past_midnight = (parsed - midnight).seconds
+		
+		# Convert to sin_time and cos_time
+		sin_time = np.sin(2 * np.pi * seconds_past_midnight / seconds_in_day)
+		cos_time = np.cos(2 * np.pi * seconds_past_midnight / seconds_in_day)
 
-		# TODO: Convert to seconds past midnight
+		encoded.append([sin_time, cos_time])
 
-		# TODO: Convert to sin_time and cos_time
+	return np.asarray(encoded)
 
 def string_to_tensor(config, doc, length):
 	"""Convert thought to tensor format"""
@@ -346,9 +356,11 @@ def train_model(config, graph, sess, saver):
 		# Encode Time 
 		time_features = encode_time_features(config, batch)
 
+		# Construct Feed Dict
 		feed_dict = {
 			"x:0" : thoughts, 
 			"y:0" : labels,
+			"tod:0" : time_features,
 			"phase:0" : 1
 		}
 
