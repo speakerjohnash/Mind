@@ -291,7 +291,7 @@ def build_graph(config):
 
 			return network
 
-		model = encoder(thoughts_placeholder, "model", train=True)
+		model = encoder(thoughts_placeholder, "model")
 
 		loss = tf.negative(tf.reduce_mean(tf.reduce_sum(model * labels_placeholder, 1)), name="loss")
 
