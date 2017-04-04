@@ -13,13 +13,6 @@ Created on Mar 26, 2016
 # python3 -m mind.tensorflow_cnn [config]
 # python3 -m mind.tensorflow_cnn config/tf_cnn_config.json
 
-# For addtional details on implementation see:
-# Character-level Convolutional Networks for Text Classification
-# http://arxiv.org/abs/1509.01626
-#
-# Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift
-# http://arxiv.org/abs/1502.03167
-
 ###################################################################################################
 
 import logging
@@ -245,16 +238,8 @@ def build_graph(config):
 		w_fc2 = weight_variable(config, [1024, num_labels])
 		b_fc2 = bias_variable([num_labels], 1024)
 
-		bn_scaler = tf.Variable(1.0 * tf.ones([num_labels]))
 
-		# Utility for Batch Normalization
-		layer_sizes = [256] * 8 + [1024, num_labels]
-		ewma = tf.train.ExponentialMovingAverage(decay=0.99)
-		running_mean = [tf.Variable(tf.zeros([l]), trainable=False) for l in layer_sizes]
-		running_var = [tf.Variable(tf.ones([l]), trainable=False) for l in layer_sizes]
-		bn_assigns = []
-
-		def layer(input_h, details, scope, train, weights=None, biases=None):
+		def layer(input_h, scope, weights=None, biases=None):
 			"""Apply all necessary steps in a layer"""
 
 			with tf.variable_scope(scope):
@@ -267,15 +252,7 @@ def build_graph(config):
 				elif "fc" in scope:
 					z_pre = tf.matmul(input_h, weights)
 
-				details["layer_count"] += 1
-				layer_n = details["layer_count"]
-
-				if train:
-					z = update_batch_normalization(z_pre, layer_n)
-				else:
-					mean = ewma.average(running_mean[layer_n-1])
-					var = ewma.average(running_var[layer_n-1])
-					z = batch_normalization(z_pre, mean=mean, var=var)
+				z = tf.contrib.layers.batch_norm(z_pre, center=True, scale=True, is_training=phase, scope='bn')
 
 				# Apply Activation
 				if "conv" in scope or "fc" in scope:
@@ -285,63 +262,43 @@ def build_graph(config):
 
 			return layer
 
-		def batch_normalization(batch, mean=None, var=None):
-			"""Perform batch normalization"""
-			if mean == None or var == None:
-				axes = [0] if len(batch.get_shape()) == 2 else [0, 1, 2]
-				mean, var = tf.nn.moments(batch, axes=axes)
-			return (batch - mean) / tf.sqrt(var + tf.constant(1e-10))
-
-		def update_batch_normalization(batch, l):
-			"batch normalize + update average mean and variance of layer l"
-			axes = [0] if len(batch.get_shape()) == 2 else [0, 1, 2]
-			mean, var = tf.nn.moments(batch, axes=axes)
-			assign_mean = running_mean[l-1].assign(mean)
-			assign_var = running_var[l-1].assign(var)
-			bn_assigns.append(ewma.apply([running_mean[l-1], running_var[l-1]]))
-			with tf.control_dependencies([assign_mean, assign_var]):
-				return (batch - mean) / tf.sqrt(var + 1e-10)
-
-		def encoder(inputs, name, train=False, noise_std=0.0):
+		def encoder(inputs, name):
 			"""Add model layers to the graph"""
 
-			details = {"layer_count": 0}
+			h_conv1 = layer(inputs, "conv0", weights=w_conv1, biases=b_conv1)
+			h_pool1 = layer(h_conv1, "pool0")
 
-			h_conv1 = layer(inputs, details, "conv0", train, weights=w_conv1, biases=b_conv1)
-			h_pool1 = layer(h_conv1, details, "pool0", train)
+			h_conv2 = layer(h_pool1, "conv1", weights=w_conv2, biases=b_conv2)
+			h_pool2 = layer(h_conv2, "pool1")
 
-			h_conv2 = layer(h_pool1, details, "conv1", train, weights=w_conv2, biases=b_conv2)
-			h_pool2 = layer(h_conv2, details, "pool1", train)
+			h_conv3 = layer(h_pool2, "conv2", weights=w_conv3, biases=b_conv3)
 
-			h_conv3 = layer(h_pool2, details, "conv2", train, weights=w_conv3, biases=b_conv3)
+			h_conv4 = layer(h_conv3, "conv3", weights=w_conv4, biases=b_conv4)
 
-			h_conv4 = layer(h_conv3, details, "conv3", train, weights=w_conv4, biases=b_conv4)
-
-			h_conv5 = layer(h_conv4, details, "conv4", train, weights=w_conv5, biases=b_conv5)
-			h_pool5 = layer(h_conv5, details, "pool2", train)
+			h_conv5 = layer(h_conv4, "conv4", weights=w_conv5, biases=b_conv5)
+			h_pool5 = layer(h_conv5, "pool2")
 
 			h_reshape = tf.reshape(h_pool5, [-1, reshape])
 
-			h_fc1 = layer(h_reshape, details, "fc0", train, weights=w_fc1, biases=b_fc1)
+			h_fc1 = layer(h_reshape, "fc0", weights=w_fc1, biases=b_fc1)
 
 			dropout = tf.layers.dropout(h_fc1, 0.5, training=phase)
 
-			h_fc2 = layer(dropout, details, "fc1", train, weights=w_fc2, biases=b_fc2)
+			h_fc2 = layer(dropout, "fc1", weights=w_fc2, biases=b_fc2)
 
-			softmax = tf.nn.softmax(bn_scaler * h_fc2)
+			softmax = tf.nn.softmax(h_fc2)
 			network = tf.log(tf.clip_by_value(softmax, 1e-10, 1.0), name=name)
 
 			return network
 
-		network = encoder(thoughts_placeholder, "network", train=True)
-		trained_model = encoder(thoughts_placeholder, "model", train=False)
+		model = encoder(thoughts_placeholder, "model", train=True)
 
-		loss = tf.negative(tf.reduce_mean(tf.reduce_sum(network * labels_placeholder, 1)), name="loss")
-		optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9).minimize(loss, name="optimizer")
+		loss = tf.negative(tf.reduce_mean(tf.reduce_sum(model * labels_placeholder, 1)), name="loss")
 
-		bn_updates = tf.group(*bn_assigns)
-		with tf.control_dependencies([optimizer]):
-			bn_applier = tf.group(bn_updates, name="bn_applier")
+		update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+
+		with tf.control_dependencies(update_ops):
+			optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9).minimize(loss, name="optimizer")
 
 		saver = tf.train.Saver()
 
@@ -376,7 +333,6 @@ def train_model(config, graph, sess, saver):
 
 		# Run Training Step
 		sess.run("optimizer", feed_dict=feed_dict)
-		sess.run("bn_applier", feed_dict=feed_dict)
 
 		# Log Loss
 		if step % logging_interval == 0:
