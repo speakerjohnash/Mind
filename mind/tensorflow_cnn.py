@@ -130,7 +130,12 @@ def encode_time_features(config, batch):
 		sin_time = np.sin(2 * np.pi * seconds_past_midnight / seconds_in_day)
 		cos_time = np.cos(2 * np.pi * seconds_past_midnight / seconds_in_day)
 
-		encoded.append([sin_time, cos_time])
+		# Encode Day of Year
+		day_of_year = midnight.timetuple().tm_yday
+		sin_day = np.sin(2 * np.pi * day_of_year / 365)
+		cos_day = np.cos(2 * np.pi * day_of_year / 365)
+
+		encoded.append([sin_time, cos_time, sin_day, cos_day])
 
 	return np.asarray(encoded)
 
@@ -165,7 +170,7 @@ def evaluate_testset(config, graph, sess, test):
 			"x:0" : thoughts_test, 
 			"phase:0" : 0
 		}
-		
+
 		output = sess.run("model:0", feed_dict=feed_dict_test)
 
 		batch_correct_count = np.sum(np.argmax(output, 1) == np.argmax(labels_test, 1))
@@ -240,7 +245,7 @@ def build_graph(config):
 
 		thoughts_placeholder = tf.placeholder(tf.float32, shape=input_shape, name="x")
 		labels_placeholder = tf.placeholder(tf.float32, shape=output_shape, name="y")
-		time_of_day_placeholder = tf.placeholder(tf.float32, shape=[None, 2], name="tod")
+		time_of_day_placeholder = tf.placeholder(tf.float32, shape=[None, 4], name="tod")
 
 		# Encoder Weights and Biases
 		w_conv1 = weight_variable(config, [1, 7, alphabet_length, 256])
@@ -258,11 +263,13 @@ def build_graph(config):
 		w_conv5 = weight_variable(config, [1, 3, 256, 256])
 		b_conv5 = bias_variable([256], 3 * 256)
 
-		w_fc1 = weight_variable(config, [reshape + 2, 1024])
-		b_fc1 = bias_variable([1024], reshape)
+		feature_count = reshape + 4
 
-		w_fc2 = weight_variable(config, [1024, num_labels])
-		b_fc2 = bias_variable([num_labels], 1024)
+		w_fc1 = weight_variable(config, [feature_count, feature_count])
+		b_fc1 = bias_variable([feature_count], feature_count)
+
+		w_fc2 = weight_variable(config, [feature_count, num_labels])
+		b_fc2 = bias_variable([num_labels], feature_count)
 
 		def layer(input_h, scope, weights=None, biases=None):
 			"""Apply all necessary steps in a layer"""
