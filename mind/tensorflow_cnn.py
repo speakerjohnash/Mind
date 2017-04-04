@@ -165,7 +165,7 @@ def get_op(graph, name):
 def get_variable(graph, name):
 	"""Get variable by name"""
 	with graph.as_default():
-		variable = [v for v in tf.all_variables() if v.name == name][0]
+		variable = [v for v in tf.global_variables() if v.name == name][0]
 		return variable
 
 def threshold(tensor):
