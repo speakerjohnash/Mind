@@ -22,6 +22,7 @@ import pprint
 import random
 import shutil
 import sys
+import datetime
 
 import pandas as pd
 import numpy as np
@@ -110,6 +111,18 @@ def batch_to_tensor(config, batch):
 
 	encoded_thoughts = np.transpose(encoded_thoughts, (0, 1, 3, 2))
 	return encoded_thoughts, labels
+
+def encode_time_features(config, batch):
+	"""Encode time from batch into usable features"""
+
+	times = batch["Post date"].tolist()
+	
+	for time in times:
+		parsed = datetime.datetime.strptime(time, '%m/%d/%y %I:%M %p')
+
+		# TODO: Convert to seconds past midnight
+
+		# TODO: Convert to sin_time and cos_time
 
 def string_to_tensor(config, doc, length):
 	"""Convert thought to tensor format"""
@@ -211,6 +224,7 @@ def build_graph(config):
 
 		thoughts_placeholder = tf.placeholder(tf.float32, shape=input_shape, name="x")
 		labels_placeholder = tf.placeholder(tf.float32, shape=output_shape, name="y")
+		time_of_day_placeholder = tf.placeholder(tf.float32, shape=[None, 2], name="tod")
 
 		# Encoder Weights and Biases
 		w_conv1 = weight_variable(config, [1, 7, alphabet_length, 256])
@@ -328,6 +342,10 @@ def train_model(config, graph, sess, saver):
 		# Prepare Data for Training
 		batch = mixed_batching(config, train, groups_train)
 		thoughts, labels = batch_to_tensor(config, batch)
+
+		# Encode Time 
+		time_features = encode_time_features(config, batch)
+
 		feed_dict = {
 			"x:0" : thoughts, 
 			"y:0" : labels,
