@@ -159,7 +159,13 @@ def evaluate_testset(config, graph, sess, test):
 		batch_size = len(batch_test)
 
 		thoughts_test, labels_test = batch_to_tensor(config, batch_test)
-		feed_dict_test = {"x:0" : thoughts_test, "phase:0" : 0}
+		time_features = encode_time_features(config, batch_test)
+		feed_dict_test = {
+			"tod:0" : time_features,
+			"x:0" : thoughts_test, 
+			"phase:0" : 0
+		}
+		
 		output = sess.run("model:0", feed_dict=feed_dict_test)
 
 		batch_correct_count = np.sum(np.argmax(output, 1) == np.argmax(labels_test, 1))
