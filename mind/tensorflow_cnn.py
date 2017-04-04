@@ -122,7 +122,7 @@ def string_to_tensor(config, doc, length):
 			tensor[alpha_dict[char]][len(doc) - index - 1] = 1
 	return tensor
 
-def evaluate_testset(config, graph, sess, model, test):
+def evaluate_testset(config, graph, sess, test):
 	"""Check error on test set"""
 
 	total_count = len(test.index)
@@ -137,7 +137,7 @@ def evaluate_testset(config, graph, sess, model, test):
 
 		thoughts_test, labels_test = batch_to_tensor(config, batch_test)
 		feed_dict_test = {"x:0" : thoughts_test, "phase:0" : 0}
-		output = sess.run(model, feed_dict=feed_dict_test)
+		output = sess.run("model:0", feed_dict=feed_dict_test)
 
 		batch_correct_count = np.sum(np.argmax(output, 1) == np.argmax(labels_test, 1))
 
@@ -153,10 +153,6 @@ def evaluate_testset(config, graph, sess, model, test):
 def accuracy(predictions, labels):
 	"""Return accuracy for a batch"""
 	return 100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1)) / predictions.shape[0]
-
-def get_tensor(graph, name):
-	"""Get tensor by name"""
-	return graph.get_tensor_by_name(name)
 
 def get_op(graph, name):
 	"""Get operation by name"""
@@ -280,6 +276,13 @@ def build_graph(config):
 
 			h_reshape = tf.reshape(h_pool5, [-1, reshape])
 
+			# TODO: Encode and concatenate speaker embedding and time encodings
+
+			# Speaker Embedding
+
+			# Time Encodings
+
+
 			h_fc1 = layer(h_reshape, "fc0", weights=w_fc1, biases=b_fc1)
 
 			dropout = tf.layers.dropout(h_fc1, 0.5, training=phase)
@@ -349,11 +352,10 @@ def train_model(config, graph, sess, saver):
 		if step != 0 and step % epochs == 0:
 
 			#Evaluate Model
-			model = get_tensor(graph, "model:0")
 			learning_rate = get_variable(graph, "lr:0")
 			logging.info("Testing for era %d" % (step / epochs))
 			logging.info("Learning rate at epoch %d: %g" % (step + 1, sess.run(learning_rate)))
-			test_accuracy = evaluate_testset(config, graph, sess, model, test)
+			test_accuracy = evaluate_testset(config, graph, sess, test)
 
 			# Save Checkpoint
 			current_era = int(step / epochs)
@@ -402,9 +404,8 @@ def run_session(config, graph, saver):
 			train_model(config, graph, sess, saver)
 		elif mode == "test":
 			saver.restore(sess, model_path)
-			model = get_tensor(graph, "model:0")
 			_, test, _ = load_data(config)
-			evaluate_testset(config, graph, sess, model, test)
+			evaluate_testset(config, graph, sess, test)
 
 def run_from_command_line():
 	"""Run module from command line"""
