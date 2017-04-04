@@ -143,7 +143,7 @@ def evaluate_testset(config, graph, sess, model, test):
 		batch_size = len(batch_test)
 
 		thoughts_test, labels_test = batch_to_tensor(config, batch_test)
-		feed_dict_test = {get_tensor(graph, "x:0"): thoughts_test, "phase:0": 0}
+		feed_dict_test = {"x:0" : thoughts_test, "phase:0" : 0}
 		output = sess.run(model, feed_dict=feed_dict_test)
 
 		batch_correct_count = np.sum(np.argmax(output, 1) == np.argmax(labels_test, 1))
@@ -367,24 +367,24 @@ def train_model(config, graph, sess, saver):
 		batch = mixed_batching(config, train, groups_train)
 		thoughts, labels = batch_to_tensor(config, batch)
 		feed_dict = {
-			get_tensor(graph, "x:0") : thoughts, 
-			get_tensor(graph, "y:0") : labels,
+			"x:0" : thoughts, 
+			"y:0" : labels,
 			"phase:0" : 1
 		}
 
 		# Run Training Step
-		sess.run(get_op(graph, "optimizer"), feed_dict=feed_dict)
-		sess.run(get_op(graph, "bn_applier"), feed_dict=feed_dict)
+		sess.run("optimizer", feed_dict=feed_dict)
+		sess.run("bn_applier", feed_dict=feed_dict)
 
 		# Log Loss
 		if step % logging_interval == 0:
-			loss = sess.run(get_tensor(graph, "loss:0"), feed_dict=feed_dict)
+			loss = sess.run("loss:0", feed_dict=feed_dict)
 			logging.info("train loss at epoch %d: %g" % (step + 1, loss))
 
 		# Log Accuracy for Tracking
 		if step % 1000 == 0:
 			feed_dict["phase:0"] = 0
-			predictions = sess.run(get_tensor(graph, "model:0"), feed_dict=feed_dict)
+			predictions = sess.run("model:0", feed_dict=feed_dict)
 			logging.info("Minibatch accuracy: %.1f%%" % accuracy(predictions, labels))
 
 		# Evaluate Testset, Log Progress and Save
@@ -438,7 +438,7 @@ def run_session(config, graph, saver):
 		mode = config["mode"]
 		model_path = config.get("model_path", "")
 
-		tf.initialize_all_variables().run()
+		tf.global_variables_initializer().run()
 
 		if mode == "train":
 			train_model(config, graph, sess, saver)
