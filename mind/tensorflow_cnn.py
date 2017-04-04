@@ -143,7 +143,7 @@ def evaluate_testset(config, graph, sess, model, test):
 		batch_size = len(batch_test)
 
 		thoughts_test, labels_test = batch_to_tensor(config, batch_test)
-		feed_dict_test = {get_tensor(graph, "x:0"): thoughts_test}
+		feed_dict_test = {get_tensor(graph, "x:0"): thoughts_test, "phase:0": 0}
 		output = sess.run(model, feed_dict=feed_dict_test)
 
 		batch_correct_count = np.sum(np.argmax(output, 1) == np.argmax(labels_test, 1))
@@ -215,6 +215,7 @@ def build_graph(config):
 	with graph.as_default():
 
 		learning_rate = tf.Variable(base_rate, trainable=False, name="lr")
+		phase = tf.placeholder(tf.bool, name='phase')
 
 		input_shape = [None, 1, doc_length, alphabet_length]
 		output_shape = [None, num_labels]
@@ -321,10 +322,9 @@ def build_graph(config):
 
 			h_fc1 = layer(h_reshape, details, "fc", train, weights=w_fc1, biases=b_fc1)
 
-			if train:
-				h_fc1 = tf.nn.dropout(h_fc1, 0.5)
+			dropout = tf.layers.dropout(h_fc1, 0.5, training=phase)
 
-			h_fc2 = layer(h_fc1, details, "fc", train, weights=w_fc2, biases=b_fc2)
+			h_fc2 = layer(dropout, details, "fc", train, weights=w_fc2, biases=b_fc2)
 
 			softmax = tf.nn.softmax(bn_scaler * h_fc2)
 			network = tf.log(tf.clip_by_value(softmax, 1e-10, 1.0), name=name)
@@ -366,7 +366,11 @@ def train_model(config, graph, sess, saver):
 		# Prepare Data for Training
 		batch = mixed_batching(config, train, groups_train)
 		thoughts, labels = batch_to_tensor(config, batch)
-		feed_dict = {get_tensor(graph, "x:0") : thoughts, get_tensor(graph, "y:0") : labels}
+		feed_dict = {
+			get_tensor(graph, "x:0") : thoughts, 
+			get_tensor(graph, "y:0") : labels,
+			"phase:0" : 1
+		}
 
 		# Run Training Step
 		sess.run(get_op(graph, "optimizer"), feed_dict=feed_dict)
@@ -379,6 +383,7 @@ def train_model(config, graph, sess, saver):
 
 		# Log Accuracy for Tracking
 		if step % 1000 == 0:
+			feed_dict["phase:0"] = 0
 			predictions = sess.run(get_tensor(graph, "model:0"), feed_dict=feed_dict)
 			logging.info("Minibatch accuracy: %.1f%%" % accuracy(predictions, labels))
 
