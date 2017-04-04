@@ -252,12 +252,11 @@ def build_graph(config):
 		w_conv5 = weight_variable(config, [1, 3, 256, 256])
 		b_conv5 = bias_variable([256], 3 * 256)
 
-		w_fc1 = weight_variable(config, [reshape, 1024])
+		w_fc1 = weight_variable(config, [reshape + 2, 1024])
 		b_fc1 = bias_variable([1024], reshape)
 
 		w_fc2 = weight_variable(config, [1024, num_labels])
 		b_fc2 = bias_variable([num_labels], 1024)
-
 
 		def layer(input_h, scope, weights=None, biases=None):
 			"""Apply all necessary steps in a layer"""
@@ -300,14 +299,12 @@ def build_graph(config):
 
 			h_reshape = tf.reshape(h_pool5, [-1, reshape])
 
-			# TODO: Encode and concatenate speaker embedding and time encodings
-
-			# Speaker Embedding
+			# TODO: Speaker Embedding
 
 			# Time Encodings
+			combined_features = tf.concat([h_reshape, time_of_day_placeholder], 1, name='concat')
 
-
-			h_fc1 = layer(h_reshape, "fc0", weights=w_fc1, biases=b_fc1)
+			h_fc1 = layer(combined_features, "fc0", weights=w_fc1, biases=b_fc1)
 
 			dropout = tf.layers.dropout(h_fc1, 0.5, training=phase)
 
