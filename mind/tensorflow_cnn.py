@@ -242,10 +242,24 @@ def build_graph(config):
 
 		input_shape = [None, 1, doc_length, alphabet_length]
 		output_shape = [None, num_labels]
+		embedding_shape = [config["num_speakers"], config["se_dim"]]
 
 		thoughts_placeholder = tf.placeholder(tf.float32, shape=input_shape, name="x")
 		labels_placeholder = tf.placeholder(tf.float32, shape=output_shape, name="y")
 		time_of_day_placeholder = tf.placeholder(tf.float32, shape=[None, 4], name="tod")
+
+		# Speaker Embeddings
+		sembed_matrix = tf.Variable(
+			tf.random_normal(embedding_shape), 
+			trainable=True, 
+			name="sembed_matrix"
+		)
+
+		embedding_placeholder = tf.placeholder(
+			tf.float32, 
+			embedding_shape, 
+			name="embedding_placeholder"
+		)
 
 		# Encoder Weights and Biases
 		w_conv1 = weight_variable(config, [1, 7, alphabet_length, 256])
@@ -311,8 +325,6 @@ def build_graph(config):
 			h_pool5 = layer(h_conv5, "pool2")
 
 			h_reshape = tf.reshape(h_pool5, [-1, reshape])
-
-			# TODO: Speaker Embedding
 
 			# Time Encodings
 			combined_features = tf.concat([h_reshape, time_of_day_placeholder], 1, name='concat')
