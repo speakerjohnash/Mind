@@ -156,13 +156,11 @@ def string_to_tensor(config, doc, length):
 	"""Convert thought to tensor format"""
 	alphabet = config["alphabet"]
 	alpha_dict = config["alpha_dict"]
-	offset = (length - len(doc)) / 2
 	doc = doc.lower()[0:length]
 	tensor = np.zeros((len(alphabet), length), dtype=np.float32)
-	for index, char in list(enumerate(doc)):
+	for index, char in reversed(list(enumerate(doc))):
 		if char in alphabet:
-			char_ind = int(index + offset)
-			tensor[alpha_dict[char]][char_ind] = 1
+			tensor[alpha_dict[char]][len(doc) - index - 1] = 1
 	return tensor
 
 def string_to_char_indices(config, doc, length):
@@ -282,31 +280,28 @@ def build_graph(config):
 		)
 
 		# Encoder Weights and Biases
-		w_conv0 = weight_variable(config, [1, 3, alphabet_length, 16])
-		b_conv0 = bias_variable([16], 3 * alphabet_length)
+		w_conv0 = weight_variable(config, [1, 3, alphabet_length, 32])
+		b_conv0 = bias_variable([32], 3 * alphabet_length)
 
-		w_conv1 = weight_variable(config, [1, 5, 16, 16])
-		b_conv1 = bias_variable([16], 5 * 16)
+		w_conv1 = weight_variable(config, [1, 5, 32, 32])
+		b_conv1 = bias_variable([32], 5 * 32)
 
-		w_conv2 = weight_variable(config, [1, 9, 16, 16])
-		b_conv2 = bias_variable([16], 9 * 16)
+		w_conv2 = weight_variable(config, [1, 9, 32, 32])
+		b_conv2 = bias_variable([32], 9 * 32)
 
-		w_conv3 = weight_variable(config, [1, 17, 16, 16])
-		b_conv3 = bias_variable([16], 17 * 16)
+		w_conv3 = weight_variable(config, [1, 17, 32, 32])
+		b_conv3 = bias_variable([32], 17 * 32)
 
-		w_conv4 = weight_variable(config, [1, 33, 16, 16])
-		b_conv4 = bias_variable([16], 33 * 16)
+		w_conv4 = weight_variable(config, [1, 33, 32, 32])
+		b_conv4 = bias_variable([32], 33 * 32)
 
-		w_conv5 = weight_variable(config, [1, 65, 16, 16])
-		b_conv5 = bias_variable([16], 65 * 16)
+		w_conv5 = weight_variable(config, [1, 65, 32, 32])
+		b_conv5 = bias_variable([32], 65 * 32)
 
-		w_conv6 = weight_variable(config, [1, 130, 16, 16])
-		b_conv6 = bias_variable([16], 130 * 16)
+		w_conv6 = weight_variable(config, [1, 1, 32, 32])
+		b_conv6 = bias_variable([32], 1 * 32)
 
-		w_conv7 = weight_variable(config, [1, 1, 16, 16])
-		b_conv7 = bias_variable([16], 1 * 16)
-
-		feature_count = (4108 - 12) + 4 + config["se_dim"]
+		feature_count = (8204 - 12) + 4 + config["se_dim"]
 
 		w_fc1 = weight_variable(config, [feature_count, 1024])
 		b_fc1 = bias_variable([1024], feature_count)
@@ -344,16 +339,15 @@ def build_graph(config):
 			"""Add model layers to the graph"""
 
 			# Thought Encoder
-			h_conv0 = layer(inputs, "dConv0", 1, weights=w_conv0, biases=b_conv0)
-			h_conv1 = layer(h_conv0, "dConv1", 1, weights=w_conv1, biases=b_conv1)
-			h_conv2 = layer(h_conv1, "dConv2", 2, weights=w_conv2, biases=b_conv2)
-			h_conv3 = layer(h_conv2, "dConv3", 4, weights=w_conv3, biases=b_conv3)
-			h_conv4 = layer(h_conv3, "dConv4", 8, weights=w_conv4, biases=b_conv4)
-			h_conv5 = layer(h_conv4, "dConv5", 16, weights=w_conv5, biases=b_conv5)
-			h_conv6 = layer(h_conv5, "dConv6", 32, weights=w_conv6, biases=b_conv6)
-			h_conv7 = layer(h_conv6, "dConv7", 1, weights=w_conv7, biases=b_conv7)
+			h_conv0 = layer(inputs, "dConv0", rate=1, weights=w_conv0, biases=b_conv0)
+			h_conv1 = layer(h_conv0, "dConv1", rate=1, weights=w_conv1, biases=b_conv1)
+			h_conv2 = layer(h_conv1, "dConv2", rate=2, weights=w_conv2, biases=b_conv2)
+			h_conv3 = layer(h_conv2, "dConv3", rate=4, weights=w_conv3, biases=b_conv3)
+			h_conv4 = layer(h_conv3, "dConv4", rate=8, weights=w_conv4, biases=b_conv4)
+			h_conv5 = layer(h_conv4, "dConv5", rate=16, weights=w_conv5, biases=b_conv5)
+			h_conv6 = layer(h_conv5, "dConv6", rate=1, weights=w_conv6, biases=b_conv6)
 
-			h_reshape = tf.contrib.layers.flatten(h_conv7)
+			h_reshape = tf.contrib.layers.flatten(h_conv6)
 
 			# Other Features
 			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
