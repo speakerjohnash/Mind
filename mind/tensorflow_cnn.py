@@ -178,7 +178,7 @@ def evaluate_testset(config, graph, sess, test):
 
 		thoughts_test, labels_test = batch_to_tensor(config, batch_test)
 		time_features = encode_time_features(config, batch_test)
-		speaker_ids = get_speaker_id_list(config, batch)
+		speaker_ids = get_speaker_id_list(config, batch_test)
 		feed_dict_test = {
 			"tod:0" : time_features,
 			"x:0" : thoughts_test,
@@ -339,7 +339,7 @@ def build_graph(config):
 
 			# Other Features
 			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
-			combined_features = tf.concat([h_reshape, time_of_day_placeholder, sembeds], 1, name='concat')
+			combined_features = tf.concat([time_of_day_placeholder, h_reshape, sembeds], 1, name='concat')
 
 			# Classifier
 			h_fc1 = layer(combined_features, "fc0", weights=w_fc1, biases=b_fc1)

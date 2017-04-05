@@ -12,5 +12,5 @@
 	"decay": 1e-5,
 	"epochs": 5000,
 	"eras": 25,
-	"se_dim": 32
+	"se_dim": 8
 }
