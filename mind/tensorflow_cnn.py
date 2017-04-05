@@ -321,6 +321,7 @@ def build_graph(config):
 		def encoder(inputs, name):
 			"""Add model layers to the graph"""
 
+			# Thought Encoder
 			h_conv1 = layer(inputs, "conv0", weights=w_conv1, biases=b_conv1)
 			h_pool1 = layer(h_conv1, "pool0")
 
@@ -336,10 +337,11 @@ def build_graph(config):
 
 			h_reshape = tf.reshape(h_pool5, [-1, reshape])
 
-			# Time Encodings
+			# Other Features
 			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
 			combined_features = tf.concat([h_reshape, time_of_day_placeholder, sembeds], 1, name='concat')
 
+			# Classifier
 			h_fc1 = layer(combined_features, "fc0", weights=w_fc1, biases=b_fc1)
 
 			dropout = tf.layers.dropout(h_fc1, 0.5, training=phase)
