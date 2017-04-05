@@ -49,6 +49,7 @@ def validate_config(config):
 	config["alpha_dict"] = {a : i for i, a in enumerate(config["alphabet"])}
 	config["base_rate"] = config["base_rate"] * math.sqrt(config["batch_size"]) / math.sqrt(128)
 	config["alphabet_length"] = len(config["alphabet"])
+	config["train"], config["test"], config["groups_train"] = load_labeled_data(config)
 
 	return config
 
@@ -65,6 +66,10 @@ def load_labeled_data(config):
 	df = pd.read_csv(dataset, na_filter=False, encoding="utf-8", error_bad_lines=False)
 	df["LABEL_NUM"] = df.apply(map_labels, axis=1)
 	df = df[df["LABEL_NUM"] != ""]
+
+	speakers = list(set(df["Seer"]))
+	config["num_speakers"] = len(speakers)
+	config["speaker_lookup"] = {name : i for i, name in enumerate(speakers)}
 
 	msk = np.random.rand(len(df)) < 0.90
 	train = df[msk]
@@ -139,6 +144,14 @@ def encode_time_features(config, batch):
 
 	return np.asarray(encoded)
 
+def get_speaker_id_list(config, batch):
+	"""Map speakers to indices associated with speaker embeddings"""
+
+	lookup = config["speaker_lookup"]
+	speakers = batch["Seer"].tolist()
+
+	return [lookup[s] for s in speakers]
+
 def string_to_tensor(config, doc, length):
 	"""Convert thought to tensor format"""
 	alphabet = config["alphabet"]
@@ -165,9 +178,11 @@ def evaluate_testset(config, graph, sess, test):
 
 		thoughts_test, labels_test = batch_to_tensor(config, batch_test)
 		time_features = encode_time_features(config, batch_test)
+		speaker_ids = get_speaker_id_list(config, batch)
 		feed_dict_test = {
 			"tod:0" : time_features,
-			"x:0" : thoughts_test, 
+			"x:0" : thoughts_test,
+			"speaker_ids:0" : speaker_ids,
 			"phase:0" : 0
 		}
 
@@ -244,9 +259,12 @@ def build_graph(config):
 		output_shape = [None, num_labels]
 		embedding_shape = [config["num_speakers"], config["se_dim"]]
 
+		print(embedding_shape)
+
 		thoughts_placeholder = tf.placeholder(tf.float32, shape=input_shape, name="x")
 		labels_placeholder = tf.placeholder(tf.float32, shape=output_shape, name="y")
 		time_of_day_placeholder = tf.placeholder(tf.float32, shape=[None, 4], name="tod")
+		speaker_ids = tf.placeholder(tf.int32, [None], name="speaker_ids")
 
 		# Speaker Embeddings
 		sembed_matrix = tf.Variable(
@@ -276,6 +294,8 @@ def build_graph(config):
 
 		w_conv5 = weight_variable(config, [1, 3, 256, 256])
 		b_conv5 = bias_variable([256], 3 * 256)
+
+		sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
 
 		feature_count = reshape + 4
 
@@ -327,6 +347,7 @@ def build_graph(config):
 			h_reshape = tf.reshape(h_pool5, [-1, reshape])
 
 			# Time Encodings
+			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
 			combined_features = tf.concat([h_reshape, time_of_day_placeholder], 1, name='concat')
 
 			h_fc1 = layer(combined_features, "fc0", weights=w_fc1, biases=b_fc1)
@@ -356,10 +377,10 @@ def build_graph(config):
 def train_model(config, graph, sess, saver):
 	"""Train the model"""
 
+	train, test, groups_train = config["train"], config["test"], config["groups_train"]
 	epochs = config["epochs"]
 	eras = config["eras"]
 	dataset = config["dataset"]
-	train, test, groups_train = load_labeled_data(config)
 	num_eras = epochs * eras
 	logging_interval = 50
 	learning_rate_interval = 15000
@@ -377,13 +398,16 @@ def train_model(config, graph, sess, saver):
 
 		# Encode Time 
 		time_features = encode_time_features(config, batch)
+		speaker_ids = get_speaker_id_list(config, batch)
 
 		# Construct Feed Dict
 		feed_dict = {
 			"x:0" : thoughts, 
 			"y:0" : labels,
 			"tod:0" : time_features,
-			"phase:0" : 1
+			"speaker_ids:0" : speaker_ids,
+			"phase:0" : 1,
+
 		}
 
 		# Run Training Step
