@@ -259,8 +259,6 @@ def build_graph(config):
 		output_shape = [None, num_labels]
 		embedding_shape = [config["num_speakers"], config["se_dim"]]
 
-		print(embedding_shape)
-
 		thoughts_placeholder = tf.placeholder(tf.float32, shape=input_shape, name="x")
 		labels_placeholder = tf.placeholder(tf.float32, shape=output_shape, name="y")
 		time_of_day_placeholder = tf.placeholder(tf.float32, shape=[None, 4], name="tod")
@@ -271,12 +269,6 @@ def build_graph(config):
 			tf.random_normal(embedding_shape), 
 			trainable=True, 
 			name="sembed_matrix"
-		)
-
-		embedding_placeholder = tf.placeholder(
-			tf.float32, 
-			embedding_shape, 
-			name="embedding_placeholder"
 		)
 
 		# Encoder Weights and Biases
@@ -295,9 +287,7 @@ def build_graph(config):
 		w_conv5 = weight_variable(config, [1, 3, 256, 256])
 		b_conv5 = bias_variable([256], 3 * 256)
 
-		sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
-
-		feature_count = reshape + 4
+		feature_count = reshape + 4 + config["se_dim"]
 
 		w_fc1 = weight_variable(config, [feature_count, feature_count])
 		b_fc1 = bias_variable([feature_count], feature_count)
@@ -348,7 +338,7 @@ def build_graph(config):
 
 			# Time Encodings
 			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
-			combined_features = tf.concat([h_reshape, time_of_day_placeholder], 1, name='concat')
+			combined_features = tf.concat([h_reshape, time_of_day_placeholder, sembeds], 1, name='concat')
 
 			h_fc1 = layer(combined_features, "fc0", weights=w_fc1, biases=b_fc1)
 
