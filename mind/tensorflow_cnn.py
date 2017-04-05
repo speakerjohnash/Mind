@@ -337,8 +337,7 @@ def build_graph(config):
 				elif "fc" in scope:
 					z_pre = tf.matmul(input_h, weights)
 
-				#z = tf.contrib.layers.batch_norm(z_pre, center=True, scale=True, is_training=phase, scope='bn')
-				z = z_pre
+				z = tf.contrib.layers.batch_norm(z_pre, center=True, scale=True, is_training=phase, scope='bn')
 
 				# Apply Activation
 				if "conv" in scope or "fc" in scope:
