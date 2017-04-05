@@ -295,6 +295,9 @@ def build_graph(config):
 		w_conv5 = weight_variable(config, [1, 65, 32, 32])
 		b_conv5 = bias_variable([32], 65 * 32)
 
+		w_conv5 = weight_variable(config, [1, 1, 32, 32])
+		b_conv5 = bias_variable([32], 1 * 32)
+
 		feature_count = (8204 - 12) + 4 + config["se_dim"]
 
 		w_fc1 = weight_variable(config, [feature_count, feature_count])
@@ -338,8 +341,9 @@ def build_graph(config):
 			h_conv2 = layer(h_conv1, "dConv2", 2, weights=w_conv2, biases=b_conv2)
 			h_conv3 = layer(h_conv2, "dConv3", 4, weights=w_conv3, biases=b_conv3)
 			h_conv4 = layer(h_conv3, "dConv4", 8, weights=w_conv4, biases=b_conv4)
+			h_conv5 = layer(h_conv3, "dConv5", 1, weights=w_conv5, biases=b_conv5)
 
-			h_reshape = tf.contrib.layers.flatten(h_conv4)
+			h_reshape = tf.contrib.layers.flatten(h_conv5)
 
 			# Other Features
 			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
