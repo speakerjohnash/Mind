@@ -280,28 +280,31 @@ def build_graph(config):
 		)
 
 		# Encoder Weights and Biases
-		w_conv0 = weight_variable(config, [1, 3, alphabet_length, 32])
-		b_conv0 = bias_variable([32], 3 * alphabet_length)
+		w_conv0 = weight_variable(config, [1, 3, alphabet_length, 21])
+		b_conv0 = bias_variable([21], 3 * alphabet_length)
 
-		w_conv1 = weight_variable(config, [1, 5, 32, 32])
-		b_conv1 = bias_variable([32], 5 * 32)
+		w_conv1 = weight_variable(config, [1, 5, 21, 21])
+		b_conv1 = bias_variable([21], 5 * 21)
 
-		w_conv2 = weight_variable(config, [1, 9, 32, 32])
-		b_conv2 = bias_variable([32], 9 * 32)
+		w_conv2 = weight_variable(config, [1, 9, 21, 21])
+		b_conv2 = bias_variable([21], 9 * 21)
 
-		w_conv3 = weight_variable(config, [1, 17, 32, 32])
-		b_conv3 = bias_variable([32], 17 * 32)
+		w_conv3 = weight_variable(config, [1, 17, 21, 21])
+		b_conv3 = bias_variable([21], 17 * 21)
 
-		w_conv4 = weight_variable(config, [1, 33, 32, 32])
-		b_conv4 = bias_variable([32], 33 * 32)
+		w_conv4 = weight_variable(config, [1, 33, 21, 21])
+		b_conv4 = bias_variable([21], 33 * 21)
 
-		w_conv5 = weight_variable(config, [1, 65, 32, 32])
-		b_conv5 = bias_variable([32], 65 * 32)
+		w_conv5 = weight_variable(config, [1, 65, 21, 21])
+		b_conv5 = bias_variable([21], 65 * 21)
 
-		w_conv6 = weight_variable(config, [1, 1, 32, 32])
-		b_conv6 = bias_variable([32], 1 * 32)
+		w_conv6 = weight_variable(config, [1, 130, 21, 21])
+		b_conv6 = bias_variable([21], 130 * 21)
 
-		feature_count = (8204 - 12) + 4 + config["se_dim"]
+		w_conv7 = weight_variable(config, [1, 1, 21, 21])
+		b_conv7 = bias_variable([21], 1 * 21)
+
+		feature_count = (5388 - 12) + 4 + config["se_dim"]
 
 		w_fc1 = weight_variable(config, [feature_count, 1024])
 		b_fc1 = bias_variable([1024], feature_count)
@@ -345,9 +348,10 @@ def build_graph(config):
 			h_conv3 = layer(h_conv2, "dConv3", rate=4, weights=w_conv3, biases=b_conv3)
 			h_conv4 = layer(h_conv3, "dConv4", rate=8, weights=w_conv4, biases=b_conv4)
 			h_conv5 = layer(h_conv4, "dConv5", rate=16, weights=w_conv5, biases=b_conv5)
-			h_conv6 = layer(h_conv5, "dConv6", rate=1, weights=w_conv6, biases=b_conv6)
+			h_conv6 = layer(h_conv5, "dConv6", rate=32, weights=w_conv6, biases=b_conv6)
+			h_conv7 = layer(h_conv6, "dConv7", rate=1, weights=w_conv7, biases=b_conv7)
 
-			h_reshape = tf.contrib.layers.flatten(h_conv6)
+			h_reshape = tf.contrib.layers.flatten(h_conv7)
 
 			# Other Features
 			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")

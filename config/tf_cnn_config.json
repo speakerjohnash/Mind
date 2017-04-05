@@ -4,7 +4,7 @@
 	"label_map": {"0": "Predict", "1": "State", "2": "Ask", "3": "Reflect"},
 	"label_key": "Type",
 	"alphabet": "abcdefghijklmnopqrstuvwxyz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
-	"batch_size": 16,
+	"batch_size": 14,
 	"doc_length": 256,
 	"randomize": 5e-2,
 	"momentum": 0.9,
