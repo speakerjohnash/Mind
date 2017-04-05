@@ -300,11 +300,11 @@ def build_graph(config):
 
 		feature_count = (8204 - 12) + 4 + config["se_dim"]
 
-		w_fc1 = weight_variable(config, [feature_count, feature_count])
-		b_fc1 = bias_variable([feature_count], feature_count)
+		w_fc1 = weight_variable(config, [feature_count, 1024])
+		b_fc1 = bias_variable([1024], feature_count)
 
-		w_fc2 = weight_variable(config, [feature_count, num_labels])
-		b_fc2 = bias_variable([num_labels], feature_count)
+		w_fc2 = weight_variable(config, [1024, num_labels])
+		b_fc2 = bias_variable([num_labels], 1024)
 
 		def layer(input_h, scope, rate=1, weights=None, biases=None):
 			"""Apply all necessary steps in a layer"""
@@ -321,7 +321,8 @@ def build_graph(config):
 				elif "fc" in scope:
 					z_pre = tf.matmul(input_h, weights)
 
-				z = tf.contrib.layers.batch_norm(z_pre, center=True, scale=True, is_training=phase, scope='bn')
+				#z = tf.contrib.layers.batch_norm(z_pre, center=True, scale=True, is_training=phase, scope='bn')
+				z = z_pre
 
 				# Apply Activation
 				if "conv" in scope or "fc" in scope:
