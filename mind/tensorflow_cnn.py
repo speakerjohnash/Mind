@@ -314,13 +314,13 @@ def build_graph(config):
 		w_conv7 = weight_variable(config, [1, 1, 32, 32])
 		b_conv7 = bias_variable([32], 1 * 32)
 
-		feature_count = (8204 - 12) + 4 + config["se_dim"]
+		feature_count = (5772 - 12) + 4 + config["se_dim"]
 
-		w_fc1 = weight_variable(config, [feature_count, 1024])
-		b_fc1 = bias_variable([1024], feature_count)
+		w_fc1 = weight_variable(config, [feature_count, feature_count])
+		b_fc1 = bias_variable([feature_count], feature_count)
 
-		w_fc2 = weight_variable(config, [1024, num_labels])
-		b_fc2 = bias_variable([num_labels], 1024)
+		w_fc2 = weight_variable(config, [feature_count, num_labels])
+		b_fc2 = bias_variable([num_labels], feature_count)
 
 		def layer(input_h, scope, rate=1, weights=None, biases=None):
 			"""Apply all necessary steps in a layer"""
