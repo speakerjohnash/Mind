@@ -314,7 +314,7 @@ def build_graph(config):
 		w_conv7 = weight_variable(config, [1, 1, 32, 32])
 		b_conv7 = bias_variable([32], 1 * 32)
 
-		feature_count = (5772 - 12) + 4 + config["se_dim"]
+		feature_count = (8204 - 12) + 4 + config["se_dim"]
 
 		w_fc1 = weight_variable(config, [feature_count, feature_count])
 		b_fc1 = bias_variable([feature_count], feature_count)
