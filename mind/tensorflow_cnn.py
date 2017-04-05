@@ -233,6 +233,11 @@ def conv2d(input_x, weights):
 	layer = tf.nn.conv2d(input_x, weights, strides=[1, 1, 1, 1], padding='VALID')
 	return layer
 
+def dilated1DConv(input_x, weights, rate):
+	"""Create convolutional layer"""
+	layer = tf.nn.atrous_conv2d(input_x, weights, rate, padding='SAME')
+	return layer
+
 def max_pool(tensor):
 	"""Create max pooling layer"""
 	layer = tf.nn.max_pool(tensor, ksize=[1, 1, 3, 1], strides=[1, 1, 3, 1], padding='VALID')
@@ -272,22 +277,25 @@ def build_graph(config):
 		)
 
 		# Encoder Weights and Biases
-		w_conv1 = weight_variable(config, [1, 7, alphabet_length, 256])
-		b_conv1 = bias_variable([256], 7 * alphabet_length)
+		w_conv0 = weight_variable(config, [1, 3, alphabet_length, 32])
+		b_conv0 = bias_variable([32], 3 * alphabet_length)
 
-		w_conv2 = weight_variable(config, [1, 7, 256, 256])
-		b_conv2 = bias_variable([256], 7 * 256)
+		w_conv1 = weight_variable(config, [1, 5, 32, 32])
+		b_conv1 = bias_variable([32], 5 * 32)
 
-		w_conv3 = weight_variable(config, [1, 3, 256, 256])
-		b_conv3 = bias_variable([256], 3 * 256)
+		w_conv2 = weight_variable(config, [1, 9, 32, 32])
+		b_conv2 = bias_variable([32], 9 * 32)
 
-		w_conv4 = weight_variable(config, [1, 3, 256, 256])
-		b_conv4 = bias_variable([256], 3 * 256)
+		w_conv3 = weight_variable(config, [1, 17, 32, 32])
+		b_conv3 = bias_variable([32], 17 * 32)
 
-		w_conv5 = weight_variable(config, [1, 3, 256, 256])
-		b_conv5 = bias_variable([256], 3 * 256)
+		w_conv4 = weight_variable(config, [1, 33, 32, 32])
+		b_conv4 = bias_variable([32], 33 * 32)
 
-		feature_count = reshape + 4 + config["se_dim"]
+		w_conv5 = weight_variable(config, [1, 65, 32, 32])
+		b_conv5 = bias_variable([32], 65 * 32)
+
+		feature_count = (8204 - 12) + 4 + config["se_dim"]
 
 		w_fc1 = weight_variable(config, [feature_count, feature_count])
 		b_fc1 = bias_variable([feature_count], feature_count)
@@ -295,7 +303,7 @@ def build_graph(config):
 		w_fc2 = weight_variable(config, [feature_count, num_labels])
 		b_fc2 = bias_variable([num_labels], feature_count)
 
-		def layer(input_h, scope, weights=None, biases=None):
+		def layer(input_h, scope, rate=1, weights=None, biases=None):
 			"""Apply all necessary steps in a layer"""
 
 			with tf.variable_scope(scope):
@@ -303,6 +311,8 @@ def build_graph(config):
 				# Preactivation
 				if "conv" in scope:
 					z_pre = conv2d(input_h, weights)
+				if "dConv" in scope:
+					z_pre = dilated1DConv(input_h, weights, rate)
 				elif "pool" in scope:
 					z_pre = max_pool(input_h)
 				elif "fc" in scope:
@@ -322,20 +332,14 @@ def build_graph(config):
 			"""Add model layers to the graph"""
 
 			# Thought Encoder
-			h_conv1 = layer(inputs, "conv0", weights=w_conv1, biases=b_conv1)
-			h_pool1 = layer(h_conv1, "pool0")
 
-			h_conv2 = layer(h_pool1, "conv1", weights=w_conv2, biases=b_conv2)
-			h_pool2 = layer(h_conv2, "pool1")
+			h_conv0 = layer(inputs, "dConv0", 1, weights=w_conv0, biases=b_conv0)
+			h_conv1 = layer(h_conv0, "dConv1", 1, weights=w_conv1, biases=b_conv1)
+			h_conv2 = layer(h_conv1, "dConv2", 2, weights=w_conv2, biases=b_conv2)
+			h_conv3 = layer(h_conv2, "dConv3", 4, weights=w_conv3, biases=b_conv3)
+			h_conv4 = layer(h_conv3, "dConv4", 8, weights=w_conv4, biases=b_conv4)
 
-			h_conv3 = layer(h_pool2, "conv2", weights=w_conv3, biases=b_conv3)
-
-			h_conv4 = layer(h_conv3, "conv3", weights=w_conv4, biases=b_conv4)
-
-			h_conv5 = layer(h_conv4, "conv4", weights=w_conv5, biases=b_conv5)
-			h_pool5 = layer(h_conv5, "pool2")
-
-			h_reshape = tf.reshape(h_pool5, [-1, reshape])
+			h_reshape = tf.contrib.layers.flatten(h_conv4)
 
 			# Other Features
 			sembeds = tf.nn.embedding_lookup(sembed_matrix, speaker_ids, name="se_lookup")
