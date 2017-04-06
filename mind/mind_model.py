@@ -17,3 +17,19 @@ class Mind_model:
 		encoder_dilations : Dilation Factor for decoder layers (list)
 		decoder_dilations : Dilation Factor for decoder layers (list)
 		'''
+
+	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
+	"""Utility function for forming an encode layer"""
+
+	def encoder(self, input_):
+	"""Utility function for constructing the encoder"""
+
+	def decode_layer(self, input_, dilation, layer_no):
+	"""Utility function for forming a decode layer"""
+
+	def decoder(self, input_, encoder_embedding=None):
+	"""Utility function for constructing the decoder"""
+
+	def loss(self, decoder_output, target_sentence):
+	"""Calculate loss between decoder output and target"""
+
