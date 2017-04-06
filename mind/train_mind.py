@@ -36,21 +36,24 @@ def load_data(config):
 	train = df[msk]
 	test = df[~msk]
 
-	grouped_train = train.groupby('LABEL_NUM', as_index=False)
-	groups_train = dict(list(grouped_train))
+	return train, test
 
-	return train, test, groups_train
+def train_model(config):
+	"""Train the model"""
 
 def run_from_command_line():
 	"""Run module from command line"""
 
-	scores = load_dict_list("data/input/ubs_votingapi_vote.csv")
-	truth_scores = [x for x in scores if x["tag"] == "Prescience"]
+if __name__ == "__main__":
+	run_from_command_line()
+
+	# scores = load_dict_list("data/input/ubs_votingapi_vote.csv")
+	# truth_scores = [x for x in scores if x["tag"] == "Prescience"]
 
 	# TODO
 	# Load associated thoughts and merge data
 
-	print(len(truth_scores))
+	# print(len(truth_scores))
 
 	#for score in truth_scores:
 	#	print(score)
@@ -102,6 +105,3 @@ def run_from_command_line():
 	# Should penalize less: incorrect alignment with the crowd
 
 	# One vote per day
-
-if __name__ == "__main__":
-	run_from_command_line()
