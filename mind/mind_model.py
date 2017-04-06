@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-class Mind_model:
+class MindModel:
 
 	def __init__(self, options):
 
@@ -42,6 +42,34 @@ class Mind_model:
 
 	def loss(self, decoder_output, target_sentence):
 	"""Calculate loss between decoder output and target"""
+
+		options = self.options
+
+		target_one_hot = tf.one_hot(
+			target_sentence, 
+			depth=options['n_target_quant'], 
+			dtype=tf.float32
+		)
+
+		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
+		flat_targets = tf.reshape(target_one_hot, [-1, options['n_target_quant']])
+
+		# Calculate Loss
+		loss = tf.nn.softmax_cross_entropy_with_logits(
+			logits=flat_logits, 
+			labels=flat_targets, 
+			name='decoder_cross_entropy_loss'
+		)
+
+		# Mask loss beyond EOL in target
+		if 'target_mask_chars' in options:
+			target_masked = tf.reshape(self.target_masked, [-1])
+			loss = tf.mul(loss, target_masked, name='masked_loss')
+			loss = tf.div(tf.reduce_sum(loss), tf.reduce_sum(target_masked), name="Reduced_mean_loss")
+		else:
+			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
+
+		return loss
 
 	def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
 	"""Helper function to create and store weights and biases with convolutional layer"""
