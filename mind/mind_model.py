@@ -18,6 +18,16 @@ class Mind_model:
 		decoder_dilations : Dilation Factor for decoder layers (list)
 		'''
 
+		self.options = options
+
+		source_initializer = tf.truncated_normal_initializer(stddev=0.02)
+		target_initializer = tf.truncated_normal_initializer(stddev=0.02)
+		source_embedding_shape = [options['n_source_quant'], 2 * options['residual_channels']]
+		target_embedding_shape = [options['n_target_quant'], options['residual_channels']]
+		
+		self.w_target_embedding = tf.get_variable('w_target_embedding', target_embedding_shape, initializer=target_initializer)
+		self.w_source_embedding = tf.get_variable('w_source_embedding', source_embedding_shape, initializer=source_initializer)
+
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 	"""Utility function for forming an encode layer"""
 
