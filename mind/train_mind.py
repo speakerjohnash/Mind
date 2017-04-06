@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-"""This module demonstrates the scoring function
+"""This module demonstrates the scoring model
 behind Prophet
 
 Created on Jan 09, 2017
@@ -9,8 +9,10 @@ Created on Jan 09, 2017
 
 #################### USAGE ##########################
 
-# python3 -m mind.truth_chain
+# python3 -m mind.train_mind
+
 # http://www.metaculus.com/help/scoring
+# https://arxiv.org/pdf/1610.10099.pdf
 
 #####################################################
 
@@ -20,9 +22,24 @@ import sys
 
 import numpy as np
 
-from mind.tools import load_dict_list
+from mind.tools import load_dict_list, load_json, load_piped_dataframe
 
 logging.basicConfig(level=logging.INFO)
+
+def load_data(config):
+	"""Load training data"""
+
+	dataset = config["dataset"]
+	df = load_piped_dataframe(dataset, chunksize=256)
+
+	msk = np.random.rand(len(df)) < 0.90
+	train = df[msk]
+	test = df[~msk]
+
+	grouped_train = train.groupby('LABEL_NUM', as_index=False)
+	groups_train = dict(list(grouped_train))
+
+	return train, test, groups_train
 
 def run_from_command_line():
 	"""Run module from command line"""
