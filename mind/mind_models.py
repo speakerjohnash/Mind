@@ -30,17 +30,17 @@ class TruthModel:
 
 	def build_prediction_model(self):
 		"""Train just the decoder"""
-
+		
 		options = self.options
 		batch_size = options['batch_size']
 		sample_size = options['sample_size']
 
-		shape = [batch_size, sample_size]
-		slice_shape = [batch_size, sample_size - 1]
+		shape = [batch_size, int(sample_size / 2)]
+		slice_shape = [batch_size, int(sample_size / 2)]
 		sentence = tf.placeholder('int32', shape, name='sentence')
 
 		source_sentence = tf.slice(sentence, [0, 0], slice_shape, name='source_sentence')
-		target_sentence = tf.slice(sentence, [0, 1], slice_shape, name='target_sentence')
+		target_sentence = tf.slice(sentence, [0, 90], slice_shape, name='target_sentence')
 
 		source_embedding = tf.nn.embedding_lookup(
 			self.w_source_embedding, 
@@ -198,52 +198,54 @@ class TruthModel:
 
 		return tensors
 
-	def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
-		"""Helper function to create and store weights and biases with convolutional layer"""
+# Utility Functions
 
-		with tf.variable_scope(name):
+def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
+	"""Helper function to create and store weights and biases with convolutional layer"""
 
-			input_shape = input_.get_shape()
-			input_channels = input_shape[-1]
-			shape = [filter_width, input_channels, output_channels]
-			weight_init = tf.truncated_normal_initializer(stddev=stddev)
-			bias_init = tf.constant_initializer(0.0)
+	with tf.variable_scope(name):
 
-			filter_ = tf.get_variable('w', shape, initializer=weight_init)
-			conv = tf.nn.conv1d(input_, filter_, stride=stride, padding='SAME')
-			biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
-			conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
+		input_shape = input_.get_shape()
+		input_channels = input_shape[-1]
+		shape = [filter_width, input_channels, output_channels]
+		weight_init = tf.truncated_normal_initializer(stddev=stddev)
+		bias_init = tf.constant_initializer(0.0)
 
-			return conv
+		filter_ = tf.get_variable('w', shape, initializer=weight_init)
+		conv = tf.nn.conv1d(input_, filter_, stride=stride, padding='SAME')
+		biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
+		conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 
-	def atrous_conv1d(input, filter, rate, padding, strides=[1], name=None):
-		"""Helper function to create and store weights and biases with convolutional layer"""
+		return conv
 
-		output = tf.nn.convolution(
-			input=input, 
-			filter=filter, 
-			padding=padding, 
-			dilation_rate=np.broadcast_to(rate, (1, )), 
-			strides=strides, 
-			name=name
-		)
+def atrous_conv1d(input, filter, rate, padding, strides=[1], name=None):
+	"""Helper function to create and store weights and biases with convolutional layer"""
 
-		return output
+	output = tf.nn.convolution(
+		input=input, 
+		filter=filter, 
+		padding=padding, 
+		dilation_rate=np.broadcast_to(rate, (1, )), 
+		strides=strides, 
+		name=name
+	)
 
-	def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, stddev=0.02, name='dilated_conv'):
-		"""Helper function to create and store weights and biases with dilated convolutional layer"""
+	return output
 
-		with tf.variable_scope(name):
+def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, stddev=0.02, name='dilated_conv'):
+	"""Helper function to create and store weights and biases with dilated convolutional layer"""
 
-			input_shape = input_.get_shape()
-			input_channels = input_shape[-1]
-			shape = [filter_width, input_channels, output_channels]
-			weight_init = tf.truncated_normal_initializer(stddev=stddev)
-			bias_init = tf.constant_initializer(0.0)
+	with tf.variable_scope(name):
 
-			filter_ = tf.get_variable('w', shape, initializer=weight_init)
-			conv = atrous_conv1d(input_, filter_, dilation, padding='SAME')
-			biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
-			conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
+		input_shape = input_.get_shape()
+		input_channels = input_shape[-1]
+		shape = [filter_width, input_channels, output_channels]
+		weight_init = tf.truncated_normal_initializer(stddev=stddev)
+		bias_init = tf.constant_initializer(0.0)
 
-			return conv
+		filter_ = tf.get_variable('w', shape, initializer=weight_init)
+		conv = atrous_conv1d(input_, filter_, dilation, padding='SAME')
+		biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
+		conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
+
+		return conv

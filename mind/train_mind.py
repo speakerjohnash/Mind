@@ -21,8 +21,10 @@ Created on Jan 09, 2017
 import logging
 import math
 import sys
+import argparse
 
 import numpy as np
+import tensorflow as tf
 
 from mind.mind_models import TruthModel
 from mind.tools import load_dict_list, load_json, load_piped_dataframe
@@ -30,6 +32,7 @@ from mind.tools import load_dict_list, load_json, load_piped_dataframe
 # Utility
 logging.basicConfig(level=logging.INFO)
 parser = argparse.ArgumentParser()
+parser.add_argument("config", nargs="*")
 parser.add_argument(
 	'--resume_model', 
 	type=str, 
@@ -40,23 +43,23 @@ parser.add_argument(
 def load_data(config):
 	"""Load training data"""
 
-	dataset = config["dataset"]
-	df = load_piped_dataframe(dataset, chunksize=256)
+	dataset = config["options"]["dataset"]
+	df = load_piped_dataframe(dataset, chunksize=1000)
 
-	msk = np.random.rand(len(df)) < 0.90
-	train = df[msk]
-	test = df[~msk]
+	for chunk in df:
+		print(chunk)
 
-	return train, test
+	return df
 
 def train_predictor(config):
 	"""Train a language model via prediction"""
 
+	data = load_data(config)
 	epochs = config["options"]["max_epochs"]
 	model_options = config["predictor"]
 	lr = config["options"]["learning_rate"]
 	beta1 = config["options"]["adam_momentum"]
-	model = MindModel(model_options)
+	model = TruthModel(model_options)
 	tensors = model.build_prediction_model()
 
 	optim = tf.train.AdamOptimizer(lr, beta1=beta1).minimize(tensors["loss"], var_list=tensors["variables"])
@@ -65,7 +68,7 @@ def train_predictor(config):
 	tf.global_variables_initializer().run()
 	saver = tf.train.Saver()
 
-	if config.resume_model:
+	if "resume_model" in config:
 		saver.restore(sess, config["resume_model"])
 
 	for i in range(epochs):
@@ -87,9 +90,11 @@ def main():
 	"""Run module from command line"""
 
 	args = parser.parse_args()
-	config = load_json(sys.argv[1])
-	config["resume_model"] = args.resume_model
-	model_type = config.options.model_type
+	config = load_json(args.config[0])
+	model_type = config["options"]["model_type"]
+
+	if args.resume_model:
+		config["resume_model"] = args.resume_model
 
 	if model_type == "predictor":
 		train_predictor(config)
