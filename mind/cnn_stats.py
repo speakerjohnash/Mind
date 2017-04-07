@@ -24,7 +24,7 @@ import os
 import pandas as pd
 import sys
 
-from mind.load_model import get_tf_cnn_by_path
+from mind.load_model import get_cnn_by_path
 from mind.tools import load_json, get_write_func
 
 def parse_arguments(args):

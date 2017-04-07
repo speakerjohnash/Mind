@@ -22,7 +22,7 @@ from mind.tensorflow_cnn import validate_config, get_tensor, string_to_tensor
 from mind.bilstm_tagger import validate_config as bilstm_validate_config
 from mind.bilstm_tagger import doc_to_tensor
 
-def get_tf_cnn_by_name(model_name, gpu_mem_fraction=False):
+def get_cnn_by_name(model_name, gpu_mem_fraction=False):
 	"""Load a tensorFlow CNN by name"""
 
 	base = "models/"
@@ -96,7 +96,7 @@ def get_tf_cnn_by_path(model_path, label_map_path, gpu_mem_fraction=False):
 
 	return apply_cnn
 
-def get_tf_rnn_by_path(model_path, w2i_path, gpu_mem_fraction=False, model_name=False):
+def get_rnn_by_path(model_path, w2i_path, gpu_mem_fraction=False, model_name=False):
 	"""Load a tensorflow rnn model"""
 
 	config_path = "config/bilstm_config.json"
