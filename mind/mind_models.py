@@ -85,6 +85,26 @@ class TruthModel:
 	def decoder(self, input_, encoder_embedding=None):
 	"""Utility function for constructing the decoder"""
 
+		options = self.options
+		curr_input = input_
+
+		# Condition with encoder embedding for truth and translation models
+		if encoder_embedding != None:
+			curr_input = tf.concat(2, [input_, encoder_embedding])
+			print("Decoder Input", curr_input)
+			
+		for layer_no, dilation in enumerate(options['decoder_dilations']):
+			layer_output = self.decode_layer(curr_input, dilation, layer_no)
+			curr_input = layer_output
+
+		processed_output = conv1d(
+			tf.nn.relu(layer_output), 
+			options['n_target_quant'], 
+			name='decoder_post_processing'
+		)
+
+		return processed_output
+
 	def loss(self, decoder_output, target_sentence):
 	"""Calculate loss between decoder output and target"""
 
