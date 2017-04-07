@@ -103,7 +103,7 @@ class TruthModel:
 			options['residual_channels'], 
 			dilation, 
 			options['decoder_filter_width'],
-			causal = True, 
+			causal=True, 
 			name="dec_dilated_conv_layer{}".format(layer_no)
 		)
 		
@@ -219,3 +219,64 @@ class TruthModel:
 	def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, name='dilated_conv'):
 	"""Helper function to create and store weights and biases with dilated convolutional layer"""
 
+		# Padding for masked convolution
+		if causal:
+			padding = [[0, 0], [(filter_width - 1) * dilation, 0], [0, 0]]
+			padded = tf.pad(input_, padding)
+		else:
+			padding = [[0, 0], [(filter_width - 1) * dilation/2, (filter_width - 1) * dilation/2], [0, 0]]
+			padded = tf.pad(input_, padding)
+	
+		if dilation > 1:
+			transformed = time_to_batch(padded, dilation)
+			conv = conv1d(transformed, output_channels, filter_width, name = name)
+			restored = batch_to_time(conv, dilation)
+		else:
+			restored = conv1d(padded, output_channels, filter_width, name = name)
+
+		result = tf.slice(restored, [0, 0, 0], [-1, int(input_.get_shape()[1]), -1])
+	
+		return result
+
+	def time_to_batch(value, dilation, name=None):
+	"""Needed for custom dilated convolution"""
+
+		with tf.name_scope('time_to_batch'):
+			shape = value.get_shape()
+			shape = [int(s) for s in shape]
+			pad_elements = dilation - 1 - (int(shape[1]) + dilation - 1) % dilation
+			padded = tf.pad(value, [[0, 0], [0, pad_elements], [0, 0]])
+			reshaped = tf.reshape(padded, [-1, dilation, shape[2]])
+			transposed = tf.transpose(reshaped, perm=[1, 0, 2])
+
+			return tf.reshape(transposed, [shape[0] * dilation, -1, shape[2]])
+
+	def batch_to_time(value, dilation, name=None):
+	"""Needed for custom dilated convolution"""
+
+		with tf.name_scope('batch_to_time'):
+			shape = value.get_shape()
+			shape = [int(s) for s in shape]
+			prepared = tf.reshape(value, [dilation, -1, shape[2]])
+			transposed = tf.transpose(prepared, perm=[1, 0, 2])
+
+			return tf.reshape(transposed, [(shape[0]/dilation), -1, shape[2]])
+
+
+	def tf_dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, stddev=0.02, name='d_conv'):
+	"""Alternative helper function to create and store weights and biases with dilated convolutional layer"""
+
+		with tf.variable_scope(name):
+
+			input_shape = input_.get_shape()
+			input_channels = input_shape[-1]
+			shape = [filter_width, input_channels, output_channels]
+			weight_init = tf.truncated_normal_initializer(stddev=stddev)
+			bias_init = tf.constant_initializer(0.0)
+
+			filter_ = tf.get_variable('w', shape, initializer=weight_init)
+			conv = tf.nn.atrous_conv1d(input_, filter_, dilation, padding='SAME')
+			biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
+			conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
+
+			return conv
