@@ -10,8 +10,8 @@ Created on Mar 26, 2016
 
 ############################################# USAGE ###############################################
 
-# python3 -m mind.tensorflow_cnn [config]
-# python3 -m mind.tensorflow_cnn config/tf_cnn_config.json
+# python3 -m mind.cnn_classifier [config]
+# python3 -m mind.cnn_classifier config/cnn_config.json
 
 ###################################################################################################
 
