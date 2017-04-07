@@ -24,7 +24,7 @@ import sys
 
 import numpy as np
 
-from mind.mind_model import MindModel
+from mind.mind_models import TruthModel
 from mind.tools import load_dict_list, load_json, load_piped_dataframe
 
 # Utility
@@ -49,7 +49,7 @@ def load_data(config):
 
 	return train, test
 
-def train_mind(config):
+def train_prophet(config):
 	"""Train a truth model"""
 
 	model_options = config["predictor"]

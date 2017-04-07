@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-class MindModel:
+class TruthModel:
 
 	def __init__(self, options):
 
@@ -27,6 +27,15 @@ class MindModel:
 		
 		self.w_target_embedding = tf.get_variable('w_target_embedding', target_embedding_shape, initializer=target_initializer)
 		self.w_source_embedding = tf.get_variable('w_source_embedding', source_embedding_shape, initializer=source_initializer)
+
+	def build_prediction_model(self):
+	"""Train just the decoder"""
+
+	def build_translation_model(self):
+	"""Train the encoder and the decoder"""
+
+	def build_truth_model(self):
+	"""Train the encoder, the decoder, and the memory state"""
 
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 	"""Utility function for forming an encode layer"""
