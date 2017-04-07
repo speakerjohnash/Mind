@@ -74,8 +74,14 @@ def train_predictor(config):
 def train_translator(config):
 	"""Train a translator"""
 
+	epochs = config["options"]["max_epochs"]
+	model_options = config["translator"]
+
 def train_prophet(config):
 	"""Train a truth model"""
+
+	epochs = config["options"]["max_epochs"]
+	model_options = config["prophet"]
 
 def main():
 	"""Run module from command line"""
@@ -86,11 +92,11 @@ def main():
 	model_type = config.options.model_type
 
 	if model_type == "predictor":
-		print("predictor")
+		train_predictor(config)
 	elif model_type == "translator":
-		print("translator")
+		train_translator(config)
 	elif model_type == "prophet":
-		print("prophet")
+		train_prophet(config)
 
 if __name__ == "__main__":
 
