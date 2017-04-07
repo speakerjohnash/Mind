@@ -29,7 +29,7 @@ class TruthModel:
 		self.w_source_embedding = tf.get_variable('w_source_embedding', source_embedding_shape, initializer=source_initializer)
 
 	def build_prediction_model(self):
-	"""Train just the decoder"""
+		"""Train just the decoder"""
 
 		options = self.options
 		batch_size = options['batch_size']
@@ -68,19 +68,19 @@ class TruthModel:
 		return tensors
 
 	def build_translation_model(self):
-	"""Train the encoder and the decoder"""
+		"""Train the encoder and the decoder"""
 
 	def build_truth_model(self):
-	"""Train the encoder, the decoder, and the memory state"""
+		"""Train the encoder, the decoder, and the memory state"""
 
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
-	"""Utility function for forming an encode layer"""
+		"""Utility function for forming an encode layer"""
 
 	def encoder(self, input_):
-	"""Utility function for constructing the encoder"""
+		"""Utility function for constructing the encoder"""
 
 	def decode_layer(self, input_, dilation, layer_no):
-	"""Utility function for forming a decode layer"""
+		"""Utility function for forming a decode layer"""
 
 		options = self.options
 
@@ -120,7 +120,7 @@ class TruthModel:
 		return input_ + conv2
 
 	def decoder(self, input_, encoder_embedding=None):
-	"""Utility function for constructing the decoder"""
+		"""Utility function for constructing the decoder"""
 
 		options = self.options
 		curr_input = input_
@@ -143,7 +143,7 @@ class TruthModel:
 		return processed_output
 
 	def loss(self, decoder_output, target_sentence):
-	"""Calculate loss between decoder output and target"""
+		"""Calculate loss between decoder output and target"""
 
 		options = self.options
 
@@ -174,7 +174,7 @@ class TruthModel:
 		return loss
 
 	def build_generator(self, sample_size, reuse=False):
-	"""Build a generator to produce thoughts"""
+		"""Build a generator to produce thoughts"""
 
 		if reuse:
 			tf.get_variable_scope().reuse_variables()
@@ -199,7 +199,7 @@ class TruthModel:
 		return tensors
 
 	def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
-	"""Helper function to create and store weights and biases with convolutional layer"""
+		"""Helper function to create and store weights and biases with convolutional layer"""
 
 		with tf.variable_scope(name):
 
@@ -216,55 +216,22 @@ class TruthModel:
 
 			return conv
 
-	def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, name='dilated_conv'):
-	"""Helper function to create and store weights and biases with dilated convolutional layer"""
+	def atrous_conv1d(input, filter, rate, padding, strides=[1], name=None):
+		"""Helper function to create and store weights and biases with convolutional layer"""
 
-		# Padding for masked convolution
-		if causal:
-			padding = [[0, 0], [(filter_width - 1) * dilation, 0], [0, 0]]
-			padded = tf.pad(input_, padding)
-		else:
-			padding = [[0, 0], [(filter_width - 1) * dilation/2, (filter_width - 1) * dilation/2], [0, 0]]
-			padded = tf.pad(input_, padding)
-	
-		if dilation > 1:
-			transformed = time_to_batch(padded, dilation)
-			conv = conv1d(transformed, output_channels, filter_width, name = name)
-			restored = batch_to_time(conv, dilation)
-		else:
-			restored = conv1d(padded, output_channels, filter_width, name = name)
+		output = tf.nn.convolution(
+			input=input, 
+			filter=filter, 
+			padding=padding, 
+			dilation_rate=np.broadcast_to(rate, (1, )), 
+			strides=strides, 
+			name=name
+		)
 
-		result = tf.slice(restored, [0, 0, 0], [-1, int(input_.get_shape()[1]), -1])
-	
-		return result
+		return output
 
-	def time_to_batch(value, dilation, name=None):
-	"""Needed for custom dilated convolution"""
-
-		with tf.name_scope('time_to_batch'):
-			shape = value.get_shape()
-			shape = [int(s) for s in shape]
-			pad_elements = dilation - 1 - (int(shape[1]) + dilation - 1) % dilation
-			padded = tf.pad(value, [[0, 0], [0, pad_elements], [0, 0]])
-			reshaped = tf.reshape(padded, [-1, dilation, shape[2]])
-			transposed = tf.transpose(reshaped, perm=[1, 0, 2])
-
-			return tf.reshape(transposed, [shape[0] * dilation, -1, shape[2]])
-
-	def batch_to_time(value, dilation, name=None):
-	"""Needed for custom dilated convolution"""
-
-		with tf.name_scope('batch_to_time'):
-			shape = value.get_shape()
-			shape = [int(s) for s in shape]
-			prepared = tf.reshape(value, [dilation, -1, shape[2]])
-			transposed = tf.transpose(prepared, perm=[1, 0, 2])
-
-			return tf.reshape(transposed, [(shape[0]/dilation), -1, shape[2]])
-
-
-	def tf_dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, stddev=0.02, name='d_conv'):
-	"""Alternative helper function to create and store weights and biases with dilated convolutional layer"""
+	def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, stddev=0.02, name='dilated_conv'):
+		"""Helper function to create and store weights and biases with dilated convolutional layer"""
 
 		with tf.variable_scope(name):
 
@@ -275,7 +242,7 @@ class TruthModel:
 			bias_init = tf.constant_initializer(0.0)
 
 			filter_ = tf.get_variable('w', shape, initializer=weight_init)
-			conv = tf.nn.atrous_conv1d(input_, filter_, dilation, padding='SAME')
+			conv = atrous_conv1d(input_, filter_, dilation, padding='SAME')
 			biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
 			conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 
