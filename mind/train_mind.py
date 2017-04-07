@@ -54,7 +54,19 @@ def train_predictor(config):
 
 	epochs = config["options"]["max_epochs"]
 	model_options = config["predictor"]
+	lr = config["options"]["learning_rate"]
+	beta1 = config["options"]["adam_momentum"]
 	model = MindModel(model_options)
+	tensors = model.build_prediction_model()
+
+	optim = tf.train.AdamOptimizer(lr, beta1=beta1).minimize(tensors["loss"], var_list=tensors["variables"])
+
+	sess = tf.InteractiveSession()
+	tf.initialize_all_variables().run()
+	saver = tf.train.Saver()
+
+	if config.resume_model:
+		saver.restore(sess, config["resume_model"])
 
 	for i in range(epochs):
 		print("Epoch: " + str(i))
@@ -70,6 +82,7 @@ def main():
 
 	args = parser.parse_args()
 	config = load_json(sys.argv[1])
+	config["resume_model"] = args.resume_model
 	model_type = config.options.model_type
 
 	if model_type == "predictor":
