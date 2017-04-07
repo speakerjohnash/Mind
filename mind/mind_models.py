@@ -136,6 +136,30 @@ class TruthModel:
 
 		return loss
 
+	def build_generator(self, sample_size, reuse=False):
+
+		if reuse:
+			tf.get_variable_scope().reuse_variables()
+
+		options = self.options
+
+		source_sentence = tf.placeholder('int32', [1, sample_size], name='sentence')
+		source_embedding = tf.nn.embedding_lookup(self.w_source_embedding, source_sentence, name="source_embedding")
+
+		decoder_output = self.decoder(source_embedding)
+		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
+
+		prediction = tf.argmax(flat_logits, 1)
+		probs = tf.nn.softmax(flat_logits)
+
+		tensors = {
+			'source_sentence': source_sentence,
+			'prediction': prediction,
+			'probs': probs
+		}
+
+		return tensors
+
 	def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
 	"""Helper function to create and store weights and biases with convolutional layer"""
 
