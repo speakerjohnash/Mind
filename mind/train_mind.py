@@ -62,7 +62,7 @@ def train_predictor(config):
 	optim = tf.train.AdamOptimizer(lr, beta1=beta1).minimize(tensors["loss"], var_list=tensors["variables"])
 
 	sess = tf.InteractiveSession()
-	tf.initialize_all_variables().run()
+	tf.global_variables_initializer().run()
 	saver = tf.train.Saver()
 
 	if config.resume_model:
