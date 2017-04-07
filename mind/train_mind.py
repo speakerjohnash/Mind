@@ -9,10 +9,12 @@ Created on Jan 09, 2017
 
 #################### USAGE ##########################
 
-# python3 -m mind.train_mind
+# python3 -m mind.train_mind config/mind_model_config.json
+# python3 -m mind.train_mind [config_file]
 
 # http://www.metaculus.com/help/scoring
 # https://arxiv.org/pdf/1610.10099.pdf
+# https://github.com/paarthneekhara/byteNet-tensorflow/
 
 #####################################################
 
@@ -38,11 +40,27 @@ def load_data(config):
 
 	return train, test
 
-def train_model(config):
-	"""Train the model"""
+def train_mind(config):
+	"""Train a truth model"""
+
+def train_predictor(config):
+	"""Train a language model via prediction"""
+
+def train_translator(config):
+	"""Train a translator"""
 
 def run_from_command_line():
 	"""Run module from command line"""
+
+	config = load_json(sys.argv[1])
+	model_type = config.options.model_type
+
+	if model_type == "predictor":
+		print("predictor")
+	elif model_type == "translator":
+		print("translator")
+	elif model_type == "prophet":
+		print("prophet")
 
 if __name__ == "__main__":
 	run_from_command_line()
