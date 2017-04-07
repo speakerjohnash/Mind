@@ -1,0 +1,43 @@
+{
+	"predictor": {
+		"batch_size": 1,
+		"decoder_filter_width": 3,
+		"encoder_filter_width" : 3,
+		"sample_size": 180,
+		"decoder_dilations": [
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+		],
+		"residual_channels": 512,
+		"n_target_quant": 256,
+		"n_source_quant": 256
+	},
+	"translator": {
+		"batch_size": 1,
+		"decoder_filter_width": 3,
+		"encoder_filter_width" : 5,
+		"encoder_dilations": [
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+		],
+		"decoder_dilations": [
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+			1, 2, 4, 8, 16,
+		],
+		"residual_channels": 512,
+	},
+	"prophet": {
+
+	},
+	"options": {
+		"model_type": "predictor",
+		"max_epochs": 1000,
+		"learning_rate": 0.001,
+		"adam_momentum": 0.5
+	}
+}

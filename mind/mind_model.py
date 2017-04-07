@@ -74,18 +74,18 @@ class MindModel:
 	def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
 	"""Helper function to create and store weights and biases with convolutional layer"""
 
-	with tf.variable_scope(name):
+		with tf.variable_scope(name):
 
-		input_shape = input_.get_shape()
-		input_channels = input_shape[-1]
-		shape = [filter_width, input_channels, output_channels]
-		weight_init = tf.truncated_normal_initializer(stddev=stddev)
-		bias_init = tf.constant_initializer(0.0)
+			input_shape = input_.get_shape()
+			input_channels = input_shape[-1]
+			shape = [filter_width, input_channels, output_channels]
+			weight_init = tf.truncated_normal_initializer(stddev=stddev)
+			bias_init = tf.constant_initializer(0.0)
 
-		filter_ = tf.get_variable('w', shape, initializer=weight_init)
-		conv = tf.nn.conv1d(input_, filter_, stride = stride, padding = 'SAME')
-		biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
-		conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
+			filter_ = tf.get_variable('w', shape, initializer=weight_init)
+			conv = tf.nn.conv1d(input_, filter_, stride = stride, padding = 'SAME')
+			biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
+			conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 
-		return conv
+			return conv
 

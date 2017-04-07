@@ -24,9 +24,18 @@ import sys
 
 import numpy as np
 
+from mind.mind_model import MindModel
 from mind.tools import load_dict_list, load_json, load_piped_dataframe
 
+# Utility
 logging.basicConfig(level=logging.INFO)
+parser = argparse.ArgumentParser()
+parser.add_argument(
+	'--resume_model', 
+	type=str, 
+	default=None, 
+	help='Pre-trained model path, to resume from'
+)
 
 def load_data(config):
 	"""Load training data"""
@@ -43,15 +52,19 @@ def load_data(config):
 def train_mind(config):
 	"""Train a truth model"""
 
+	model_options = config["predictor"]
+	model = MindModel(model_options)
+
 def train_predictor(config):
 	"""Train a language model via prediction"""
 
 def train_translator(config):
 	"""Train a translator"""
 
-def run_from_command_line():
+def main():
 	"""Run module from command line"""
 
+	args = parser.parse_args()
 	config = load_json(sys.argv[1])
 	model_type = config.options.model_type
 
@@ -63,7 +76,8 @@ def run_from_command_line():
 		print("prophet")
 
 if __name__ == "__main__":
-	run_from_command_line()
+
+	main()
 
 	# scores = load_dict_list("data/input/ubs_votingapi_vote.csv")
 	# truth_scores = [x for x in scores if x["tag"] == "Prescience"]
