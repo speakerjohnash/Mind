@@ -49,8 +49,8 @@ def load_data(config):
 
 	return train, test
 
-def train_prophet(config):
-	"""Train a truth model"""
+def train_predictor(config):
+	"""Train a language model via prediction"""
 
 	epochs = config["options"]["max_epochs"]
 	model_options = config["predictor"]
@@ -59,11 +59,11 @@ def train_prophet(config):
 	for i in range(epochs):
 		print("Epoch: " + str(i))
 
-def train_predictor(config):
-	"""Train a language model via prediction"""
-
 def train_translator(config):
 	"""Train a translator"""
+
+def train_prophet(config):
+	"""Train a truth model"""
 
 def main():
 	"""Run module from command line"""

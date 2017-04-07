@@ -500,7 +500,7 @@ def run_session(config, graph, saver):
 			_, test, _ = load_data(config)
 			evaluate_testset(config, graph, sess, test)
 
-def run_from_command_line():
+def main():
 	"""Run module from command line"""
 	logging.basicConfig(level=logging.INFO)
 	config = validate_config(sys.argv[1])
@@ -508,4 +508,4 @@ def run_from_command_line():
 	run_session(config, graph, saver)
 
 if __name__ == "__main__":
-	run_from_command_line()
+	main()

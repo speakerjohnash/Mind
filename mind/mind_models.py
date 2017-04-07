@@ -82,6 +82,43 @@ class TruthModel:
 	def decode_layer(self, input_, dilation, layer_no):
 	"""Utility function for forming a decode layer"""
 
+		options = self.options
+
+		# Activation
+		relu1 = tf.nn.relu(input_, name='dec_relu1_layer{}'.format(layer_no))
+
+		# Convolution
+		conv1 = conv1d(
+			relu1, 
+			options['residual_channels'], 
+			name='dec_conv1d_1_layer{}'.format(layer_no)
+		)
+		
+		# Activation
+		relu2 = tf.nn.relu(conv1, name='enc_relu2_layer{}'.format(layer_no))
+
+		# Dilated Convolution
+		dilated_conv = dilated_conv1d(
+			relu2, 
+			options['residual_channels'], 
+			dilation, 
+			options['decoder_filter_width'],
+			causal = True, 
+			name="dec_dilated_conv_layer{}".format(layer_no)
+		)
+		
+		# Activation
+		relu3 = tf.nn.relu(dilated_conv, name='dec_relu3_layer{}'.format(layer_no))
+
+		# Convolution
+		conv2 = conv1d(
+			relu3, 
+			2 * options['residual_channels'],
+			name='dec_conv1d_2_layer{}'.format(layer_no)
+		)
+		
+		return input_ + conv2
+
 	def decoder(self, input_, encoder_embedding=None):
 	"""Utility function for constructing the decoder"""
 
@@ -137,6 +174,7 @@ class TruthModel:
 		return loss
 
 	def build_generator(self, sample_size, reuse=False):
+	"""Build a generator to produce thoughts"""
 
 		if reuse:
 			tf.get_variable_scope().reuse_variables()
@@ -177,4 +215,7 @@ class TruthModel:
 			conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 
 			return conv
+
+	def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, name='dilated_conv'):
+	"""Helper function to create and store weights and biases with dilated convolutional layer"""
 
