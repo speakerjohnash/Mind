@@ -31,6 +31,42 @@ class TruthModel:
 	def build_prediction_model(self):
 	"""Train just the decoder"""
 
+		options = self.options
+		batch_size = options['batch_size']
+		sample_size = options['sample_size']
+
+		shape = [batch_size, sample_size]
+		slice_shape = [batch_size, sample_size - 1]
+		sentence = tf.placeholder('int32', shape, name='sentence')
+
+		source_sentence = tf.slice(sentence, [0, 0], slice_shape, name='source_sentence')
+		target_sentence = tf.slice(sentence, [0, 1], slice_shape, name='target_sentence')
+
+		source_embedding = tf.nn.embedding_lookup(
+			self.w_source_embedding, 
+			source_sentence, 
+			name="source_embedding"
+		)
+
+		decoder_output = self.decoder(source_embedding)
+		loss = self.loss(decoder_output, target_sentence)
+		
+		tf.summary.scalar('LOSS', loss)
+
+		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
+		prediction = tf.argmax(flat_logits, 1)
+		
+		variables = tf.trainable_variables()
+		
+		tensors = {
+			'sentence' : sentence,
+			'loss' : loss,
+			'prediction' : prediction,
+			'variables' : variables
+		}
+
+		return tensors
+
 	def build_translation_model(self):
 	"""Train the encoder and the decoder"""
 
@@ -92,7 +128,7 @@ class TruthModel:
 			bias_init = tf.constant_initializer(0.0)
 
 			filter_ = tf.get_variable('w', shape, initializer=weight_init)
-			conv = tf.nn.conv1d(input_, filter_, stride = stride, padding = 'SAME')
+			conv = tf.nn.conv1d(input_, filter_, stride=stride, padding='SAME')
 			biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
 			conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 

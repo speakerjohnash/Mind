@@ -52,8 +52,12 @@ def load_data(config):
 def train_prophet(config):
 	"""Train a truth model"""
 
+	epochs = config["options"]["max_epochs"]
 	model_options = config["predictor"]
 	model = MindModel(model_options)
+
+	for i in range(epochs):
+		print("Epoch: " + str(i))
 
 def train_predictor(config):
 	"""Train a language model via prediction"""
