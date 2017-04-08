@@ -290,26 +290,26 @@ def build_graph(config):
 		)
 
 		# Encoder Weights and Biases
-		w_conv0 = weight_variable(config, [1, 3, alphabet_length, 32])
-		b_conv0 = bias_variable([32], 3 * alphabet_length)
+		w_conv0 = weight_variable(config, [1, 3, alphabet_length, 64])
+		b_conv0 = bias_variable([64], 3 * alphabet_length)
 
-		w_conv1 = weight_variable(config, [1, 3, 32, 32])
-		b_conv1 = bias_variable([32], 3 * 32)
+		w_conv1 = weight_variable(config, [1, 3, 64, 64])
+		b_conv1 = bias_variable([64], 3 * 64)
 
-		w_conv2 = weight_variable(config, [1, 3, 32, 32])
-		b_conv2 = bias_variable([32], 3 * 32)
+		w_conv2 = weight_variable(config, [1, 3, 64, 64])
+		b_conv2 = bias_variable([64], 3 * 64)
 
-		w_conv3 = weight_variable(config, [1, 3, 32, 32])
-		b_conv3 = bias_variable([32], 3 * 32)
+		w_conv3 = weight_variable(config, [1, 3, 64, 64])
+		b_conv3 = bias_variable([64], 3 * 64)
 
-		w_conv4 = weight_variable(config, [1, 3, 32, 32])
-		b_conv4 = bias_variable([32], 3 * 32)
+		w_conv4 = weight_variable(config, [1, 3, 64, 64])
+		b_conv4 = bias_variable([64], 3 * 64)
 
-		w_conv5 = weight_variable(config, [1, 3, 32, 32])
-		b_conv5 = bias_variable([32], 3 * 32)
+		w_conv5 = weight_variable(config, [1, 3, 64, 64])
+		b_conv5 = bias_variable([64], 3 * 64)
 
-		w_conv6 = weight_variable(config, [1, 1, 32, 32])
-		b_conv6 = bias_variable([32], 1 * 32)
+		w_conv6 = weight_variable(config, [1, 1, 64, 64])
+		b_conv6 = bias_variable([64], 1 * 64)
 
 		feature_count = (8204 - 12) + 4 + config["se_dim"]
 

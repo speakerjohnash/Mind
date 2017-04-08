@@ -84,39 +84,28 @@ class TruthModel:
 
 		options = self.options
 
-		# Activation
-		relu1 = tf.nn.relu(input_, name='dec_relu1_layer{}'.format(layer_no))
+		# Input dimension
+		in_dim = input_.get_shape().as_list()[-1]
 
-		# Convolution
-		conv1 = conv1d(
-			relu1, 
-			options['residual_channels'], 
-			name='dec_conv1d_1_layer{}'.format(layer_no)
-		)
-		
-		# Activation
-		relu2 = tf.nn.relu(conv1, name='enc_relu2_layer{}'.format(layer_no))
+		# Reduce dimension
+		relu1 = tf.nn.relu(input_, name = 'dec_relu1_layer{}'.format(layer_no))
+		conv1 = ops.conv1d(relu1, in_dim / 2, name = 'dec_conv1d_1_layer{}'.format(layer_no))
 
-		# Dilated Convolution
+		# 1 x k dilated convolution
+		relu2 = tf.nn.relu(conv1, name = 'enc_relu2_layer{}'.format(layer_no))
 		dilated_conv = dilated_conv1d(
-			relu2, 
-			options['residual_channels'], 
-			dilation, 
-			options['decoder_filter_width'],
-			causal=True, 
-			name="dec_dilated_conv_layer{}".format(layer_no)
-		)
-		
-		# Activation
-		relu3 = tf.nn.relu(dilated_conv, name='dec_relu3_layer{}'.format(layer_no))
+			relu2,
+			output_channels = in_dim / 2,
+			dilation        = dilation,
+			filter_width    = options['decoder_filter_width'],
+			causal          = True,
+			name            = "dec_dilated_conv_layer{}".format(layer_no))
 
-		# Convolution
-		conv2 = conv1d(
-			relu3, 
-			2 * options['residual_channels'],
-			name='dec_conv1d_2_layer{}'.format(layer_no)
-		)
-		
+		# Restore dimension
+		relu3 = tf.nn.relu(dilated_conv, name = 'dec_relu3_layer{}'.format(layer_no))
+		conv2 = conv1d(relu3, in_dim, name = 'dec_conv1d_2_layer{}'.format(layer_no))
+
+		# Residual connection
 		return input_ + conv2
 
 	def decoder(self, input_, encoder_embedding=None):

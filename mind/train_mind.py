@@ -47,7 +47,13 @@ def load_data(config):
 	df = load_piped_dataframe(dataset, chunksize=1000)
 
 	for chunk in df:
-		print(chunk)
+
+		if len(chunk.columns) == 1:
+			lines = chunk[chunk.columns[0]]
+			text = " ".join(list(lines))
+			thoughts = text.split(".")
+		else: 
+			thoughts = chunk["Thought"]
 
 	return df
 
@@ -71,8 +77,8 @@ def train_predictor(config):
 	if "resume_model" in config:
 		saver.restore(sess, config["resume_model"])
 
-	for i in range(epochs):
-		print("Epoch: " + str(i))
+	# for i in range(epochs):
+	# 	print("Epoch: " + str(i))
 
 def train_translator(config):
 	"""Train a translator"""
