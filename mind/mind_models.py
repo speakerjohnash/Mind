@@ -202,6 +202,8 @@ class TruthModel:
 			name='decoder_post_processing'
 		)
 
+		# Where is Droppout?
+
 		return processed_output
 
 	def loss(self, decoder_output, target_sentence):
@@ -280,7 +282,7 @@ def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name=
 
 		return conv
 
-def atroud_conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='atrous_conv1d'):
+def atrous_conv1d(input_, output_channels, rate=1, filter_width=1, stride=[1], stddev=0.02, name='atrous_conv1d'):
 	"""Helper function to create and store weights and biases with convolutional layer"""
 
 	with tf.variable_scope(name):
@@ -304,7 +306,7 @@ def atroud_conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02
 		biases = tf.get_variable('biases', [output_channels], initializer=tf.constant_initializer(0.0))
 		conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 
-	return output
+	return conv
 
 def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, name='dilated_conv'):
 	
@@ -316,7 +318,7 @@ def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=Fal
 		padding = [[0, 0], [(filter_width - 1) * dilation/2, (filter_width - 1) * dilation/2], [0, 0]]
 		padded = tf.pad(input_, padding)
 	
-	d_conv = atrous_conv1d(transformed, output_channels, filter_width, name=name)	
+	d_conv = atrous_conv1d(padded, output_channels, filter_width=filter_width, rate=dilation, name=name)	
 	result = tf.slice(d_conv,[0, 0, 0],[-1, int(input_.get_shape()[1]), -1])
 	
 	return result
