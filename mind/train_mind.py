@@ -62,11 +62,16 @@ def train_predictor(config):
 
 	data = load_data(config)
 	epochs = config["options"]["max_epochs"]
-	model_options = config["predictor"]
+
+def train_translator(config):
+	"""Train a translator"""
+
+	epochs = config["options"]["max_epochs"]
+	model_options = config["translator"]
 	lr = config["options"]["learning_rate"]
 	beta1 = config["options"]["adam_momentum"]
 	model = TruthModel(model_options)
-	tensors = model.build_prediction_model()
+	tensors = model.build_translation_model()
 
 	optim = tf.train.AdamOptimizer(lr, beta1=beta1).minimize(tensors["loss"], var_list=tensors["variables"])
 
@@ -79,12 +84,6 @@ def train_predictor(config):
 
 	# for i in range(epochs):
 	# 	print("Epoch: " + str(i))
-
-def train_translator(config):
-	"""Train a translator"""
-
-	epochs = config["options"]["max_epochs"]
-	model_options = config["translator"]
 
 def train_prophet(config):
 	"""Train a truth model"""

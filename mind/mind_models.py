@@ -28,6 +28,21 @@ class TruthModel:
 		self.w_target_embedding = tf.get_variable('w_target_embedding', target_embedding_shape, initializer=target_initializer)
 		self.w_source_embedding = tf.get_variable('w_source_embedding', source_embedding_shape, initializer=source_initializer)
 
+		if 'source_mask_chars' in options:
+
+			# For embedding only, the input sentence before the padding
+			# the output network would be conditioned only upto input length
+			# also loss needs to be calculated upto target sentence
+
+			input_sentence_mask = np.ones((options['n_source_quant'], 2 * options['residual_channels']), dtype = 'float32')
+			input_sentence_mask[options['source_mask_chars'], :] = np.zeros((1,2 * options['residual_channels'] ), dtype = 'float32')
+
+			output_sentence_mask = np.ones( (options['n_target_quant'], 1), dtype = 'float32')
+			output_sentence_mask[options['target_mask_chars'], :] = np.zeros((1,1), dtype = 'float32')
+
+			self.input_mask = tf.constant(input_sentence_mask)
+			self.output_mask = tf.constant(output_sentence_mask)
+
 	def build_prediction_model(self):
 		"""Train just the decoder"""
 		
@@ -76,6 +91,33 @@ class TruthModel:
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 		"""Utility function for forming an encode layer"""
 
+		options = self.options
+
+		# Reduce Dimension
+		relu1 = tf.nn.relu(input_, name = 'enc_relu1_layer{}'.format(layer_no))
+		conv1 = ops.conv1d(relu1, options['residual_channels'], name = 'enc_conv1d_1_layer{}'.format(layer_no))
+
+		# What is this?
+		conv1 = tf.mul(conv1, self.source_masked_d)
+		
+		# Unmasked 1 x k dilated convolution
+		relu2 = tf.nn.relu(conv1, name = 'enc_relu2_layer{}'.format(layer_no))
+		dilated_conv = ops.dilated_conv1d(relu2, options['residual_channels'], 
+			dilation, options['encoder_filter_width'],
+			causal = False, 
+			name = "enc_dilated_conv_layer{}".format(layer_no)
+		)
+
+		# What is this?
+		dilated_conv = tf.mul(dilated_conv, self.source_masked_d)
+
+		# Restore Dimension
+		relu3 = tf.nn.relu(dilated_conv, name = 'enc_relu3_layer{}'.format(layer_no))
+		conv2 = ops.conv1d(relu3, 2 * options['residual_channels'], name = 'enc_conv1d_2_layer{}'.format(layer_no))
+
+		# Residual connection
+		return input_ + conv2
+
 	def decode_layer(self, input_, dilation, layer_no):
 		"""Utility function for forming a decode layer"""
 
@@ -88,7 +130,7 @@ class TruthModel:
 		relu1 = tf.nn.relu(input_, name = 'dec_relu1_layer{}'.format(layer_no))
 		conv1 = conv1d(relu1, in_dim / 2, name = 'dec_conv1d_1_layer{}'.format(layer_no))
 
-		# 1 x k dilated convolution
+		# Masked 1 x k dilated convolution
 		relu2 = tf.nn.relu(conv1, name = 'enc_relu2_layer{}'.format(layer_no))
 		dilated_conv = dilated_conv1d(
 			relu2,
@@ -107,6 +149,32 @@ class TruthModel:
 
 	def encoder(self, input_):
 		"""Utility function for constructing the encoder"""
+
+		options = self.options
+		curr_input = input_
+
+		# Connect encoder layers
+		for layer_no, dilation in enumerate(self.options['encoder_dilations']):
+
+			layer_output = self.encode_layer(curr_input, dilation, layer_no)
+
+			# Encode only until the input length, conditioning should be 0 beyond that
+			layer_output = tf.mul(layer_output, self.source_masked, name = 'layer_{}_output'.format(layer_no))
+
+			curr_input = layer_output
+		
+		# What is this?
+		processed_output = conv1d(
+			tf.nn.relu(layer_output), 
+			options['residual_channels'], 
+			name='encoder_post_processing'
+		)
+
+		# What are these?
+		processed_output = tf.nn.relu(processed_output)
+		processed_output = tf.mul(processed_output, self.source_masked_d, name='encoder_processed')
+
+		return processed_output
 
 	def decoder(self, input_, encoder_embedding=None):
 		"""Utility function for constructing the decoder"""
