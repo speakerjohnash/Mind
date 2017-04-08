@@ -34,12 +34,15 @@ class TruthModel:
 			# the output network would be conditioned only upto input length
 			# also loss needs to be calculated upto target sentence
 
+			# What is this?
 			input_sentence_mask = np.ones((options['n_source_quant'], 2 * options['residual_channels']), dtype = 'float32')
 			input_sentence_mask[options['source_mask_chars'], :] = np.zeros((1,2 * options['residual_channels'] ), dtype = 'float32')
 
+			# What is this?
 			output_sentence_mask = np.ones( (options['n_target_quant'], 1), dtype = 'float32')
 			output_sentence_mask[options['target_mask_chars'], :] = np.zeros((1,1), dtype = 'float32')
 
+			# What is this?
 			self.input_mask = tf.constant(input_sentence_mask)
 			self.output_mask = tf.constant(output_sentence_mask)
 
@@ -50,13 +53,15 @@ class TruthModel:
 		batch_size = options['batch_size']
 		sample_size = options['sample_size']
 
-		shape = [batch_size, int(sample_size / 2)]
-		slice_shape = [batch_size, int(sample_size / 2)]
+		shape = [batch_size, sample_size]
 		sentence = tf.placeholder('int32', shape, name='sentence')
 
+		# Is this Correct?
+		slice_shape = [batch_size, sample_size - 1]
 		source_sentence = tf.slice(sentence, [0, 0], slice_shape, name='source_sentence')
-		target_sentence = tf.slice(sentence, [0, 90], slice_shape, name='target_sentence')
+		target_sentence = tf.slice(sentence, [0, 1], slice_shape, name='target_sentence')
 
+		# Lookup Character Embeddings
 		source_embedding = tf.nn.embedding_lookup(
 			self.w_source_embedding, 
 			source_sentence, 
@@ -66,7 +71,7 @@ class TruthModel:
 		decoder_output = self.decoder(source_embedding)
 		loss = self.loss(decoder_output, target_sentence)
 		
-		tf.summary.scalar('LOSS', loss)
+		tf.summary.scalar('loss', loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
 		prediction = tf.argmax(flat_logits, 1)
