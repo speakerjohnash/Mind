@@ -189,7 +189,7 @@ class TruthModel:
 
 		# Condition with encoder embedding for truth and translation models
 		if encoder_embedding != None:
-			curr_input = tf.concat(2, [input_, encoder_embedding])
+			curr_input = tf.concat([input_, encoder_embedding], 2)
 			print("Decoder Input", curr_input)
 			
 		for layer_no, dilation in enumerate(options['decoder_dilations']):
@@ -236,6 +236,9 @@ class TruthModel:
 			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
 		return loss
+
+	def build_translator(self, sample_size, reuse=False):
+		"""Build a translator to translate thoughts"""
 
 	def build_generator(self, sample_size, reuse=False):
 		"""Build a generator to produce thoughts"""
@@ -312,10 +315,11 @@ def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=Fal
 	
 	# Padding for masked convolutions
 	if causal:
-		padding = [[0, 0], [(filter_width - 1) * dilation, 0], [0, 0]]
+		padding = [[0, 0], [int((filter_width - 1) * dilation), 0], [0, 0]]
 		padded = tf.pad(input_, padding)
 	else:
-		padding = [[0, 0], [(filter_width - 1) * dilation/2, (filter_width - 1) * dilation/2], [0, 0]]
+		middle_shape = [int((filter_width - 1) * dilation/2), int((filter_width - 1) * dilation/2)]
+		padding = [[0, 0], middle_shape, [0, 0]]
 		padded = tf.pad(input_, padding)
 	
 	d_conv = atrous_conv1d(padded, output_channels, filter_width=filter_width, rate=dilation, name=name)	
