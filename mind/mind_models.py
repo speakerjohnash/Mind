@@ -76,9 +76,6 @@ class TruthModel:
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 		"""Utility function for forming an encode layer"""
 
-	def encoder(self, input_):
-		"""Utility function for constructing the encoder"""
-
 	def decode_layer(self, input_, dilation, layer_no):
 		"""Utility function for forming a decode layer"""
 
@@ -89,7 +86,7 @@ class TruthModel:
 
 		# Reduce dimension
 		relu1 = tf.nn.relu(input_, name = 'dec_relu1_layer{}'.format(layer_no))
-		conv1 = ops.conv1d(relu1, in_dim / 2, name = 'dec_conv1d_1_layer{}'.format(layer_no))
+		conv1 = conv1d(relu1, in_dim / 2, name = 'dec_conv1d_1_layer{}'.format(layer_no))
 
 		# 1 x k dilated convolution
 		relu2 = tf.nn.relu(conv1, name = 'enc_relu2_layer{}'.format(layer_no))
@@ -107,6 +104,9 @@ class TruthModel:
 
 		# Residual connection
 		return input_ + conv2
+
+	def encoder(self, input_):
+		"""Utility function for constructing the encoder"""
 
 	def decoder(self, input_, encoder_embedding=None):
 		"""Utility function for constructing the decoder"""
@@ -207,22 +207,8 @@ def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name=
 
 		return conv
 
-def atrous_conv1d(input, filter, rate, padding, strides=[1], name=None):
+def atroud_conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='atrous_conv1d'):
 	"""Helper function to create and store weights and biases with convolutional layer"""
-
-	output = tf.nn.convolution(
-		input=input, 
-		filter=filter, 
-		padding=padding, 
-		dilation_rate=np.broadcast_to(rate, (1, )), 
-		strides=strides, 
-		name=name
-	)
-
-	return output
-
-def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, stddev=0.02, name='dilated_conv'):
-	"""Helper function to create and store weights and biases with dilated convolutional layer"""
 
 	with tf.variable_scope(name):
 
@@ -233,8 +219,31 @@ def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=Fal
 		bias_init = tf.constant_initializer(0.0)
 
 		filter_ = tf.get_variable('w', shape, initializer=weight_init)
-		conv = atrous_conv1d(input_, filter_, dilation, padding='SAME')
-		biases = tf.get_variable('biases', [output_channels], initializer=bias_init)
+		conv = tf.nn.convolution(
+			input=input_, 
+			filter=filter_, 
+			padding="VALID", 
+			dilation_rate=np.broadcast_to(rate, (1, )), 
+			strides=stride, 
+			name=name
+		)
+
+		biases = tf.get_variable('biases', [output_channels], initializer=tf.constant_initializer(0.0))
 		conv = tf.reshape(tf.nn.bias_add(conv, biases), conv.get_shape())
 
-		return conv
+	return output
+
+def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, name='dilated_conv'):
+	
+	# Padding for masked convolutions
+	if causal:
+		padding = [[0, 0], [(filter_width - 1) * dilation, 0], [0, 0]]
+		padded = tf.pad(input_, padding)
+	else:
+		padding = [[0, 0], [(filter_width - 1) * dilation/2, (filter_width - 1) * dilation/2], [0, 0]]
+		padded = tf.pad(input_, padding)
+	
+	d_conv = atrous_conv1d(transformed, output_channels, filter_width, name=name)	
+	result = tf.slice(d_conv,[0, 0, 0],[-1, int(input_.get_shape()[1]), -1])
+	
+	return result
