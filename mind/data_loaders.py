@@ -1,6 +1,8 @@
+import sys
 import os
 from os import listdir
 from os.path import isfile, join
+from itertools import groupby
 
 import numpy as np
 
@@ -9,22 +11,25 @@ from nltk.corpus import comtrans
 class TranslationData:
 	def __init__(self, bucket_quant):
 
-		als = comtrans.aligned_sents('alignment-en-fr.txt')
+		self.als = comtrans.aligned_sents('alignment-en-fr.txt')
 
 		# Load Aligned Translation Pairs
 		self.source_lines = []
 		self.target_lines = []
 
-		for al in als:
+		for al in self.als:
 			self.source_lines.append(' '.join(al.mots))
 			self.target_lines.append(' '.join(al.words))
+
+		# Build word vocab
 
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
 
+		# Build character vocab
 		self.bucket_quant = bucket_quant
-		self.source_vocab = self.build_vocab(self.source_lines)
-		self.target_vocab = self.build_vocab(self.target_lines)
+		self.source_vocab = self.build_char_vocab(self.source_lines)
+		self.target_vocab = self.build_word_vocab()
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
@@ -36,18 +41,19 @@ class TranslationData:
 		target_lines = []
 
 		for i in range(len(self.source_lines)):
-			source_lines.append( self.string_to_indices(self.source_lines[i], self.source_vocab) )
-			target_lines.append( self.string_to_indices(self.target_lines[i], self.target_vocab) )
+			source_lines.append(self.string_to_char_indices(self.source_lines[i], self.source_vocab))
+			target_lines.append(self.string_to_word_indices(self.target_lines[i], self.target_vocab))
 
 		buckets = self.create_buckets(source_lines, target_lines)
 
-		frequent_keys = [ (-len(buckets[key]), key) for key in buckets ]
+		frequent_keys = [(-len(buckets[key]), key) for key in buckets]
 		frequent_keys.sort()
 
-		print(("Source", self.inidices_to_string( buckets[ frequent_keys[3][1] ][5][0], self.source_vocab)))
-		print(("Target", self.inidices_to_string( buckets[ frequent_keys[3][1] ][5][1], self.target_vocab)))
+		print(("Source", self.char_indices_to_string( buckets[ frequent_keys[3][1] ][5][0], self.source_vocab)))
+		print(("Target", self.word_indices_to_string( buckets[ frequent_keys[3][1] ][5][1], self.target_vocab)))
 		
 		print((len(frequent_keys)))
+
 		return buckets, self.source_vocab, self.target_vocab, frequent_keys
 
 	def create_buckets(self, source_lines, target_lines):
@@ -61,8 +67,8 @@ class TranslationData:
 
 		for i in range(len(source_lines)):
 			
-			source_lines[i] = np.concatenate( (source_lines[i], [source_vocab['eol']]) )
-			target_lines[i] = np.concatenate( ([target_vocab['init']], target_lines[i], [target_vocab['eol']]) )
+			source_lines[i] = np.concatenate((source_lines[i], [source_vocab['eol']]))
+			target_lines[i] = np.concatenate(([target_vocab['init']], target_lines[i], [target_vocab['eol']]))
 			
 			sl = len(source_lines[i])
 			tl = len(target_lines[i])
@@ -89,7 +95,7 @@ class TranslationData:
 			
 		return buckets
 
-	def build_vocab(self, sentences):
+	def build_char_vocab(self, sentences):
 		"""Build character vocab"""
 
 		vocab = {}
@@ -108,14 +114,64 @@ class TranslationData:
 
 		return vocab
 
-	def string_to_indices(self, sentence, vocab):
+	def build_word_vocab(self):
+		"""Build word vocab"""
+
+		vocab = set()
+
+		for al in self.als:
+			for word in al.words:
+				vocab.add(word)
+
+		word_count = len(vocab)
+		index_lookup = dict(zip(vocab, range(word_count)))
+
+		# Add Special Characters
+		index_lookup['eol'] = word_count
+		index_lookup['padding'] = word_count + 1
+		index_lookup['init'] = word_count + 2
+		index_lookup[' '] = word_count + 3
+
+		return index_lookup 
+
+	def string_to_word_indices(self, sentence, vocab):
+		"""Convert string to repeated word embeding indices
+		equal the length of each word"""
+
+		tokens = sentence.split(" ")
+		indices = []
+
+		for i, token in enumerate(tokens):
+			for ii in range(len(token)): 
+				indices.append(vocab[token])
+			if i != len(token):
+				indices.append(vocab[" "])
+
+		return indices
+
+	def string_to_char_indices(self, sentence, vocab):
 		"""Convert string to embedding lookup indices"""
 
 		indices = [vocab[s] for s in sentence]
 
 		return indices
 
-	def inidices_to_string(self, sentence, vocab):
+	def word_indices_to_string(self, sentence, vocab):
+		"""Collapse repeated word embedding indices to string
+		and convert to string"""
+
+		id_word = {vocab[token] : token for token in vocab}
+		sentence = [x[0] for x in groupby(sentence)]
+		sent = []
+
+		for w in sentence:
+			if id_word[w] == 'eol':
+				break
+			sent += id_word[w]
+
+		return "".join(sent)
+
+	def char_indices_to_string(self, sentence, vocab):
 		"""Convert embedding indices to string"""
 
 		id_ch = { vocab[ch] : ch for ch in vocab } 
