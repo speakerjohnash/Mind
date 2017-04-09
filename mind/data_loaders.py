@@ -207,6 +207,17 @@ class WikiData(TranslationData):
 
 		reader = self.load_data(config)
 
+		print(("Source Sentences", len(self.source_lines)))
+		print(("Target Sentences", len(self.target_lines)))
+
+		# Build word and character vocabs
+		self.bucket_quant = config["options"]["bucket_quant"]
+		self.source_vocab = self.build_char_vocab(self.source_lines)
+		self.target_vocab = self.build_word_vocab()
+
+		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
+		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
+
 	def load_data(self, config):
 		"""Load training data"""
 
@@ -226,3 +237,26 @@ class WikiData(TranslationData):
 				if i + 1 < len(thoughts):
 					self.source_lines.append(thoughts[i])
 					self.target_lines.append(thoughts[i+1])
+
+	def build_word_vocab(self):
+		"""Build word vocab"""
+
+		vocab = set()
+
+		for line in self.source_lines:
+			for word in line.split(" "):
+				vocab.add(word)
+
+		for word in self.target_lines[-1].split(" "):
+				vocab.add(word)		
+
+		word_count = len(vocab)
+		index_lookup = dict(zip(vocab, range(word_count)))
+
+		# Add Special Characters
+		index_lookup['eol'] = word_count
+		index_lookup['padding'] = word_count + 1
+		index_lookup['init'] = word_count + 2
+		index_lookup[' '] = word_count + 3
+
+		return index_lookup 
