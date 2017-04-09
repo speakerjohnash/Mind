@@ -39,6 +39,7 @@
 		"max_epochs": 1000,
 		"learning_rate": 0.001,
 		"adam_momentum": 0.5,
+		"bucket_quant": 25,
 		"dataset": "/home/ubuntu/git/byte-net/Data/wiki_02.txt"
 	}
 }

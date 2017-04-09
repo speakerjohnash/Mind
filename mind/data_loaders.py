@@ -7,7 +7,7 @@ import numpy as np
 from nltk.corpus import comtrans
 
 class TranslationData:
-	def __init__(self, options):
+	def __init__(self, bucket_quant):
 
 		als = comtrans.aligned_sents('alignment-en-fr.txt')
 
@@ -22,15 +22,15 @@ class TranslationData:
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
 
-		self.bucket_quant = options['bucket_quant']
+		self.bucket_quant = bucket_quant
 		self.source_vocab = self.build_vocab(self.source_lines)
 		self.target_vocab = self.build_vocab(self.target_lines)
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
-	def load_data(self):
-		"""Load Data"""
+	def bucket_data(self):
+		"""Bucket Data"""
 
 		source_lines = []
 		target_lines = []
@@ -120,6 +120,7 @@ class TranslationData:
 
 		id_ch = { vocab[ch] : ch for ch in vocab } 
 		sent = []
+
 		for c in sentence:
 			if id_ch[c] == 'eol':
 				break

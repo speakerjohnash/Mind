@@ -45,12 +45,26 @@ def train_translator(config):
 	"""Train a translator"""
 
 	epochs = config["options"]["max_epochs"]
+
+	# Load Data
+	paired_sentences = TranslationData(config["options"]["bucket_quant"])
+	buckets, source_vocab, target_vocab, frequent_keys = paired_sentences.bucket_data()
+
+	# Configure Model Options
 	model_options = config["translator"]
-	lr = config["options"]["learning_rate"]
-	beta1 = config["options"]["adam_momentum"]
+	model_options["n_source_quant"] = len(source_vocab)
+	model_options["n_target_quant"] = len(target_vocab)
+	model_options["sample_size"] = 10
+	model_options["source_mask_chars"] = [source_vocab["padding"]]
+	model_options["target_mask_chars"] = [target_vocab["padding"]]
+
+	# Build Model
 	model = TruthModel(model_options)
 	tensors = model.build_translation_model()
 
+	# Build Optimizer
+	lr = config["options"]["learning_rate"]
+	beta1 = config["options"]["adam_momentum"]
 	optim = tf.train.AdamOptimizer(lr, beta1=beta1).minimize(tensors["loss"], var_list=tensors["variables"])
 
 	sess = tf.InteractiveSession()
@@ -60,8 +74,9 @@ def train_translator(config):
 	if "resume_model" in config:
 		saver.restore(sess, config["resume_model"])
 
-	# for i in range(epochs):
-	# 	print("Epoch: " + str(i))
+	# Train Model
+	for i in range(epochs):
+	 	print("Epoch: " + str(i))
 
 def pretrain_prophet(config):
 	"""Train a language model via sequential thought prediction"""
@@ -85,10 +100,10 @@ def main():
 	if args.resume_model:
 		config["resume_model"] = args.resume_model
 
-	if model_type == "predictor":
-		train_predictor(config)
-	elif model_type == "translator":
+	if model_type == "translator":
 		train_translator(config)
+	elif model_type == "predictor":
+		pretrain_prophet(config)
 	elif model_type == "prophet":
 		train_prophet(config)
 
