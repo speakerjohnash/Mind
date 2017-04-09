@@ -27,6 +27,7 @@ import numpy as np
 import tensorflow as tf
 
 from mind.mind_models import TruthModel
+from mind.data_models import WikiData, TranslationData
 from mind.tools import load_dict_list, load_json, load_piped_dataframe
 
 # Utility
@@ -39,29 +40,6 @@ parser.add_argument(
 	default=None, 
 	help='Pre-trained model path, to resume from'
 )
-
-def load_data(config):
-	"""Load training data"""
-
-	dataset = config["options"]["dataset"]
-	df = load_piped_dataframe(dataset, chunksize=1000)
-
-	for chunk in df:
-
-		if len(chunk.columns) == 1:
-			lines = chunk[chunk.columns[0]]
-			text = " ".join(list(lines))
-			thoughts = text.split(".")
-		else: 
-			thoughts = chunk["Thought"]
-
-	return df
-
-def train_predictor(config):
-	"""Train a language model via prediction"""
-
-	data = load_data(config)
-	epochs = config["options"]["max_epochs"]
 
 def train_translator(config):
 	"""Train a translator"""
@@ -84,6 +62,12 @@ def train_translator(config):
 
 	# for i in range(epochs):
 	# 	print("Epoch: " + str(i))
+
+def pretrain_prophet(config):
+	"""Train a language model via sequential thought prediction"""
+
+	epochs = config["options"]["max_epochs"]
+	model_options = config["predictor"]
 
 def train_prophet(config):
 	"""Train a truth model"""
