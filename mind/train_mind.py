@@ -140,11 +140,11 @@ def train_translator(config):
 				
 				# Print Results to Terminal
 				print("******")
-				print(("Source ", paired_sentences.inidices_to_string(source[0], source_vocab)))
+				print(("Source ", paired_sentences.char_indices_to_string(source[0], source_vocab)))
 				print("---------")
-				print(("Target ", paired_sentences.inidices_to_string(target[0], target_vocab)))
+				print(("Target ", paired_sentences.word_indices_to_string(target[0], target_vocab)))
 				print("----------")
-				print(("Prediction ", paired_sentences.inidices_to_string(prediction[0:int(key)], target_vocab)))
+				print(("Prediction ", paired_sentences.word_indices_to_string(prediction[0:int(key)], target_vocab)))
 				print("******")
 
 				batch_no += 1
