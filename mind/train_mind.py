@@ -58,25 +58,100 @@ def train_translator(config):
 	model_options["source_mask_chars"] = [source_vocab["padding"]]
 	model_options["target_mask_chars"] = [target_vocab["padding"]]
 
-	# Build Model
-	model = TruthModel(model_options)
-	tensors = model.build_translation_model()
-
-	# Build Optimizer
-	lr = config["options"]["learning_rate"]
-	beta1 = config["options"]["adam_momentum"]
-	optim = tf.train.AdamOptimizer(lr, beta1=beta1).minimize(tensors["loss"], var_list=tensors["variables"])
-
-	sess = tf.InteractiveSession()
-	tf.global_variables_initializer().run()
-	saver = tf.train.Saver()
+	last_saved_model_path = None
 
 	if "resume_model" in config:
-		saver.restore(sess, config["resume_model"])
+		last_saved_model_path = config["resume_model"]
 
 	# Train Model
-	for i in range(epochs):
-	 	print("Epoch: " + str(i))
+	for i in range(1, epochs):
+
+	 	cnt = 0
+
+	 	for _, key in frequent_keys:
+
+	 		key = int(key)
+			cnt += 1
+
+			if key not in buckets:
+				continue
+			
+			print(("Key", cnt, key))
+			if key > 400:
+				continue
+			
+			if len(buckets[key]) < model_options["batch_size"]:
+				print(("Bucket too small", key))
+				continue
+
+			sess = tf.InteractiveSession()
+
+			batch_no = 0
+			batch_size = args.batch_size
+
+			# Build Model
+			model = TruthModel(model_options)
+			tensors = model.build_translation_model()
+			
+			# Build Optimizer
+			lr = config["options"]["learning_rate"]
+			beta1 = config["options"]["adam_momentum"]
+			adam = tf.train.AdamOptimizer(lr, beta1=beta1)
+			optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
+
+			# Initialize Variables and Summary Writer
+			train_writer = tf.summary.FileWriter('logs/', sess.graph)
+			tf.global_variables_initializer().run()
+
+			saver = tf.train.Saver()
+
+			# Restore previous checkpoint if existing
+			if last_saved_model_path:
+				saver.restore(sess, last_saved_model_path)
+
+			# Training Step
+			while (batch_no + 1) * batch_size < len(buckets[key]):
+
+				source, target = paired_sentences.load_batch( 
+					buckets[key][batch_no * batch_size : (batch_no + 1) * batch_size] 
+				)
+
+				tensors_to_get = [optim, tensors['loss'], tensors['prediction']]
+				gradients = [tensors['merged_summary'], tensors['source_gradient'], tensors['target_gradient']]
+				feed_dict = {
+					tensors['source_sentence'] : source,
+					tensors['target_sentence'] : target
+				}
+
+				# Expand Outputs
+				outputs = sess.run(tensors_to_get, gradients, feed_dict=feed_dict)
+				_, loss, prediction, summary, source_gradient, target_gradient = outputs
+
+				# Write to Summary
+				train_writer.add_summary(summary, batch_no * (cnt + 1))
+				print(("Loss", loss, batch_no, len(buckets[key])/batch_size, i, cnt, key))
+				
+				# Print Results to Terminal
+				print("******")
+				print(("Source ", paired_sentences.inidices_to_string(source[0], source_vocab)))
+				print("---------")
+				print(("Target ", paired_sentences.inidices_to_string(target[0], target_vocab)))
+				print("----------")
+				print(("Prediction ", paired_sentences.inidices_to_string(prediction[0:int(key)], target_vocab)))
+				print("******")
+
+				batch_no += 1
+
+				if batch_no % 1000 == 0:
+					save_path = saver.save(sess, "Data/Models/model_translation_epoch_{}_{}.ckpt".format(i, cnt))
+					last_saved_model_path = "Data/Models/model_translation_epoch_{}_{}.ckpt".format(i, cnt)
+
+			# Save Checkpoint
+			save_path = saver.save(sess, "Data/Models/model_translation_epoch_{}.ckpt".format(i))
+			last_saved_model_path = "Data/Models/model_translation_epoch_{}.ckpt".format(i)
+
+			tf.reset_default_graph()
+			sess.close()
 
 def pretrain_prophet(config):
 	"""Train a language model via sequential thought prediction"""
