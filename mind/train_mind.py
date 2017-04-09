@@ -27,7 +27,7 @@ import numpy as np
 import tensorflow as tf
 
 from mind.mind_models import TruthModel
-from mind.data_models import WikiData, TranslationData
+from mind.data_loaders import WikiData, TranslationData
 from mind.tools import load_dict_list, load_json, load_piped_dataframe
 
 # Utility

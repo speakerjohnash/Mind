@@ -150,7 +150,7 @@ class WikiData:
 		reader = load_data(config)
 
 	def load_data(config):
-	"""Load training data"""
+		"""Load training data"""
 
 		dataset = config["options"]["dataset"]
 		df = load_piped_dataframe(dataset, chunksize=1000)

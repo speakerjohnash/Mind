@@ -35,7 +35,7 @@
 
 	},
 	"options": {
-		"model_type": "predictor",
+		"model_type": "translator",
 		"max_epochs": 1000,
 		"learning_rate": 0.001,
 		"adam_momentum": 0.5,
