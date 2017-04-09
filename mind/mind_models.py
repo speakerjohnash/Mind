@@ -164,25 +164,25 @@ class TruthModel:
 
 		# Reduce Dimension
 		relu1 = tf.nn.relu(input_, name = 'enc_relu1_layer{}'.format(layer_no))
-		conv1 = ops.conv1d(relu1, options['residual_channels'], name = 'enc_conv1d_1_layer{}'.format(layer_no))
+		conv1 = conv1d(relu1, options['residual_channels'], name = 'enc_conv1d_1_layer{}'.format(layer_no))
 
 		# What is this?
-		conv1 = tf.mul(conv1, self.source_masked_d)
+		conv1 = tf.multiply(conv1, self.source_masked_d)
 		
 		# Unmasked 1 x k dilated convolution
 		relu2 = tf.nn.relu(conv1, name = 'enc_relu2_layer{}'.format(layer_no))
-		dilated_conv = ops.dilated_conv1d(relu2, options['residual_channels'], 
+		dilated_conv = dilated_conv1d(relu2, options['residual_channels'], 
 			dilation, options['encoder_filter_width'],
 			causal = False, 
 			name = "enc_dilated_conv_layer{}".format(layer_no)
 		)
 
 		# What is this?
-		dilated_conv = tf.mul(dilated_conv, self.source_masked_d)
+		dilated_conv = tf.multiply(dilated_conv, self.source_masked_d)
 
 		# Restore Dimension
 		relu3 = tf.nn.relu(dilated_conv, name = 'enc_relu3_layer{}'.format(layer_no))
-		conv2 = ops.conv1d(relu3, 2 * options['residual_channels'], name = 'enc_conv1d_2_layer{}'.format(layer_no))
+		conv2 = conv1d(relu3, 2 * options['residual_channels'], name = 'enc_conv1d_2_layer{}'.format(layer_no))
 
 		# Residual connection
 		return input_ + conv2
@@ -228,7 +228,7 @@ class TruthModel:
 			layer_output = self.encode_layer(curr_input, dilation, layer_no)
 
 			# Encode only until the input length, conditioning should be 0 beyond that
-			layer_output = tf.mul(layer_output, self.source_masked, name = 'layer_{}_output'.format(layer_no))
+			layer_output = tf.multiply(layer_output, self.source_masked, name = 'layer_{}_output'.format(layer_no))
 
 			curr_input = layer_output
 		
@@ -241,7 +241,7 @@ class TruthModel:
 
 		# What are these?
 		processed_output = tf.nn.relu(processed_output)
-		processed_output = tf.mul(processed_output, self.source_masked_d, name='encoder_processed')
+		processed_output = tf.multiply(processed_output, self.source_masked_d, name='encoder_processed')
 
 		return processed_output
 
@@ -294,7 +294,7 @@ class TruthModel:
 		# Mask loss beyond EOL in target
 		if 'target_mask_chars' in options:
 			target_masked = tf.reshape(self.target_masked, [-1])
-			loss = tf.mul(loss, target_masked, name='masked_loss')
+			loss = tf.multiply(loss, target_masked, name='masked_loss')
 			loss = tf.div(tf.reduce_sum(loss), tf.reduce_sum(target_masked), name="Reduced_mean_loss")
 		else:
 			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")

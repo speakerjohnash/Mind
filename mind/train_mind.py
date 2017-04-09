@@ -66,11 +66,11 @@ def train_translator(config):
 	# Train Model
 	for i in range(1, epochs):
 
-	 	cnt = 0
+		cnt = 0
 
-	 	for _, key in frequent_keys:
+		for _, key in frequent_keys:
 
-	 		key = int(key)
+			key = int(key)
 			cnt += 1
 
 			if key not in buckets:
@@ -87,11 +87,11 @@ def train_translator(config):
 			sess = tf.InteractiveSession()
 
 			batch_no = 0
-			batch_size = args.batch_size
+			batch_size = model_options["batch_size"]
 
 			# Build Model
 			model = TruthModel(model_options)
-			tensors = model.build_translation_model()
+			tensors = model.build_translation_model(sample_size=key)
 			
 			# Build Optimizer
 			lr = config["options"]["learning_rate"]
@@ -116,15 +116,22 @@ def train_translator(config):
 					buckets[key][batch_no * batch_size : (batch_no + 1) * batch_size] 
 				)
 
-				tensors_to_get = [optim, tensors['loss'], tensors['prediction']]
-				gradients = [tensors['merged_summary'], tensors['source_gradient'], tensors['target_gradient']]
+				tensors_to_get = [
+					optim, 
+					tensors['loss'], 
+					tensors['prediction'], 
+					tensors['merged_summary'], 
+					tensors['source_gradient'],
+					tensors['target_gradient']
+				]
+
 				feed_dict = {
 					tensors['source_sentence'] : source,
 					tensors['target_sentence'] : target
 				}
 
-				# Expand Outputs
-				outputs = sess.run(tensors_to_get, gradients, feed_dict=feed_dict)
+				# Run Session and Expand Outputs
+				outputs = sess.run(tensors_to_get, feed_dict=feed_dict)
 				_, loss, prediction, summary, source_gradient, target_gradient = outputs
 
 				# Write to Summary
