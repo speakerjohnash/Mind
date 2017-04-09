@@ -150,12 +150,12 @@ def train_translator(config):
 				batch_no += 1
 
 				if batch_no % 1000 == 0:
-					save_path = saver.save(sess, "Data/Models/model_translation_epoch_{}_{}.ckpt".format(i, cnt))
-					last_saved_model_path = "Data/Models/model_translation_epoch_{}_{}.ckpt".format(i, cnt)
+					save_path = saver.save(sess, "models/model_translation_epoch_{}_{}.ckpt".format(i, cnt))
+					last_saved_model_path = "models/model_translation_epoch_{}_{}.ckpt".format(i, cnt)
 
 			# Save Checkpoint
-			save_path = saver.save(sess, "Data/Models/model_translation_epoch_{}.ckpt".format(i))
-			last_saved_model_path = "Data/Models/model_translation_epoch_{}.ckpt".format(i)
+			save_path = saver.save(sess, "models/model_translation_epoch_{}.ckpt".format(i))
+			last_saved_model_path = "models/model_translation_epoch_{}.ckpt".format(i)
 
 			tf.reset_default_graph()
 			sess.close()
