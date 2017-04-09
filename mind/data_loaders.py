@@ -8,7 +8,9 @@ import numpy as np
 
 from nltk.corpus import comtrans
 
-class TranslationData:
+from mind.tools import load_piped_dataframe
+
+class TranslationData():
 	def __init__(self, bucket_quant):
 
 		self.als = comtrans.aligned_sents('alignment-en-fr.txt')
@@ -196,16 +198,16 @@ class TranslationData:
 
 		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentences, dtype = 'int32')
 
-class WikiData:
+class WikiData(TranslationData):
 	def __init__(self, config):
 
 		# Load Aligned Sequential Sentences
 		self.source_lines = []
 		self.target_lines = []
 
-		reader = load_data(config)
+		reader = self.load_data(config)
 
-	def load_data(config):
+	def load_data(self, config):
 		"""Load training data"""
 
 		dataset = config["options"]["dataset"]
@@ -220,4 +222,7 @@ class WikiData:
 			else: 
 				thoughts = chunk["Thought"]
 
-		return df
+			for i, thought in enumerate(thoughts):
+				if i + 1 < len(thoughts):
+					self.source_lines.append(thoughts[i])
+					self.target_lines.append(thoughts[i+1])
