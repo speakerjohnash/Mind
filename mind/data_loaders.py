@@ -104,9 +104,6 @@ class TranslationData():
 	def build_char_vocab(self, sentences):
 		"""Build character vocab"""
 
-		if os.path.isfile("models/char_lookup.json"):
-			return load_json("models/char_lookup.json")
-
 		vocab = {}
 		ctr = 0
 
@@ -127,9 +124,6 @@ class TranslationData():
 
 	def build_word_vocab(self):
 		"""Build word vocab"""
-
-		if os.path.isfile("models/word_lookup.json"):
-			return load_json("models/word_lookup.json")
 
 		tknzr = TweetTokenizer().tokenize
 
