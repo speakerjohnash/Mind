@@ -8,10 +8,10 @@ import numpy as np
 
 from nltk.corpus import comtrans
 
-from mind.tools import load_piped_dataframe
+from mind.tools import load_piped_dataframe, dict_2_json
 
 class TranslationData():
-	def __init__(self, bucket_quant):
+	def __init__(self, bucket_quant, config):
 
 		self.als = comtrans.aligned_sents('alignment-en-fr.txt')
 
@@ -114,6 +114,8 @@ class TranslationData():
 		vocab['padding'] = ctr + 1
 		vocab['init'] = ctr + 2
 
+		dict_2_json(vocab, "models/char_lookup.json")
+
 		return vocab
 
 	def build_word_vocab(self):
@@ -134,6 +136,8 @@ class TranslationData():
 		index_lookup['init'] = word_count + 2
 		index_lookup[' '] = word_count + 3
 
+		dict_2_json(index_lookup, "models/word_lookup.json")
+
 		return index_lookup 
 
 	def string_to_word_indices(self, sentence, vocab):
@@ -144,9 +148,13 @@ class TranslationData():
 		indices = []
 
 		for i, token in enumerate(tokens):
-			for ii in range(len(token)): 
-				indices.append(vocab[token])
-			if i != len(token):
+			if token in vocab:
+				for ii in range(len(token)): 
+					indices.append(vocab[token])
+			else:
+				indices.append(vocab[" "])
+
+			if i != len(tokens):
 				indices.append(vocab[" "])
 
 		return indices
@@ -199,7 +207,7 @@ class TranslationData():
 		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentences, dtype = 'int32')
 
 class WikiData(TranslationData):
-	def __init__(self, config):
+	def __init__(self, bucket_quant, config):
 
 		# Load Aligned Sequential Sentences
 		self.source_lines = []
@@ -214,13 +222,13 @@ class WikiData(TranslationData):
 		self.bucket_quant = config["options"]["bucket_quant"]
 		self.source_vocab = self.build_char_vocab(self.source_lines)
 		self.target_vocab = self.build_word_vocab()
-
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
 	def load_data(self, config):
 		"""Load training data"""
 
+		print(config)
 		dataset = config["options"]["dataset"]
 		df = load_piped_dataframe(dataset, chunksize=1000)
 
