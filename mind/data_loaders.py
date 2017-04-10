@@ -333,3 +333,16 @@ class WikiData(TranslationData):
 				sent += id_word[i]
 
 		return "".join(sent)
+
+if __name__ == "__main__":
+
+	# Test Encoding of Mixed Embeddings for Targets
+	config = load_json("mind_config.json")
+	dl = WikiData(25, config)
+	corpus = dl.target_lines
+	encoded = dl.string_to_word_indices(corpus[0], dl.target_vocab)
+	decoded = dl.word_indices_to_string(encoded, dl.target_vocab)
+
+	print(corpus[0])
+	print(encoded)
+	print(decoded)
