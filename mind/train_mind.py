@@ -47,7 +47,7 @@ def train_translator(config):
 	epochs = config["options"]["max_epochs"]
 
 	# Load Data
-	paired_sentences = WikiData(config["options"]["bucket_quant"], config)
+	paired_sentences = TranslationData(config["options"]["bucket_quant"], config)
 	buckets, source_vocab, target_vocab, frequent_keys = paired_sentences.bucket_data()
 
 	# Configure Model Options
@@ -77,6 +77,7 @@ def train_translator(config):
 				continue
 			
 			print(("Key", cnt, key))
+
 			if key > 400:
 				continue
 			

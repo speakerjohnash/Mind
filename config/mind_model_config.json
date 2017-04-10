@@ -18,7 +18,7 @@
 	"translator": {
 		"batch_size": 1,
 		"decoder_filter_width": 3,
-		"encoder_filter_width" : 3,
+		"encoder_filter_width" : 5,
 		"encoder_dilations": [
 			1, 2, 4, 8, 16,
 			1, 2, 4, 8, 16,
@@ -29,7 +29,7 @@
 			1, 2, 4, 8, 16,
 			1, 2, 4, 8, 16
 		],
-		"residual_channels": 256
+		"residual_channels": 512
 	},
 	"prophet": {
 
