@@ -310,6 +310,10 @@ class WikiData(TranslationData):
 
 		return vocab
 
+	def string_to_word_indices(self, sentence, vocab):
+		"""Convert string to repeated word embedding indices
+		equal the length of each word"""
+
 	def word_indices_to_string(self, sentence, vocab):
 		"""Collapse repeated word embedding indices to string
 		and convert to string"""
