@@ -15,6 +15,7 @@ from mind.tools import load_piped_dataframe, dict_2_json, load_json
 class TranslationData():
 	def __init__(self, bucket_quant, config):
 
+		self.config = config
 		self.als = comtrans.aligned_sents('alignment-en-fr.txt')
 
 		# Load Aligned Translation Pairs
@@ -33,6 +34,7 @@ class TranslationData():
 		# Build character vocab
 		self.bucket_quant = bucket_quant
 		self.source_vocab = self.build_char_vocab(self.source_lines)
+		self.target_char_vocab = self.build_char_vocab(self.target_lines)
 		self.target_vocab = self.build_word_vocab()
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
@@ -129,27 +131,30 @@ class TranslationData():
 		if os.path.isfile("models/word_lookup.json"):
 			return load_json("models/word_lookup.json")
 
-		vocab = set()
+		tknzr = TweetTokenizer().tokenize
 
-		for al in self.als:
-			for word in al.words:
-				vocab.add(word)
+		def tokenizer(thought):
+			output = tknzr(thought)
+			output = [o for o in output if len(o) > 2]
+			return output
 
+		corpus = self.target_lines
+
+		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
+		count_vector = vectorizer.fit_transform(corpus).toarray()
+
+		# Merge word and character vocabs
+		vocab = list(self.target_char_vocab.keys())
+		vocab += list(vectorizer.get_feature_names())
 		word_count = len(vocab)
 		index_lookup = dict(zip(vocab, range(word_count)))
 
-		# Add Special Characters
-		index_lookup['eol'] = word_count
-		index_lookup['padding'] = word_count + 1
-		index_lookup['init'] = word_count + 2
-		index_lookup[' '] = word_count + 3
-
 		dict_2_json(index_lookup, "models/word_lookup.json")
 
-		return index_lookup 
+		return index_lookup
 
 	def string_to_word_indices(self, sentence, vocab):
-		"""Convert string to repeated word embeding indices
+		"""Convert string to repeated word embedding indices
 		equal the length of each word"""
 
 		tokens = sentence.split(" ")
@@ -160,17 +165,11 @@ class TranslationData():
 				for ii in range(len(token)): 
 					indices.append(vocab[token])
 			else:
-				indices.append(vocab[" "])
+				for char in token:
+					indices.append(vocab[char])
 
 			if i != len(tokens):
 				indices.append(vocab[" "])
-
-		return indices
-
-	def string_to_char_indices(self, sentence, vocab):
-		"""Convert string to embedding lookup indices"""
-
-		indices = [vocab[s] for s in sentence]
 
 		return indices
 
@@ -179,15 +178,27 @@ class TranslationData():
 		and convert to string"""
 
 		id_word = {vocab[token] : token for token in vocab}
-		sentence = [x[0] for x in groupby(sentence)]
 		sent = []
 
-		for w in sentence:
-			if id_word[w] == 'eol':
+		for i, group in groupby(sentence):
+
+			if id_word[i] == 'eol':
 				break
-			sent += id_word[w]
+			
+			if i in self.target_char_vocab.values():
+				for g in list(group):
+					sent += id_word[i]
+			else:
+				sent += id_word[i]
 
 		return "".join(sent)
+
+	def string_to_char_indices(self, sentence, vocab):
+		"""Convert string to embedding lookup indices"""
+
+		indices = [vocab[s] for s in sentence]
+
+		return indices
 
 	def char_indices_to_string(self, sentence, vocab):
 		"""Convert embedding indices to string"""
@@ -273,13 +284,13 @@ class WikiData(TranslationData):
 		halfpoint = int(len(corpus) / 2)
 		half_corpus = corpus[:halfpoint]
 
-		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
+		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
 		count_vector = vectorizer.fit_transform(half_corpus).toarray()
 		count_vector_2 = vectorizer.fit_transform(corpus[halfpoint:]).toarray()
-		vocab = vectorizer.get_feature_names()
 
 		# Merge word and character vocabs
-		vocab += self.source_vocab.keys()
+		vocab = list(self.target_vocab.keys())
+		vocab += list(vectorizer.get_feature_names())
 		word_count = len(vocab)
 		index_lookup = dict(zip(vocab, range(word_count)))
 
@@ -311,54 +322,15 @@ class WikiData(TranslationData):
 
 		return vocab
 
-	def string_to_word_indices(self, sentence, vocab):
-		"""Convert string to repeated word embedding indices
-		equal the length of each word"""
-
-		tokens = sentence.split(" ")
-		indices = []
-
-		for i, token in enumerate(tokens):
-			if token in vocab:
-				for ii in range(len(token)): 
-					indices.append(vocab[token])
-			else:
-				for char in token:
-					indices.append(vocab[char])
-
-			if i != len(tokens):
-				indices.append(vocab[" "])
-
-		return indices
-
-	def word_indices_to_string(self, sentence, vocab):
-		"""Collapse repeated word embedding indices to string
-		and convert to string"""
-
-		id_word = {vocab[token] : token for token in vocab}
-		sent = []
-
-		for i, group in groupby(sentence):
-
-			if id_word[i] == 'eol':
-				break
-			
-			if i in self.target_char_vocab:
-				for g in list(group):
-					sent += id_word[i]
-			else:
-				sent += id_word[i]
-
-		return "".join(sent)
-
 if __name__ == "__main__":
 
 	# Test Encoding of Mixed Embeddings for Targets
 	config = load_json("config/mind_config.json")
-	dl = WikiData(25, config)
+	dl = TranslationData(25, config)
 	corpus = dl.target_lines
 	encoded = dl.string_to_word_indices(corpus[0], dl.target_vocab)
 	decoded = dl.word_indices_to_string(encoded, dl.target_vocab)
 
 	print(corpus[0])
+	print(encoded)
 	print(decoded)
