@@ -230,13 +230,13 @@ class WikiData(TranslationData):
 		self.bucket_quant = config["options"]["bucket_quant"]
 		self.source_vocab = self.build_char_vocab(self.source_lines)
 		self.target_vocab = self.build_word_vocab()
+
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
 	def load_data(self, config):
 		"""Load training data"""
 
-		print(config)
 		dataset = config["options"]["dataset"]
 		df = load_piped_dataframe(dataset, chunksize=1000)
 
@@ -286,19 +286,46 @@ class WikiData(TranslationData):
 
 		return index_lookup
 
+	def build_char_vocab(self, sentences):
+		"""Build character vocab"""
+
+		if os.path.isfile("models/wiki_char_lookup.json"):
+			return load_json("models/wiki_char_lookup.json")
+
+		vocab = {}
+		ctr = 0
+
+		for st in sentences:
+			for ch in st:
+				if ch not in vocab:
+					vocab[ch] = ctr
+					ctr += 1
+
+		# Add Special Characters
+		vocab['eol'] = ctr
+		vocab['padding'] = ctr + 1
+		vocab['init'] = ctr + 2
+
+		dict_2_json(vocab, "models/wiki_char_lookup.json")
+
+		return vocab
+
 	def word_indices_to_string(self, sentence, vocab):
 		"""Collapse repeated word embedding indices to string
 		and convert to string"""
 
 		id_word = {vocab[token] : token for token in vocab}
+		sent = []
 
 		for i, group in groupby(sentence):
-			print(group)
-			print(i)
 
-		for w in sentence:
-			if id_word[w] == 'eol':
+			if id_word[i] == 'eol':
 				break
-			sent += id_word[w]
+			
+			if i in self.source_vocab:
+				for g in group:
+					sent += id_word[i]
+			else:
+				sent += id_word[i]
 
 		return "".join(sent)
