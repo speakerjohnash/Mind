@@ -7,6 +7,8 @@ from itertools import groupby
 import numpy as np
 
 from nltk.corpus import comtrans
+from nltk.tokenize import TweetTokenizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 from mind.tools import load_piped_dataframe, dict_2_json, load_json
 
@@ -258,24 +260,45 @@ class WikiData(TranslationData):
 		if os.path.isfile("models/wiki_word_lookup.json"):
 			return load_json("models/wiki_word_lookup.json")
 
-		vocab = set()
+		corpus = self.source_lines + [self.target_lines[-1]]
 
-		for line in self.source_lines:
-			for word in line.split(" "):
-				vocab.add(word)
+		tknzr = TweetTokenizer().tokenize
 
-		for word in self.target_lines[-1].split(" "):
-				vocab.add(word)		
+		def tokenizer(thought):
+			output = tknzr(thought)
+			output = [o for o in output if len(o) > 2]
+			return output
 
+		halfpoint = int(len(corpus) / 2)
+		half_corpus = corpus[:halfpoint]
+
+		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
+		count_vector = vectorizer.fit_transform(half_corpus).toarray()
+		count_vector_2 = vectorizer.fit_transform(corpus[halfpoint:]).toarray()
+		vocab = vectorizer.get_feature_names()
+
+		# Merge word and character vocabs
+		vocab += self.source_vocab.keys()
 		word_count = len(vocab)
 		index_lookup = dict(zip(vocab, range(word_count)))
 
-		# Add Special Characters
-		index_lookup['eol'] = word_count
-		index_lookup['padding'] = word_count + 1
-		index_lookup['init'] = word_count + 2
-		index_lookup[' '] = word_count + 3
-
 		dict_2_json(index_lookup, "models/wiki_word_lookup.json")
 
-		return index_lookup 
+		return index_lookup
+
+	def word_indices_to_string(self, sentence, vocab):
+		"""Collapse repeated word embedding indices to string
+		and convert to string"""
+
+		id_word = {vocab[token] : token for token in vocab}
+
+		for i, group in groupby(sentence):
+			print(group)
+			print(i)
+
+		for w in sentence:
+			if id_word[w] == 'eol':
+				break
+			sent += id_word[w]
+
+		return "".join(sent)
