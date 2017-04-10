@@ -77,7 +77,6 @@ def train_translator(config):
 				continue
 			
 			print(("Key", cnt, key))
-
 			if key > 400:
 				continue
 			

@@ -8,7 +8,7 @@ import numpy as np
 
 from nltk.corpus import comtrans
 
-from mind.tools import load_piped_dataframe, dict_2_json
+from mind.tools import load_piped_dataframe, dict_2_json, load_json
 
 class TranslationData():
 	def __init__(self, bucket_quant, config):
@@ -100,6 +100,9 @@ class TranslationData():
 	def build_char_vocab(self, sentences):
 		"""Build character vocab"""
 
+		if os.path.isfile("models/char_lookup.json"):
+			return load_json("models/char_lookup.json")
+
 		vocab = {}
 		ctr = 0
 
@@ -120,6 +123,9 @@ class TranslationData():
 
 	def build_word_vocab(self):
 		"""Build word vocab"""
+
+		if os.path.isfile("models/word_lookup.json"):
+			return load_json("models/word_lookup.json")
 
 		vocab = set()
 
@@ -249,6 +255,9 @@ class WikiData(TranslationData):
 	def build_word_vocab(self):
 		"""Build word vocab"""
 
+		if os.path.isfile("models/wiki_word_lookup.json"):
+			return load_json("models/wiki_word_lookup.json")
+
 		vocab = set()
 
 		for line in self.source_lines:
@@ -266,5 +275,7 @@ class WikiData(TranslationData):
 		index_lookup['padding'] = word_count + 1
 		index_lookup['init'] = word_count + 2
 		index_lookup[' '] = word_count + 3
+
+		dict_2_json(index_lookup, "models/wiki_word_lookup.json")
 
 		return index_lookup 
