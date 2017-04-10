@@ -229,6 +229,7 @@ class WikiData(TranslationData):
 		# Build word and character vocabs
 		self.bucket_quant = config["options"]["bucket_quant"]
 		self.source_vocab = self.build_char_vocab(self.source_lines)
+		self.target_char_vocab = self.build_char_vocab(self.target_lines)
 		self.target_vocab = self.build_word_vocab()
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
@@ -314,6 +315,22 @@ class WikiData(TranslationData):
 		"""Convert string to repeated word embedding indices
 		equal the length of each word"""
 
+		tokens = sentence.split(" ")
+		indices = []
+
+		for i, token in enumerate(tokens):
+			if token in vocab:
+				for ii in range(len(token)): 
+					indices.append(vocab[token])
+			else:
+				for char in token:
+					indices.append(vocab[char])
+
+			if i != len(tokens):
+				indices.append(vocab[" "])
+
+		return indices
+
 	def word_indices_to_string(self, sentence, vocab):
 		"""Collapse repeated word embedding indices to string
 		and convert to string"""
@@ -326,8 +343,8 @@ class WikiData(TranslationData):
 			if id_word[i] == 'eol':
 				break
 			
-			if i in self.source_vocab:
-				for g in group:
+			if i in self.target_char_vocab:
+				for g in list(group):
 					sent += id_word[i]
 			else:
 				sent += id_word[i]
@@ -337,12 +354,11 @@ class WikiData(TranslationData):
 if __name__ == "__main__":
 
 	# Test Encoding of Mixed Embeddings for Targets
-	config = load_json("mind_config.json")
+	config = load_json("config/mind_config.json")
 	dl = WikiData(25, config)
 	corpus = dl.target_lines
 	encoded = dl.string_to_word_indices(corpus[0], dl.target_vocab)
 	decoded = dl.word_indices_to_string(encoded, dl.target_vocab)
 
 	print(corpus[0])
-	print(encoded)
 	print(decoded)
