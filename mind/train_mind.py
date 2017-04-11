@@ -278,7 +278,7 @@ def pretrain_prophet(config):
 
 			# Save Checkpoint
 			save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))
-			last_saved_model_path = "models/model_pretrain_{}.ckpt".format(i)
+			last_saved_model_path = "models/model_pretrain_epoch_{}.ckpt".format(i)
 
 			tf.reset_default_graph()
 			sess.close()
