@@ -27,7 +27,7 @@ import numpy as np
 import tensorflow as tf
 
 from mind.mind_models import TruthModel
-from mind.data_loaders import WikiData, TranslationData
+from mind.data_loaders import PretrainData, TranslationData
 from mind.tools import load_dict_list, load_json, load_piped_dataframe
 
 # Utility
@@ -47,7 +47,7 @@ def train_translator(config):
 	epochs = config["options"]["max_epochs"]
 
 	# Load Data
-	paired_sentences = WikiData(config["options"]["bucket_quant"], config)
+	paired_sentences = TranslationData(config["options"]["bucket_quant"], config)
 	buckets, source_vocab, target_vocab, frequent_keys = paired_sentences.bucket_data()
 
 	# Configure Model Options
@@ -171,6 +171,8 @@ def train_prophet(config):
 
 	epochs = config["options"]["max_epochs"]
 	model_options = config["prophet"]
+
+	thought_stream = PretrainData(config["options"]["bucket_quant"], config)
 
 def main():
 	"""Run module from command line"""

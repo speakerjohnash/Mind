@@ -228,7 +228,7 @@ class TranslationData():
 
 		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentences, dtype = 'int32')
 
-class WikiData(TranslationData):
+class PretrainData(TranslationData):
 	def __init__(self, bucket_quant, config):
 
 		# Load Aligned Sequential Sentences
