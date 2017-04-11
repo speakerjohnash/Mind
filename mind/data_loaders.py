@@ -270,10 +270,12 @@ class PretrainData(TranslationData):
 					self.target_lines.append(thoughts[i])
 
 	def build_word_vocab(self):
-		"""Build word vocab"""
+		"""Build target vocab"""
 
-		if "resume_model" in self.config and os.path.isfile("models/wiki_word_lookup.json"):
-			return load_json("models/wiki_word_lookup.json")
+		if "resume_model" in self.config and os.path.isfile("models/pretrain_word_lookup.json"):
+			return load_json("models/pretrain_word_lookup.json")
+
+		# TODO: Load thought data for the choice of words to embed
 
 		corpus = self.source_lines + [self.target_lines[-1]]
 
@@ -297,15 +299,15 @@ class PretrainData(TranslationData):
 		word_count = len(vocab)
 		index_lookup = dict(zip(vocab, range(word_count)))
 
-		dict_2_json(index_lookup, "models/wiki_word_lookup.json")
+		dict_2_json(index_lookup, "models/pretrain_word_lookup.json")
 
 		return index_lookup
 
 	def build_char_vocab(self, sentences):
-		"""Build character vocab"""
+		"""Build source vocab"""
 
-		if "resume_model" in self.config and os.path.isfile("models/wiki_char_lookup.json"):
-			return load_json("models/wiki_char_lookup.json")
+		if "resume_model" in self.config and os.path.isfile("models/pretrain_char_lookup.json"):
+			return load_json("models/pretrain_char_lookup.json")
 
 		vocab = {}
 		ctr = 0
@@ -321,7 +323,7 @@ class PretrainData(TranslationData):
 		vocab['padding'] = ctr + 1
 		vocab['init'] = ctr + 2
 
-		dict_2_json(vocab, "models/wiki_char_lookup.json")
+		dict_2_json(vocab, "models/prterain_char_lookup.json")
 
 		return vocab
 
