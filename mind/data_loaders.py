@@ -105,7 +105,7 @@ class TranslationData():
 		"""Build character vocab"""
 
 		if os.path.isfile("models/" + name + "_char_lookup.json"):
-			return load_json("models/" + name + "char_lookup.json")
+			return load_json("models/" + name + "_char_lookup.json")
 
 		vocab = {}
 		ctr = 0
@@ -121,7 +121,7 @@ class TranslationData():
 		vocab['padding'] = ctr + 1
 		vocab['init'] = ctr + 2
 
-		dict_2_json(vocab, "models/char_lookup.json")
+		dict_2_json(vocab, "models/" + name + "_char_lookup.json")
 
 		return vocab
 
