@@ -157,6 +157,23 @@ class TruthModel:
 	def build_truth_model(self):
 		"""Train the encoder, the decoder, and the memory state"""
 
+		# Encode input thoughts
+
+		# Feed encoded thoughts into memory cell
+		# in_lstm = tf.nn.rnn_cell.BasicLSTMCell(256)
+		# truth_pool = tf.nn.rnn_cell.BasicLSTMCell(1024)
+		# out_lstm = tf.nn.rnn_cell.BasicLSTMCell(256)
+		# focusing_lens = tf.nn.rnn_cell.MultiRNNCell([in_lstm, truth_pool, out_lstm])
+
+		# Run ten thoughts through the cell
+		# outputs, output_states = tf.nn.bidirectional_dynamic_rnn(focusing_lens, batched_input, **options)
+
+		# Concatenate output state of the last thought encoding to output state
+
+		# Feed to decoder
+
+		# Predict (Generate) One thought
+
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 		"""Utility function for forming an encode layer"""
 
