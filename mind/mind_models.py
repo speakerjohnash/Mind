@@ -46,47 +46,6 @@ class TruthModel:
 			self.input_mask = tf.constant(input_sentence_mask)
 			self.output_mask = tf.constant(output_sentence_mask)
 
-	def build_prediction_model(self):
-		"""Train just the decoder"""
-		
-		options = self.options
-		batch_size = options['batch_size']
-		sample_size = options['sample_size']
-
-		shape = [batch_size, sample_size]
-		sentence = tf.placeholder('int32', shape, name='sentence')
-
-		# Is this Correct?
-		slice_shape = [batch_size, sample_size - 1]
-		source_sentence = tf.slice(sentence, [0, 0], slice_shape, name='source_sentence')
-		target_sentence = tf.slice(sentence, [0, 1], slice_shape, name='target_sentence')
-
-		# Lookup Character Embeddings
-		source_embedding = tf.nn.embedding_lookup(
-			self.w_source_embedding, 
-			source_sentence, 
-			name="source_embedding"
-		)
-
-		decoder_output = self.decoder(source_embedding)
-		loss = self.loss(decoder_output, target_sentence)
-		
-		tf.summary.scalar('loss', loss)
-
-		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
-		prediction = tf.argmax(flat_logits, 1)
-		
-		variables = tf.trainable_variables()
-		
-		tensors = {
-			'sentence' : sentence,
-			'loss' : loss,
-			'prediction' : prediction,
-			'variables' : variables
-		}
-
-		return tensors
-
 	def build_translation_model(self, sample_size):
 		"""Train the encoder and the decoder"""
 
@@ -392,34 +351,6 @@ class TruthModel:
 			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
 		return loss
-
-	def build_translator(self, sample_size, reuse=False):
-		"""Build a translator to translate thoughts"""
-
-	def build_generator(self, sample_size, reuse=False):
-		"""Build a generator to produce thoughts"""
-
-		if reuse:
-			tf.get_variable_scope().reuse_variables()
-
-		options = self.options
-
-		source_sentence = tf.placeholder('int32', [1, sample_size], name='sentence')
-		source_embedding = tf.nn.embedding_lookup(self.w_source_embedding, source_sentence, name="source_embedding")
-
-		decoder_output = self.decoder(source_embedding)
-		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
-
-		prediction = tf.argmax(flat_logits, 1)
-		probs = tf.nn.softmax(flat_logits)
-
-		tensors = {
-			'source_sentence': source_sentence,
-			'prediction': prediction,
-			'probs': probs
-		}
-
-		return tensors
 
 # Utility Functions
 

@@ -149,7 +149,7 @@ def train_translator(config):
 
 				batch_no += 1
 
-				if batch_no % 1000 == 0:
+				if batch_no % 5000 == 0:
 					save_path = saver.save(sess, "models/model_translation_epoch_{}_{}.ckpt".format(i, cnt))
 					last_saved_model_path = "models/model_translation_epoch_{}_{}.ckpt".format(i, cnt)
 
@@ -164,15 +164,33 @@ def pretrain_prophet(config):
 	"""Train a language model via sequential thought prediction"""
 
 	epochs = config["options"]["max_epochs"]
-	model_options = config["predictor"]
+	model_options = config["prophet"]
+
+	# Load Data
+	thought_stream = PretrainData(config["options"]["bucket_quant"], config)
+
+	# Configure Model Options
+	model_options = config["translator"]
+	model_options["n_source_quant"] = len(source_vocab)
+	model_options["n_target_quant"] = len(target_vocab)
+	model_options["sample_size"] = 10
+	model_options["source_mask_chars"] = [source_vocab["padding"]]
+	model_options["target_mask_chars"] = [target_vocab["padding"]]
+
+	last_saved_model_path = None
+
+	if "resume_model" in config:
+		last_saved_model_path = config["resume_model"]
+
+	# Train Model
+	for i in range(1, epochs):
+		print(i);
 
 def train_prophet(config):
 	"""Train a truth model"""
 
 	epochs = config["options"]["max_epochs"]
 	model_options = config["prophet"]
-
-	thought_stream = PretrainData(config["options"]["bucket_quant"], config)
 
 def main():
 	"""Run module from command line"""
