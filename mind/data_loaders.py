@@ -104,7 +104,7 @@ class TranslationData():
 	def build_char_vocab(self, sentences, name):
 		"""Build character vocab"""
 
-		if os.path.isfile("models/" + name + "_char_lookup.json"):
+		if "resume_model" in self.config and os.path.isfile("models/" + name + "_char_lookup.json"):
 			return load_json("models/" + name + "_char_lookup.json")
 
 		vocab = {}
@@ -128,7 +128,7 @@ class TranslationData():
 	def build_word_vocab(self):
 		"""Build word vocab"""
 
-		if os.path.isfile("models/word_lookup.json"):
+		if "resume_model" in self.config and os.path.isfile("models/word_lookup.json"):
 			return load_json("models/word_lookup.json")
 
 		tknzr = TweetTokenizer().tokenize
@@ -272,7 +272,7 @@ class PretrainData(TranslationData):
 	def build_word_vocab(self):
 		"""Build word vocab"""
 
-		if os.path.isfile("models/wiki_word_lookup.json"):
+		if "resume_model" in self.config and os.path.isfile("models/wiki_word_lookup.json"):
 			return load_json("models/wiki_word_lookup.json")
 
 		corpus = self.source_lines + [self.target_lines[-1]]
@@ -304,7 +304,7 @@ class PretrainData(TranslationData):
 	def build_char_vocab(self, sentences):
 		"""Build character vocab"""
 
-		if os.path.isfile("models/wiki_char_lookup.json"):
+		if "resume_model" in self.config and os.path.isfile("models/wiki_char_lookup.json"):
 			return load_json("models/wiki_char_lookup.json")
 
 		vocab = {}
