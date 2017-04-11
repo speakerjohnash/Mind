@@ -231,6 +231,8 @@ class TranslationData():
 class PretrainData(TranslationData):
 	def __init__(self, bucket_quant, config):
 
+		self.config = config
+
 		# Load Aligned Sequential Sentences
 		self.source_lines = []
 		self.target_lines = []
@@ -292,10 +294,13 @@ class PretrainData(TranslationData):
 		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
 		count_vector = vectorizer.fit_transform(half_corpus).toarray()
 		count_vector_2 = vectorizer.fit_transform(corpus[halfpoint:]).toarray()
+		feature_names = list(vectorizer.get_feature_names())
+		feature_names.remove("the")
+		feature_names.remove("and")
 
 		# Merge word and character vocabs
-		vocab = list(self.target_vocab.keys())
-		vocab += list(vectorizer.get_feature_names())
+		vocab = list(self.target_char_vocab.keys())
+		vocab += feature_names
 		word_count = len(vocab)
 		index_lookup = dict(zip(vocab, range(word_count)))
 
@@ -303,11 +308,11 @@ class PretrainData(TranslationData):
 
 		return index_lookup
 
-	def build_char_vocab(self, sentences):
+	def build_char_vocab(self, sentences, name):
 		"""Build source vocab"""
 
-		if "resume_model" in self.config and os.path.isfile("models/pretrain_char_lookup.json"):
-			return load_json("models/pretrain_char_lookup.json")
+		if "resume_model" in self.config and os.path.isfile("models/" + name + "_pretrain_char_lookup.json"):
+			return load_json("models/" + name + "_pretrain_char_lookup.json")
 
 		vocab = {}
 		ctr = 0
@@ -323,7 +328,7 @@ class PretrainData(TranslationData):
 		vocab['padding'] = ctr + 1
 		vocab['init'] = ctr + 2
 
-		dict_2_json(vocab, "models/prterain_char_lookup.json")
+		dict_2_json(vocab, "models/" + name + "_pretrain_char_lookup.json")
 
 		return vocab
 
