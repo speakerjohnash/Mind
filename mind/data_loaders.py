@@ -33,8 +33,8 @@ class TranslationData():
 
 		# Build character vocab
 		self.bucket_quant = bucket_quant
-		self.source_vocab = self.build_char_vocab(self.source_lines)
-		self.target_char_vocab = self.build_char_vocab(self.target_lines)
+		self.source_vocab = self.build_char_vocab(self.source_lines, "source")
+		self.target_char_vocab = self.build_char_vocab(self.target_lines, "target")
 		self.target_vocab = self.build_word_vocab()
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
@@ -101,8 +101,11 @@ class TranslationData():
 			
 		return buckets
 
-	def build_char_vocab(self, sentences):
+	def build_char_vocab(self, sentences, name):
 		"""Build character vocab"""
+
+		if os.path.isfile("models/" + name + "_char_lookup.json"):
+			return load_json("models/" + name + "char_lookup.json")
 
 		vocab = {}
 		ctr = 0
@@ -124,6 +127,9 @@ class TranslationData():
 
 	def build_word_vocab(self):
 		"""Build word vocab"""
+
+		if os.path.isfile("models/word_lookup.json"):
+			return load_json("models/word_lookup.json")
 
 		tknzr = TweetTokenizer().tokenize
 
@@ -233,8 +239,8 @@ class WikiData(TranslationData):
 
 		# Build word and character vocabs
 		self.bucket_quant = config["options"]["bucket_quant"]
-		self.source_vocab = self.build_char_vocab(self.source_lines)
-		self.target_char_vocab = self.build_char_vocab(self.target_lines)
+		self.source_vocab = self.build_char_vocab(self.source_lines, "source")
+		self.target_char_vocab = self.build_char_vocab(self.target_lines, "target")
 		self.target_vocab = self.build_word_vocab()
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))

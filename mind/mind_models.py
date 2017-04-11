@@ -180,7 +180,8 @@ class TruthModel:
 		options = self.options
 
 		# Reduce Dimension
-		relu1 = tf.nn.relu(input_, name = 'enc_relu1_layer{}'.format(layer_no))
+		normed = tf.contrib.layers.layer_norm(input_)
+		relu1 = tf.nn.relu(normed, name='enc_relu1_layer{}'.format(layer_no))
 		conv1 = conv1d(relu1, options['residual_channels'], name = 'enc_conv1d_1_layer{}'.format(layer_no))
 
 		# What is this?
@@ -196,6 +197,8 @@ class TruthModel:
 
 		# What is this?
 		dilated_conv = tf.multiply(dilated_conv, self.source_masked_d)
+
+		#tf.contrib.layers.layer_norm
 
 		# Restore Dimension
 		relu3 = tf.nn.relu(dilated_conv, name = 'enc_relu3_layer{}'.format(layer_no))
@@ -213,7 +216,8 @@ class TruthModel:
 		in_dim = input_.get_shape().as_list()[-1]
 
 		# Reduce dimension
-		relu1 = tf.nn.relu(input_, name = 'dec_relu1_layer{}'.format(layer_no))
+		normed = tf.contrib.layers.layer_norm(input_)
+		relu1 = tf.nn.relu(normed, name = 'dec_relu1_layer{}'.format(layer_no))
 		conv1 = conv1d(relu1, in_dim / 2, name = 'dec_conv1d_1_layer{}'.format(layer_no))
 
 		# Masked 1 x k dilated convolution
