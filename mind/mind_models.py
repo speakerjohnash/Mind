@@ -128,7 +128,7 @@ class TruthModel:
 
 		return input_
 
-	def build_truth_model(self):
+	def build_truth_model(self, sample_size):
 		"""Train the encoder, the decoder, and the memory state"""
 
 		self.options["sample_size"] = sample_size

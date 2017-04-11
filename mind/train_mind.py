@@ -168,8 +168,7 @@ def pretrain_prophet(config):
 
 	# Load Data
 	thought_stream = PretrainData(config["options"]["bucket_quant"], config)
-	source_vocab = thought_stream.source_vocab
-	target_vocab = thought_stream.target_vocab
+	buckets, source_vocab, target_vocab, frequent_keys = thought_stream.bucket_data()
 
 	# Configure Model Options
 	model_options = config["translator"]

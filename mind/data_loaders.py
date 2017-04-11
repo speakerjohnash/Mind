@@ -288,12 +288,17 @@ class PretrainData(TranslationData):
 			output = [o for o in output if len(o) > 2]
 			return output
 
-		halfpoint = int(len(corpus) / 2)
-		half_corpus = corpus[:halfpoint]
+		third = int(len(corpus) / 3)
+		first_section = corpus[:third]
+		second_section = corpus[third:third+third]
+		third_section = corpus[third+third:]
 
 		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
-		count_vector = vectorizer.fit_transform(half_corpus).toarray()
-		count_vector_2 = vectorizer.fit_transform(corpus[halfpoint:]).toarray()
+
+		vectorizer.fit_transform(first_section)
+		vectorizer.fit_transform(second_section)
+		vectorizer.fit_transform(third_section)
+
 		feature_names = list(vectorizer.get_feature_names())
 		feature_names.remove("the")
 		feature_names.remove("and")
