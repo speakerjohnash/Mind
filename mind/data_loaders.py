@@ -142,10 +142,13 @@ class TranslationData():
 
 		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
 		count_vector = vectorizer.fit_transform(corpus).toarray()
+		feature_names = list(vectorizer.get_feature_names())
+		feature_names.remove("the")
+		feature_names.remove("and")
 
 		# Merge word and character vocabs
 		vocab = list(self.target_char_vocab.keys())
-		vocab += list(vectorizer.get_feature_names())
+		vocab += feature_names
 		word_count = len(vocab)
 		index_lookup = dict(zip(vocab, range(word_count)))
 
