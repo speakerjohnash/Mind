@@ -237,6 +237,7 @@ class PretrainData(TranslationData):
 		self.source_lines = []
 		self.target_lines = []
 
+		self.load_dictionary()
 		self.load_data(config["options"]["dataset"])
 
 		print(("Source Sentences", len(self.source_lines)))
@@ -250,6 +251,23 @@ class PretrainData(TranslationData):
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
+
+	def load_dictionary(self):
+		"""Load a dictionary as the corpus"""
+
+		thoughts = load_dict_list("data/prophet_lexicon.csv")
+		corpus = [t["Thought"] for t in thoughts]
+
+		for item in corpus:
+			word, definition: item.split(": ")
+			self.source_lines.append(word)
+			self.target_lines.append(definition)
+		
+		dictionary = load_json("data/dictionary.json")
+
+		for key, value in dictionary.items():
+			self.source_lines.append(key)
+			self.target_lines.append(value)
 
 	def load_data(self, dataset):
 		"""Load training data"""
@@ -268,7 +286,7 @@ class PretrainData(TranslationData):
 			for i, thought in enumerate(thoughts):
 				if i + 1 < len(thoughts):
 					self.source_lines.append(thoughts[i])
-					self.target_lines.append(thoughts[i])
+					self.target_lines.append(thoughts[i+1])
 
 	def build_word_vocab(self):
 		"""Build target vocab"""
