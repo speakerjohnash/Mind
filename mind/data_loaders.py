@@ -267,7 +267,7 @@ class PretrainData(TranslationData):
 			for i, thought in enumerate(thoughts):
 				if i + 1 < len(thoughts):
 					self.source_lines.append(thoughts[i])
-					self.target_lines.append(thoughts[i+1])
+					self.target_lines.append(thoughts[i])
 
 	def build_word_vocab(self):
 		"""Build word vocab"""
