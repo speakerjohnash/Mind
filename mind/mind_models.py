@@ -154,10 +154,9 @@ class TruthModel:
 
 		return tensors
 
-	def build_truth_model(self):
-		"""Train the encoder, the decoder, and the memory state"""
-
-		# Encode input thoughts
+	def memory_state(self, input_):
+		"""Create the memory state and feed encoded thoughts
+		throught it"""
 
 		# Feed encoded thoughts into memory cell
 		# in_lstm = tf.nn.rnn_cell.BasicLSTMCell(256)
@@ -168,11 +167,83 @@ class TruthModel:
 		# Run ten thoughts through the cell
 		# outputs, output_states = tf.nn.bidirectional_dynamic_rnn(focusing_lens, batched_input, **options)
 
-		# Concatenate output state of the last thought encoding to output state
+		return input_
 
-		# Feed to decoder
+	def build_truth_model(self):
+		"""Train the encoder, the decoder, and the memory state"""
 
-		# Predict (Generate) One thought
+		self.options["sample_size"] = sample_size
+
+		options = self.options
+		batch_size = options["batch_size"]
+		sample_size = options["sample_size"]
+
+		source_size = [batch_size , options["sample_size"]]
+		target_size = [batch_size , options["sample_size"] + 1]
+		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
+		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
+		
+		slice_sizes = [batch_size, sample_size, options["residual_channels"]]
+		slice_sizes = [int(x) for x in slice_sizes]
+		slice_sizes = tf.constant(slice_sizes, dtype="int32")
+
+		self.source_masked = tf.nn.embedding_lookup(self.input_mask, source_sentence, name = "source_masked")
+		self.source_masked_d = tf.slice(self.source_masked, begin=[0,0,0], size=slice_sizes, name = "source_masked_d")
+
+		# Lookup Embeddings and mask embedding beyond source length
+		source_embedding = tf.nn.embedding_lookup(self.w_source_embedding, source_sentence)
+		source_embedding = tf.multiply(source_embedding, self.source_masked, name = "source_embedding")
+
+		# Decoder Input
+		sample_slice_size = [int(batch_size), int(options["sample_size"])]
+		sample_slice_size = tf.constant(sample_slice_size, dtype="int32")
+		target_sentence1 = tf.slice(target_sentence, [0,0], sample_slice_size, name="target_sentence1")
+		target1_embedding = tf.nn.embedding_lookup(self.w_target_embedding, target_sentence1, name="target1_embedding")
+
+		# Decoder Output
+		target_sentence2 = tf.slice(target_sentence, [0,1], sample_slice_size, name="target_sentence2")
+
+		# Mask loss beyond the target length
+		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence2, name = "target_masked")
+
+		# Encode Context
+		encoder_output = self.encoder(source_embedding)
+
+		# Process Thoughts Through Memory State
+		truth_vector = self.memory_state(encoder_output)
+
+		# Concat Truth and Thought Vectors
+		#
+
+		# Decode Thought
+		decoder_output = self.decoder(target1_embedding, encoder_output)
+
+		loss = self.loss(decoder_output, target_sentence2)
+		tf.summary.scalar('loss', loss)
+
+		flat_logits = tf.reshape( decoder_output, [-1, options['n_target_quant']])
+		prediction = tf.argmax(flat_logits, 1)
+		
+		variables = tf.trainable_variables()
+		merged_summary = tf.summary.merge_all()
+
+		tensors = {
+			'source_sentence' : source_sentence,
+			'target_sentence' : target_sentence,
+			'loss' : loss,
+			'prediction' : prediction,
+			'variables' : variables,
+			'merged_summary' : merged_summary,
+			'source_embedding' : source_embedding,
+			'encoder_output' : encoder_output,
+			'target_masked' : self.target_masked,
+			'source_masked' : self.source_masked,
+			'source_gradient' : tf.gradients(loss, [source_embedding]),
+			'target_gradient' : tf.gradients(loss, [target1_embedding]),
+			'probs' : tf.nn.softmax(flat_logits)
+		}
+
+		return tensors
 
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 		"""Utility function for forming an encode layer"""
