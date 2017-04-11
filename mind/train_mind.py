@@ -232,7 +232,7 @@ def pretrain_prophet(config):
 			# Training Step
 			while (batch_no + 1) * batch_size < len(buckets[key]):
 
-				source, target = paired_sentences.load_batch( 
+				source, target = thought_stream.load_batch( 
 					buckets[key][batch_no * batch_size : (batch_no + 1) * batch_size] 
 				)
 
@@ -260,11 +260,11 @@ def pretrain_prophet(config):
 				
 				# Print Results to Terminal
 				print("******")
-				print(("Source ", paired_sentences.char_indices_to_string(source[0], source_vocab)))
+				print(("Source ", thought_stream.char_indices_to_string(source[0], source_vocab)))
 				print("---------")
-				print(("Target ", paired_sentences.word_indices_to_string(target[0], target_vocab)))
+				print(("Target ", thought_stream.word_indices_to_string(target[0], target_vocab)))
 				print("----------")
-				print(("Prediction ", paired_sentences.word_indices_to_string(prediction[0:int(key)], target_vocab)))
+				print(("Prediction ", thought_stream.word_indices_to_string(prediction[0:int(key)], target_vocab)))
 				print("******")
 
 				batch_no += 1
