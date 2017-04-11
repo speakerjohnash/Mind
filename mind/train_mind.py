@@ -193,6 +193,9 @@ def pretrain_prophet(config):
 			key = int(key)
 			cnt += 1
 
+			if key < 75:
+				continue
+
 			if key not in buckets:
 				continue
 			

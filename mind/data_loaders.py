@@ -10,7 +10,7 @@ from nltk.corpus import comtrans
 from nltk.tokenize import TweetTokenizer
 from sklearn.feature_extraction.text import CountVectorizer
 
-from mind.tools import load_piped_dataframe, dict_2_json, load_json
+from mind.tools import load_piped_dataframe, dict_2_json, load_json, load_dict_list
 
 class TranslationData():
 	def __init__(self, bucket_quant, config):
@@ -237,7 +237,7 @@ class PretrainData(TranslationData):
 		self.source_lines = []
 		self.target_lines = []
 
-		reader = self.load_data(config)
+		self.load_data(config["options"]["dataset"])
 
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
@@ -251,10 +251,9 @@ class PretrainData(TranslationData):
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
-	def load_data(self, config):
+	def load_data(self, dataset):
 		"""Load training data"""
 
-		dataset = config["options"]["dataset"]
 		df = load_piped_dataframe(dataset, chunksize=1000)
 
 		for chunk in df:
@@ -277,9 +276,10 @@ class PretrainData(TranslationData):
 		if "resume_model" in self.config and os.path.isfile("models/pretrain_word_lookup.json"):
 			return load_json("models/pretrain_word_lookup.json")
 
-		# TODO: Load thought data for the choice of words to embed
+		thoughts = load_dict_list("data/thoughts.csv")
+		corpus = [t["Thought"] for t in thoughts]
 
-		corpus = self.source_lines + [self.target_lines[-1]]
+		# corpus = self.source_lines + [self.target_lines[-1]]
 
 		tknzr = TweetTokenizer().tokenize
 
@@ -293,7 +293,7 @@ class PretrainData(TranslationData):
 		second_section = corpus[third:third+third]
 		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
+		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
 
 		vectorizer.fit_transform(first_section)
 		vectorizer.fit_transform(second_section)

@@ -87,7 +87,7 @@ def load_json(filename_or_dict):
 		return json_dict
 	return filename_or_dict
 
-def load_piped_dataframe(filename, chunksize=False, usecols=False):
+def load_piped_dataframe(filename, chunksize=False, usecols=False, sep="|"):
 	"""Load piped dataframe from file name"""
 
 	options = {
