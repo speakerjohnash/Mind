@@ -137,8 +137,8 @@ class TruthModel:
 		batch_size = options["batch_size"]
 		sample_size = options["sample_size"]
 
-		source_size = [batch_size , options["sample_size"]]
-		target_size = [batch_size , options["sample_size"] + 1]
+		source_size = [None, options["sample_size"]]
+		target_size = [1, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
 		
@@ -180,7 +180,7 @@ class TruthModel:
 		loss = self.loss(decoder_output, target_sentence2)
 		tf.summary.scalar('loss', loss)
 
-		flat_logits = tf.reshape( decoder_output, [-1, options['n_target_quant']])
+		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
 		prediction = tf.argmax(flat_logits, 1)
 		
 		variables = tf.trainable_variables()
