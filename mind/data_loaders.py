@@ -87,7 +87,7 @@ class TranslationData():
 			s_padding = np.array( [source_vocab['padding'] for ctr in range(int(sl), int(new_length)) ] )
 
 			# Extra Padding for Training
-			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
+			t_padding = np.array([target_vocab['padding'] for ctr in range(ihttps://www.youtube.com/watch?v=QVaafph6HSQnt(tl), int(new_length + 1))])
 			source_lines[i] = np.concatenate([source_lines[i], s_padding])
 			target_lines[i] = np.concatenate([target_lines[i], t_padding])
 
@@ -367,6 +367,12 @@ class PretrainData(TranslationData):
 		dict_2_json(vocab, "models/" + name + "_pretrain_char_lookup.json")
 
 		return vocab
+
+	def load_batch(self, pair_list):
+		"""Load a batch of documents"""
+
+	def create_buckets(self, source_lines, target_lines):
+		"""Create buckets"""
 
 if __name__ == "__main__":
 
