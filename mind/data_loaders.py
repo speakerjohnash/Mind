@@ -105,6 +105,7 @@ class TranslationData():
 		"""Build character vocab"""
 
 		if "resume_model" in self.config and os.path.isfile("models/" + name + "_char_lookup.json"):
+			print("Restoring previous character lookup")
 			return load_json("models/" + name + "_char_lookup.json")
 
 		vocab = {}
@@ -129,6 +130,7 @@ class TranslationData():
 		"""Build word vocab"""
 
 		if "resume_model" in self.config and os.path.isfile("models/word_lookup.json"):
+			print("Restoring previous word lookup")
 			return load_json("models/word_lookup.json")
 
 		tknzr = TweetTokenizer().tokenize
@@ -169,7 +171,7 @@ class TranslationData():
 					indices.append(vocab[token])
 			else:
 				for char in token:
-					indices.append(vocab[char])
+					indices.append(vocab.get(char, vocab[" "]))
 
 			if i != len(tokens):
 				indices.append(vocab[" "])
@@ -199,7 +201,7 @@ class TranslationData():
 	def string_to_char_indices(self, sentence, vocab):
 		"""Convert string to embedding lookup indices"""
 
-		indices = [vocab[s] for s in sentence]
+		indices = [vocab.get(s, vocab[" "]) for s in sentence]
 
 		return indices
 
@@ -259,7 +261,16 @@ class PretrainData(TranslationData):
 		corpus = [t["Thought"] for t in thoughts]
 
 		for item in corpus:
-			word, definition: item.split(": ")
+
+			item = item.replace("\t","")
+			split = item.split(": ")
+
+			if len(split) != 2:
+				continue
+
+			word = [0]
+			definition = split[1]
+
 			self.source_lines.append(word)
 			self.target_lines.append(definition)
 		
@@ -292,6 +303,7 @@ class PretrainData(TranslationData):
 		"""Build target vocab"""
 
 		if "resume_model" in self.config and os.path.isfile("models/pretrain_word_lookup.json"):
+			print("Loading previous word lookup")
 			return load_json("models/pretrain_word_lookup.json")
 
 		thoughts = load_dict_list("data/thoughts.csv")
@@ -335,6 +347,7 @@ class PretrainData(TranslationData):
 		"""Build source vocab"""
 
 		if "resume_model" in self.config and os.path.isfile("models/" + name + "_pretrain_char_lookup.json"):
+			print("Loading previous character lookup")
 			return load_json("models/" + name + "_pretrain_char_lookup.json")
 
 		vocab = {}
