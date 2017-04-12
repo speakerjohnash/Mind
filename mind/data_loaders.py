@@ -272,8 +272,8 @@ class PretrainData(TranslationData):
 			word = split[0]
 			definition = split[1]
 
-			self.source_lines.append(word[:256])
-			self.target_lines.append(definition[:256])
+			self.source_lines.append(word[:254])
+			self.target_lines.append(definition[:254])
 		
 		# dictionary = load_json("data/dictionary.json")
 
@@ -299,7 +299,7 @@ class PretrainData(TranslationData):
 
 			for i, thought in enumerate(thoughts):
 				if i + 1 < len(thoughts):
-					thought = thoughts[i][:256]
+					thought = thoughts[i][:254]
 					self.source_lines.append(thought)
 					self.target_lines.append(thought)
 
