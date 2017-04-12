@@ -299,8 +299,9 @@ class PretrainData(TranslationData):
 
 			for i, thought in enumerate(thoughts):
 				if i + 1 < len(thoughts):
-					self.source_lines.append(thoughts[i][:256])
-					self.target_lines.append(thoughts[i][:256])
+					thought = thoughts[i][:256]
+					self.source_lines.append(thought)
+					self.target_lines.append(thought)
 
 	def build_word_vocab(self):
 		"""Build target vocab"""
@@ -384,8 +385,8 @@ class PretrainData(TranslationData):
 		sentences = buckets[sample_size][step * batch_size : (step + 1) * batch_size]
 
 		for s, t in sentences:
-			source_sentences.append(s)
-			target_sentences.append(t)
+			source_sentences.append(s[:256])
+			target_sentences.append(t[:256])
 		
 		source_sentences = source_sentences[:batch_size - 1]
 		target_sentence = target_sentences[len(target_sentences) - 1]
