@@ -250,7 +250,7 @@ def pretrain_prophet(config):
 
 			step += 1
 
-			if batch_no % 5000 == 0:
+			if step % 5000 == 0:
 				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
 				last_saved_model_path = "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt)
 
