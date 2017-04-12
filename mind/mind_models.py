@@ -120,14 +120,19 @@ class TruthModel:
 		options = self.options
 
 		# Feed encoded thoughts into memory cell
-		in_lstm = tf.nn.rnn_cell.BasicLSTMCell(options["sample_size"])
-		truth_pool = tf.nn.rnn_cell.BasicLSTMCell(options["memory_state"])
-		out_lstm = tf.nn.rnn_cell.BasicLSTMCell(options["sample_size"])
-		focusing_lens = tf.nn.rnn_cell.MultiRNNCell([in_lstm, truth_pool, out_lstm])
+		in_lstm = tf.contrib.rnn.BasicLSTMCell(options["sample_size"])
+		truth_pool = tf.contrib.rnn.BasicLSTMCell(options["memory_state"])
+		out_lstm = tf.contrib.rnn.BasicLSTMCell(options["sample_size"])
+		focusing_lens = tf.contrib.rnn.MultiRNNCell([in_lstm, truth_pool, out_lstm])
 
 		# Run thoughts through the cell
 		# TODO Set initial state to output of previous training step
-		output, output_state = tf.contrib.rnn.static_rnn(focusing_lens, input_, initial_state=None)
+		options = {
+			"dtype": tf.float32,
+			#"sequence_length": 0,
+			#"initial_state":
+		}
+		output, output_state = tf.contrib.rnn.static_rnn(focusing_lens, tf.unstack(input_), **options)
 
 		return output
 
