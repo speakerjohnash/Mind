@@ -379,14 +379,14 @@ class PretrainData(TranslationData):
 		source_sentences = []
 		target_sentences = []
 
-		sentences = buckets[sample_size][step * batch_size : (batch_no + 1) * batch_size]
+		sentences = buckets[sample_size][step * batch_size : (step + 1) * batch_size]
 
 		for s, t in sentences:
 			source_sentences.append(s)
 			target_sentences.append(t)
 		
 		source_sentences = source_sentences[:batch_size - 1]
-		target_sentence = target[len(target) - 1]
+		target_sentence = target_sentences[len(target_sentences) - 1]
 
 		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentence, dtype = 'int32')
 
