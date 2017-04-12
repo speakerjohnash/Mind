@@ -46,7 +46,8 @@
 			1, 2, 4, 8, 16,
 			1, 2, 4, 8, 16
 		],
-		"residual_channels": 512
+		"residual_channels": 512,
+		"memory_state": 1024
 	},
 	"options": {
 		"model_type": "predictor",

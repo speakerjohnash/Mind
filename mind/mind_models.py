@@ -117,16 +117,19 @@ class TruthModel:
 		"""Create the memory state and feed encoded thoughts
 		throught it"""
 
+		options = self.options
+
 		# Feed encoded thoughts into memory cell
-		# in_lstm = tf.nn.rnn_cell.BasicLSTMCell(256)
-		# truth_pool = tf.nn.rnn_cell.BasicLSTMCell(1024)
-		# out_lstm = tf.nn.rnn_cell.BasicLSTMCell(256)
-		# focusing_lens = tf.nn.rnn_cell.MultiRNNCell([in_lstm, truth_pool, out_lstm])
+		in_lstm = tf.nn.rnn_cell.BasicLSTMCell(options["sample_size"])
+		truth_pool = tf.nn.rnn_cell.BasicLSTMCell(options["memory_state"])
+		out_lstm = tf.nn.rnn_cell.BasicLSTMCell(options["sample_size"])
+		focusing_lens = tf.nn.rnn_cell.MultiRNNCell([in_lstm, truth_pool, out_lstm])
 
-		# Run ten thoughts through the cell
-		# outputs, output_states = tf.nn.bidirectional_dynamic_rnn(focusing_lens, batched_input, **options)
+		# Run thoughts through the cell
+		rnn_options = {}
+		output, output_state = tf.nn.dynamic_rnn(focusing_lens, input_, **rnn_options)
 
-		return input_
+		return output
 
 	def build_truth_model(self, sample_size):
 		"""Train the encoder, the decoder, and the memory state"""
@@ -154,7 +157,7 @@ class TruthModel:
 		source_embedding = tf.multiply(source_embedding, self.source_masked, name = "source_embedding")
 
 		# Decoder Input
-		sample_slice_size = [int(batch_size), int(options["sample_size"])]
+		sample_slice_size = [1, int(options["sample_size"])]
 		sample_slice_size = tf.constant(sample_slice_size, dtype="int32")
 		target_sentence1 = tf.slice(target_sentence, [0,0], sample_slice_size, name="target_sentence1")
 		target1_embedding = tf.nn.embedding_lookup(self.w_target_embedding, target_sentence1, name="target1_embedding")
