@@ -9,7 +9,7 @@ Created on Jan 09, 2017
 
 #################### USAGE ##########################
 
-# python3 -m mind.train_mind config/mind_model_config.json
+# python3 -m mind.train_mind config/mind_config.json
 # python3 -m mind.train_mind [config_file]
 
 # http://www.metaculus.com/help/scoring

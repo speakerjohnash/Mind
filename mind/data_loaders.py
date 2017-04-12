@@ -234,6 +234,7 @@ class PretrainData(TranslationData):
 	def __init__(self, bucket_quant, config):
 
 		self.config = config
+		self.options = config["prophet"]
 
 		# Load Aligned Sequential Sentences
 		self.source_lines = []
@@ -372,8 +373,8 @@ class PretrainData(TranslationData):
 		"""Load a batch of documents"""
 
 		options = self.options
-		sample_size = model_options["sample_size"]
-		batch_size = model_options["batch_size"]
+		sample_size = options["sample_size"]
+		batch_size = options["batch_size"]
 
 		source_sentences = []
 		target_sentences = []
@@ -393,7 +394,7 @@ class PretrainData(TranslationData):
 		"""Create buckets"""
 
 		options = self.options
-		sample_size = model_options["sample_size"]
+		sample_size = options["sample_size"]
 
 		bucket_quant = self.bucket_quant
 		source_vocab = self.source_vocab
@@ -409,10 +410,7 @@ class PretrainData(TranslationData):
 			sl = len(source_lines[i])
 			tl = len(target_lines[i])
 
-			new_length = max(sl, tl)
-
-			if new_length % bucket_quant > 0:
-				new_length = ((new_length / bucket_quant) + 1) * bucket_quant	
+			new_length = sample_size
 			
 			s_padding = np.array([source_vocab['padding'] for ctr in range(int(sl), int(new_length))])
 
