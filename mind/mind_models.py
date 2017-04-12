@@ -169,13 +169,15 @@ class TruthModel:
 		encoder_output = self.encoder(source_embedding)
 
 		# Process Thoughts Through Memory State
-		truth_vector = self.memory_state(encoder_output)
+		context = self.memory_state(encoder_output)
 
-		# Concat Truth and Thought Vectors
-		#
+		# Concat Previous Truth and Thought Vectors
+		# TODO get previous thought
+		focus = None
+		features = tf.concat([focus, context], 2)
 
 		# Decode Thought
-		decoder_output = self.decoder(target1_embedding, encoder_output)
+		decoder_output = self.decoder(target1_embedding, features)
 
 		loss = self.loss(decoder_output, target_sentence2)
 		tf.summary.scalar('loss', loss)
