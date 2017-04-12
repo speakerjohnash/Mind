@@ -295,10 +295,12 @@ class PretrainData(TranslationData):
 			else: 
 				thoughts = chunk["Thought"]
 
+			# TODO Split sentences longer than sample size into multiple sentences
+
 			for i, thought in enumerate(thoughts):
 				if i + 1 < len(thoughts):
-					self.source_lines.append(thoughts[i])
-					self.target_lines.append(thoughts[i])
+					self.source_lines.append(thoughts[i][:256])
+					self.target_lines.append(thoughts[i][:256])
 
 	def build_word_vocab(self):
 		"""Build target vocab"""
