@@ -32,7 +32,7 @@
 		"residual_channels": 512
 	},
 	"prophet": {
-		"batch_size": 10,
+		"batch_size": 9,
 		"sample_size": 256,
 		"decoder_filter_width": 3,
 		"encoder_filter_width" : 5,
@@ -54,7 +54,7 @@
 		"max_epochs": 1000,
 		"learning_rate": 0.001,
 		"adam_momentum": 0.5,
-		"bucket_quant": 25,
+		"bucket_quant": 32,
 		"dataset": "data/wiki_02.txt"
 	}
 }

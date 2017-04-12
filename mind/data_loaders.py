@@ -87,7 +87,7 @@ class TranslationData():
 			s_padding = np.array( [source_vocab['padding'] for ctr in range(int(sl), int(new_length)) ] )
 
 			# Extra Padding for Training
-			t_padding = np.array([target_vocab['padding'] for ctr in range(ihttps://www.youtube.com/watch?v=QVaafph6HSQnt(tl), int(new_length + 1))])
+			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
 			source_lines[i] = np.concatenate([source_lines[i], s_padding])
 			target_lines[i] = np.concatenate([target_lines[i], t_padding])
 
@@ -297,7 +297,7 @@ class PretrainData(TranslationData):
 			for i, thought in enumerate(thoughts):
 				if i + 1 < len(thoughts):
 					self.source_lines.append(thoughts[i])
-					self.target_lines.append(thoughts[i+1])
+					self.target_lines.append(thoughts[i])
 
 	def build_word_vocab(self):
 		"""Build target vocab"""
@@ -368,11 +368,56 @@ class PretrainData(TranslationData):
 
 		return vocab
 
-	def load_batch(self, pair_list):
+	def load_batch(self, step):
 		"""Load a batch of documents"""
+
+		source_sentences = []
+		target_sentence = []
+
+		#TODO: Get context and target
+
+		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentence, dtype = 'int32')
 
 	def create_buckets(self, source_lines, target_lines):
 		"""Create buckets"""
+
+		bucket_quant = self.bucket_quant
+		source_vocab = self.source_vocab
+		target_vocab = self.target_vocab
+		options = self.options
+		sample_size = model_options["sample_size"]
+
+		buckets = {}
+
+		for i in range(len(source_lines)):
+			
+			source_lines[i] = np.concatenate((source_lines[i], [source_vocab['eol']]))
+			target_lines[i] = np.concatenate(([target_vocab['init']], target_lines[i], [target_vocab['eol']]))
+			
+			sl = len(source_lines[i])
+			tl = len(target_lines[i])
+
+			new_length = max(sl, tl)
+
+			if new_length % bucket_quant > 0:
+				new_length = ((new_length / bucket_quant) + 1) * bucket_quant	
+			
+			s_padding = np.array([source_vocab['padding'] for ctr in range(int(sl), int(new_length))])
+
+			# Extra Padding for Training
+			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
+			source_lines[i] = np.concatenate([source_lines[i], s_padding])
+			target_lines[i] = np.concatenate([target_lines[i], t_padding])
+
+			if sample_size in buckets:
+				buckets[new_length].append((source_lines[i], target_lines[i]))
+			else:
+				buckets[sample_size] = [(source_lines[i], target_lines[i])]
+
+			if i%1000 == 0:
+				print(("Loading", i))
+			
+		return buckets
 
 if __name__ == "__main__":
 
