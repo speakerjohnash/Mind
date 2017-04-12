@@ -368,24 +368,36 @@ class PretrainData(TranslationData):
 
 		return vocab
 
-	def load_batch(self, step):
+	def load_batch(self, step, buckets):
 		"""Load a batch of documents"""
 
-		source_sentences = []
-		target_sentence = []
+		options = self.options
+		sample_size = model_options["sample_size"]
+		batch_size = model_options["batch_size"]
 
-		#TODO: Get context and target
+		source_sentences = []
+		target_sentences = []
+
+		sentences = buckets[sample_size][step * batch_size : (batch_no + 1) * batch_size]
+
+		for s, t in sentences:
+			source_sentences.append(s)
+			target_sentences.append(t)
+		
+		source_sentences = source_sentences[:batch_size - 1]
+		target_sentence = target[len(target) - 1]
 
 		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentence, dtype = 'int32')
 
 	def create_buckets(self, source_lines, target_lines):
 		"""Create buckets"""
 
+		options = self.options
+		sample_size = model_options["sample_size"]
+
 		bucket_quant = self.bucket_quant
 		source_vocab = self.source_vocab
 		target_vocab = self.target_vocab
-		options = self.options
-		sample_size = model_options["sample_size"]
 
 		buckets = {}
 

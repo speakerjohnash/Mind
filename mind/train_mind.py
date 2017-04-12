@@ -191,7 +191,7 @@ def pretrain_prophet(config):
 
 		sess = tf.InteractiveSession()
 
-		batch_no = 0
+		step = 0
 		batch_size = model_options["batch_size"]
 
 		# Build Model
@@ -215,7 +215,9 @@ def pretrain_prophet(config):
 			saver.restore(sess, last_saved_model_path)
 
 		# Training Step
-		while (batch_no + 1) < len(buckets[key]):
+		while (step + 1) < len(buckets[key]):
+
+			source, target = thought_stream.load_batch(step, buckets)
 
 			# TODO: Training Step
 
