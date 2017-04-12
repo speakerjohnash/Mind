@@ -429,6 +429,30 @@ class PretrainData(TranslationData):
 			
 		return buckets
 
+	def bucket_data(self):
+		"""Bucket Data"""
+
+		options = self.options
+		sample_size = options["sample_size"]
+		source_lines = []
+		target_lines = []
+
+		for i in range(len(self.source_lines)):
+			source_lines.append(self.string_to_char_indices(self.source_lines[i], self.source_vocab))
+			target_lines.append(self.string_to_word_indices(self.target_lines[i], self.target_vocab))
+
+		buckets = self.create_buckets(source_lines, target_lines)
+
+		frequent_keys = [(-len(buckets[key]), key) for key in buckets]
+		frequent_keys.sort()
+
+		print(("Source", self.char_indices_to_string(buckets[sample_size][5][0], self.source_vocab)))
+		print(("Target", self.word_indices_to_string(buckets[sample_size][5][1], self.target_vocab)))
+		
+		print((len(frequent_keys)))
+
+		return buckets, self.source_vocab, self.target_vocab, frequent_keys
+
 if __name__ == "__main__":
 
 	# Test Encoding of Mixed Embeddings for Targets

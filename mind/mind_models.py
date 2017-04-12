@@ -140,7 +140,7 @@ class TruthModel:
 		batch_size = options["batch_size"]
 		sample_size = options["sample_size"]
 
-		source_size = [None, options["sample_size"]]
+		source_size = [batch_size - 1, options["sample_size"]]
 		target_size = [1, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
