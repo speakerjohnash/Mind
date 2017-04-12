@@ -175,8 +175,7 @@ class TruthModel:
 		context = self.memory_state(encoder_output)
 
 		# Concat Previous Truth and Thought Vectors
-		# TODO get previous thought
-		focus = None
+		focus = tf.gather(encoder_output, batch_size - 1)
 		features = tf.concat([focus, context], 2)
 
 		# Decode Thought
@@ -232,8 +231,6 @@ class TruthModel:
 
 		# What is this?
 		dilated_conv = tf.multiply(dilated_conv, self.source_masked_d)
-
-		#tf.contrib.layers.layer_norm
 
 		# Restore Dimension
 		relu3 = tf.nn.relu(dilated_conv, name = 'enc_relu3_layer{}'.format(layer_no))

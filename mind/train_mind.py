@@ -219,7 +219,36 @@ def pretrain_prophet(config):
 
 			source, target = thought_stream.load_batch(step, buckets)
 
-			# TODO: Training Step
+			tensors_to_get = [
+				optim, 
+				tensors['loss'], 
+				tensors['prediction'], 
+				tensors['merged_summary']
+			]
+
+			feed_dict = {
+				tensors['source_sentence'] : source,
+				tensors['target_sentence'] : target
+			}
+
+			# Run Session and Expand Outputs
+			outputs = sess.run(tensors_to_get, feed_dict=feed_dict)
+			_, loss, prediction, summary = outputs
+
+			# Write to Summary
+			train_writer.add_summary(summary, step)
+			print(("Loss", loss, step, len(buckets[key]) / batch_size, i, cnt, key))
+			
+			# Print Results to Terminal
+			print("******")
+			print(("Source ", paired_sentences.char_indices_to_string(source[0], source_vocab)))
+			print("---------")
+			print(("Target ", paired_sentences.word_indices_to_string(target[0], target_vocab)))
+			print("----------")
+			print(("Prediction ", paired_sentences.word_indices_to_string(prediction[0:int(key)], target_vocab)))
+			print("******")
+
+			step += 1
 
 			if batch_no % 5000 == 0:
 				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
