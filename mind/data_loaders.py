@@ -388,7 +388,7 @@ class PretrainData(TranslationData):
 		source_sentences = source_sentences[:batch_size - 1]
 		target_sentence = target_sentences[len(target_sentences) - 1]
 
-		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentence, dtype = 'int32')
+		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
 
 	def create_buckets(self, source_lines, target_lines):
 		"""Create buckets"""
