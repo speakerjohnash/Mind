@@ -162,17 +162,15 @@ def pretrain_prophet(config):
 	"""Train a language model via sequential thought prediction"""
 
 	epochs = config["options"]["max_epochs"]
-	model_options = config["prophet"]
 
 	# Load Data
 	thought_stream = PretrainData(config["options"]["bucket_quant"], config)
 	buckets, source_vocab, target_vocab, frequent_keys = thought_stream.bucket_data()
 
 	# Configure Model Options
-	model_options = config["translator"]
+	model_options = config["prophet"]
 	model_options["n_source_quant"] = len(source_vocab)
 	model_options["n_target_quant"] = len(target_vocab)
-	model_options["sample_size"] = 10
 	model_options["source_mask_chars"] = [source_vocab["padding"]]
 	model_options["target_mask_chars"] = [target_vocab["padding"]]
 
@@ -186,98 +184,51 @@ def pretrain_prophet(config):
 
 		cnt = 0
 
-		for _, key in frequent_keys:
+		key = model_options["sample_size"]
+		cnt += 1
+		
+		print(("Key", cnt, key))
 
-			key = int(key)
-			cnt += 1
+		sess = tf.InteractiveSession()
 
-			if key < 75:
-				continue
+		batch_no = 0
+		batch_size = model_options["batch_size"]
 
-			if key not in buckets:
-				continue
-			
-			print(("Key", cnt, key))
-			if key > 400:
-				continue
-			
-			if len(buckets[key]) < model_options["batch_size"]:
-				print(("Bucket too small", key))
-				continue
+		# Build Model
+		model = TruthModel(model_options)
+		tensors = model.build_truth_model(sample_size=key)
+		
+		# Build Optimizer
+		lr = config["options"]["learning_rate"]
+		beta1 = config["options"]["adam_momentum"]
+		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
+		optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
 
-			sess = tf.InteractiveSession()
+		# Initialize Variables and Summary Writer
+		train_writer = tf.summary.FileWriter('logs/', sess.graph)
+		tf.global_variables_initializer().run()
 
-			batch_no = 0
-			batch_size = model_options["batch_size"]
+		saver = tf.train.Saver()
 
-			# Build Model
-			model = TruthModel(model_options)
-			tensors = model.build_truth_model(sample_size=key)
-			
-			# Build Optimizer
-			lr = config["options"]["learning_rate"]
-			beta1 = config["options"]["adam_momentum"]
-			adam = tf.train.AdamOptimizer(lr, beta1=beta1)
-			optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
+		# Restore previous checkpoint if existing
+		if last_saved_model_path:
+			saver.restore(sess, last_saved_model_path)
 
-			# Initialize Variables and Summary Writer
-			train_writer = tf.summary.FileWriter('logs/', sess.graph)
-			tf.global_variables_initializer().run()
+		# Training Step
+		while (batch_no + 1) < len(buckets[key]):
 
-			saver = tf.train.Saver()
+			# TODO: Training Step
 
-			# Restore previous checkpoint if existing
-			if last_saved_model_path:
-				saver.restore(sess, last_saved_model_path)
+			if batch_no % 5000 == 0:
+				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
+				last_saved_model_path = "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt)
 
-			# Training Step
-			while (batch_no + 1) * batch_size < len(buckets[key]):
+		# Save Checkpoint
+		save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))
+		last_saved_model_path = "models/model_pretrain_epoch_{}.ckpt".format(i)
 
-				source, target = thought_stream.load_batch( 
-					buckets[key][batch_no * batch_size : (batch_no + 1) * batch_size] 
-				)
-
-				tensors_to_get = [
-					optim, 
-					tensors['loss'], 
-					tensors['prediction'], 
-					tensors['merged_summary']
-				]
-
-				feed_dict = {
-					tensors['source_sentence'] : source,
-					tensors['target_sentence'] : target
-				}
-
-				# Run Session and Expand Outputs
-				outputs = sess.run(tensors_to_get, feed_dict=feed_dict)
-				_, loss, prediction, summary = outputs
-
-				# Write to Summary
-				train_writer.add_summary(summary, batch_no * (cnt + 1))
-				print(("Loss", loss, batch_no, len(buckets[key])/batch_size, i, cnt, key))
-				
-				# Print Results to Terminal
-				print("******")
-				print(("Source ", thought_stream.char_indices_to_string(source[0], source_vocab)))
-				print("---------")
-				print(("Target ", thought_stream.word_indices_to_string(target[0], target_vocab)))
-				print("----------")
-				print(("Prediction ", thought_stream.word_indices_to_string(prediction[0:int(key)], target_vocab)))
-				print("******")
-
-				batch_no += 1
-
-				if batch_no % 5000 == 0:
-					save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
-					last_saved_model_path = "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt)
-
-			# Save Checkpoint
-			save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))
-			last_saved_model_path = "models/model_pretrain_epoch_{}.ckpt".format(i)
-
-			tf.reset_default_graph()
-			sess.close()
+		tf.reset_default_graph()
+		sess.close()
 
 def train_prophet(config):
 	"""Train a truth model"""
