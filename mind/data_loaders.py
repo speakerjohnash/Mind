@@ -268,17 +268,17 @@ class PretrainData(TranslationData):
 			if len(split) != 2:
 				continue
 
-			word = [0]
+			word = split[0]
 			definition = split[1]
 
 			self.source_lines.append(word)
 			self.target_lines.append(definition)
 		
-		dictionary = load_json("data/dictionary.json")
+		# dictionary = load_json("data/dictionary.json")
 
-		for key, value in dictionary.items():
-			self.source_lines.append(key)
-			self.target_lines.append(value)
+		# for key, value in dictionary.items():
+		#	self.source_lines.append(key)
+		#	self.target_lines.append(value)
 
 	def load_data(self, dataset):
 		"""Load training data"""
