@@ -134,7 +134,9 @@ class TruthModel:
 		}
 		output, output_state = tf.contrib.rnn.static_rnn(focusing_lens, tf.unstack(input_), **options)
 
-		return tf.gather(output, batch_size - 1)
+		last_output = tf.gather(output, batch_size - 1)
+
+		return tf.expand_dims(last_output, 0)
 
 	def build_truth_model(self, sample_size):
 		"""Train the encoder, the decoder, and the memory state"""
@@ -180,8 +182,13 @@ class TruthModel:
 		context = self.memory_state(encoder_output, batch_size)
 
 		# Concat Previous Truth and Thought Vectors
-		focus = tf.gather(encoder_output, batch_size - 1)
+		focus = tf.expand_dims(tf.gather(encoder_output, batch_size - 1), 0)
 		features = tf.concat([focus, context], 2)
+
+		print(focus.shape)
+		print(context.shape)
+		print(encoder_output.shape)
+		print(target1_embedding.shape)
 
 		# Decode Thought
 		decoder_output = self.decoder(target1_embedding, features)
