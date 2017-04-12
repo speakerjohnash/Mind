@@ -126,8 +126,8 @@ class TruthModel:
 		focusing_lens = tf.nn.rnn_cell.MultiRNNCell([in_lstm, truth_pool, out_lstm])
 
 		# Run thoughts through the cell
-		rnn_options = {}
-		output, output_state = tf.nn.dynamic_rnn(focusing_lens, input_, **rnn_options)
+		# TODO Set initial state to output of previous training step
+		output, output_state = tf.contrib.rnn.static_rnn(focusing_lens, input_, initial_state=None)
 
 		return output
 
