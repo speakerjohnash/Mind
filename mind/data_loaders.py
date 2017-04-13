@@ -187,8 +187,9 @@ class TranslationData():
 
 		for i, group in groupby(sentence):
 
-			if id_word[i] == 'eol':
-				sent += " EOL "
+			# Originally was 'eol'
+			if id_word[i] == 'padding':
+				break
 
 			if i in self.target_char_vocab.values():
 				for g in list(group):
@@ -397,8 +398,8 @@ class PretrainData(TranslationData):
 			# Recall Last Thought
 			target_sentence = target_sentences[len(target_sentences) - 3]
 		else:
-			# Predict Next Thought
-			target_sentence = target_sentences[len(target_sentences) - 1] 
+			# Predict Current Thought
+			target_sentence = target_sentences[len(target_sentences) - 2] 
 
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
 
