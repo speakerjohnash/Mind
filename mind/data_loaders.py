@@ -384,7 +384,7 @@ class PretrainData(TranslationData):
 		source_sentences = []
 		target_sentences = []
 
-		sentences = buckets[sample_size][step * batch_size : (step + 1) * batch_size]
+		sentences = buckets[sample_size][step : step + batch_size]
 
 		for s, t in sentences:
 			source_sentences.append(s)
@@ -394,9 +394,11 @@ class PretrainData(TranslationData):
 
 		# Vary target by step
 		if step % 2 == 0:
+			# Recall Last Thought
 			target_sentence = target_sentences[len(target_sentences) - 3]
 		else:
-			target_sentence = target_sentences[len(target_sentences) - 2] 
+			# Predict Next Thought
+			target_sentence = target_sentences[len(target_sentences) - 1] 
 
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
 
