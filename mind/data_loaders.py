@@ -188,8 +188,8 @@ class TranslationData():
 		for i, group in groupby(sentence):
 
 			if id_word[i] == 'eol':
-				break
-			
+				sent += " EOL "
+
 			if i in self.target_char_vocab.values():
 				for g in list(group):
 					sent += id_word[i]
