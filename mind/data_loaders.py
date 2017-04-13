@@ -187,8 +187,7 @@ class TranslationData():
 
 		for i, group in groupby(sentence):
 
-			# Originally was 'eol'
-			if id_word[i] == 'padding':
+			if id_word[i] == 'eol':
 				break
 
 			if i in self.target_char_vocab.values():
@@ -396,11 +395,11 @@ class PretrainData(TranslationData):
 
 		# Vary target by step
 		if step % 2 == 0:
-			# Recall Last Thought
-			target_sentence = target_sentences[len(target_sentences) - 3]
-		else:
 			# Predict Next Thought
-			target_sentence = target_sentences[len(target_sentences) - 1] 
+			target_sentence = target_sentences[len(target_sentences) - 1]
+		else:
+			# Recall Last Thought
+			target_sentence = target_sentences[len(target_sentences) - 3] 
 
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
 

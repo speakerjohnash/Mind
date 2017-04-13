@@ -212,6 +212,7 @@ def pretrain_prophet(config):
 
 		# Restore previous checkpoint if existing
 		if last_saved_model_path:
+			print("Restoring Model")
 			saver.restore(sess, last_saved_model_path)
 
 		# Training Step
@@ -239,9 +240,9 @@ def pretrain_prophet(config):
 			train_writer.add_summary(summary, step)
 
 			if step % 2 == 0:
-				print("\n Recalling Previous thought")
+				print("\n Predict Next Thought")
 			else:
-				print("\n Predicting Next thought")
+				print("\n Recall Last Thought")
 
 			print(("Loss", loss, step, len(buckets[key]) / batch_size, i, cnt, key))
 			
@@ -257,6 +258,7 @@ def pretrain_prophet(config):
 			step += 1
 
 			if step % 5000 == 0:
+				print("Saving Model")
 				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
 				last_saved_model_path = "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt)
 
