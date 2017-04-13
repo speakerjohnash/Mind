@@ -239,10 +239,7 @@ def pretrain_prophet(config):
 			# Write to Summary
 			train_writer.add_summary(summary, step)
 
-			if step % 2 == 0:
-				print("\n Predict Next Thought")
-			else:
-				print("\n Recall Last Thought")
+			print("\n")
 
 			print(("Loss", loss, step, len(buckets[key]) / batch_size, i, cnt, key))
 			

@@ -274,6 +274,9 @@ class PretrainData(TranslationData):
 			definition = split[1]
 
 			self.source_lines.append(word[:254])
+			self.target_lines.append(word[:254])
+
+			self.source_lines.append(definition[:254])
 			self.target_lines.append(definition[:254])
 		
 		# dictionary = load_json("data/dictionary.json")
@@ -392,14 +395,15 @@ class PretrainData(TranslationData):
 			target_sentences.append(t)
 		
 		source_sentences = source_sentences[:batch_size - 1]
+		target_sentence = target_sentences[len(target_sentences) - 1]
 
 		# Vary target by step
-		if step % 2 == 0:
+		# if step % 2 == 0:
 			# Predict Next Thought
-			target_sentence = target_sentences[len(target_sentences) - 1]
-		else:
+		#	target_sentence = target_sentences[len(target_sentences) - 1]
+		#else:
 			# Recall Last Thought
-			target_sentence = target_sentences[len(target_sentences) - 3] 
+		#	target_sentence = target_sentences[len(target_sentences) - 2] 
 
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
 
