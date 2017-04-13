@@ -183,7 +183,7 @@ class TruthModel:
 
 		# Concat Previous Truth and Thought Vectors
 		focus = tf.expand_dims(tf.gather(encoder_output, batch_size - 1), 0)
-		features = tf.concat([focus, context], 2)
+		features = tf.concat([context, focus], 2)
 
 		print(focus.shape)
 		print(context.shape)

@@ -300,6 +300,8 @@ class PretrainData(TranslationData):
 			for i, thought in enumerate(thoughts):
 				if i + 1 < len(thoughts):
 					thought = thoughts[i][:254]
+					if len(thought) < 50:
+						continue
 					self.source_lines.append(thought)
 					self.target_lines.append(thought)
 
@@ -389,7 +391,12 @@ class PretrainData(TranslationData):
 			target_sentences.append(t)
 		
 		source_sentences = source_sentences[:batch_size - 1]
-		target_sentence = target_sentences[len(target_sentences) - 1]
+
+		# Vary target by step
+		if step % 2 == 0:
+			target_sentence = target_sentences[len(target_sentences) - 3]
+		else:
+			target_sentence = target_sentences[len(target_sentences) - 2] 
 
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
 
