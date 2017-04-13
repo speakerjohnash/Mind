@@ -242,6 +242,7 @@ class PretrainData(TranslationData):
 		self.target_lines = []
 
 		self.load_dictionary()
+		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")
 		self.load_data(config["options"]["dataset"])
 
 		print(("Source Sentences", len(self.source_lines)))
@@ -398,8 +399,8 @@ class PretrainData(TranslationData):
 			# Recall Last Thought
 			target_sentence = target_sentences[len(target_sentences) - 3]
 		else:
-			# Predict Current Thought
-			target_sentence = target_sentences[len(target_sentences) - 2] 
+			# Predict Next Thought
+			target_sentence = target_sentences[len(target_sentences) - 1] 
 
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
 
