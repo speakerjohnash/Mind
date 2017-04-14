@@ -120,9 +120,9 @@ class TruthModel:
 		options = self.options
 
 		# Feed encoded thoughts into memory cell
-		in_lstm = tf.contrib.rnn.BasicLSTMCell(options["sample_size"])
-		truth_pool = tf.contrib.rnn.BasicLSTMCell(options["memory_state"])
-		out_lstm = tf.contrib.rnn.BasicLSTMCell(options["sample_size"])
+		in_lstm = tf.contrib.rnn.LayerNormBasicLSTMCell(options["sample_size"])
+		truth_pool = tf.contrib.rnn.LayerNormBasicLSTMCell(options["memory_state"])
+		out_lstm = tf.contrib.rnn.LayerNormBasicLSTMCell(options["sample_size"])
 		focusing_lens = tf.contrib.rnn.MultiRNNCell([in_lstm, truth_pool, out_lstm])
 
 		# Run thoughts through the cell

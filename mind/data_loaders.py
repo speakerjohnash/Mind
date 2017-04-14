@@ -240,9 +240,9 @@ class PretrainData(TranslationData):
 		self.source_lines = []
 		self.target_lines = []
 
-		self.load_dictionary()
+		# self.load_dictionary()
 		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")
-		self.load_data(config["options"]["dataset"])
+		# self.load_data(config["options"]["dataset"])
 
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
@@ -288,16 +288,18 @@ class PretrainData(TranslationData):
 	def load_data(self, dataset):
 		"""Load training data"""
 
-		df = load_piped_dataframe(dataset, chunksize=1000)
+		df = load_piped_dataframe(dataset, chunksize=1000, sep=",")
+		thoughts = load_dict_list("data/ordered_thoughts.csv")
+		thoughts = [t["Thought"] for t in thoughts]
 
 		for chunk in df:
 
 			if len(chunk.columns) == 1:
 				lines = chunk[chunk.columns[0]]
 				text = " ".join(list(lines))
-				thoughts = text.split(".")
+				thoughts += text.split(".")
 			else: 
-				thoughts = chunk["Thought"]
+				thoughts += chunk["Thought"]
 
 			# TODO Split sentences longer than sample size into multiple sentences
 
