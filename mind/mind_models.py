@@ -120,24 +120,19 @@ class TruthModel:
 		options = self.options
 
 		# Feed encoded thoughts into memory cell
-		in_lstm = tf.contrib.rnn.LayerNormBasicLSTMCell(options["sample_size"])
-		truth_pool = tf.contrib.rnn.LayerNormBasicLSTMCell(options["memory_state"])
-		out_lstm = tf.contrib.rnn.LayerNormBasicLSTMCell(options["sample_size"])
-		focusing_lens = tf.contrib.rnn.MultiRNNCell([in_lstm, truth_pool, out_lstm])
+		lstm = tf.contrib.rnn.LayerNormBasicLSTMCell(options["sample_size"])
 
 		# Run thoughts through the cell
-		# TODO Set initial state to output of previous training step
 		options = {
-			"dtype": tf.float32,
-			#"sequence_length": 0,
-			#"initial_state":
+			"dtype": tf.float32
 		}
-		output, output_state = tf.contrib.rnn.static_rnn(focusing_lens, tf.unstack(input_), **options)
+
+		output, output_state = tf.contrib.rnn.static_rnn(lstm, tf.unstack(input_), **options)
 
 		last_output = tf.gather(output, batch_size - 1)
 
 		return tf.expand_dims(last_output, 0)
-
+		
 	def build_truth_model(self, sample_size):
 		"""Train the encoder, the decoder, and the memory state"""
 
@@ -151,7 +146,7 @@ class TruthModel:
 		target_size = [1, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
-		
+	
 		slice_sizes = [batch_size - 1, sample_size, options["residual_channels"]]
 		slice_sizes = [int(x) for x in slice_sizes]
 		slice_sizes = tf.constant(slice_sizes, dtype="int32")
@@ -178,20 +173,13 @@ class TruthModel:
 		# Encode Context
 		encoder_output = self.encoder(source_embedding)
 
+		# TODO: Latent Space for VAE
+
 		# Process Thoughts Through Memory State
-		context = self.memory_state(encoder_output, batch_size)
-
-		# Concat Previous Truth and Thought Vectors
-		focus = tf.expand_dims(tf.gather(encoder_output, batch_size - 1), 0)
-		features = tf.concat([context, focus], 2)
-
-		print(focus.shape)
-		print(context.shape)
-		print(encoder_output.shape)
-		print(target1_embedding.shape)
+		context_encoded = self.memory_state(encoder_output, batch_size)
 
 		# Decode Thought
-		decoder_output = self.decoder(target1_embedding, features)
+		decoder_output = self.decoder(target1_embedding, context_encoded)
 
 		loss = self.loss(decoder_output, target_sentence2)
 		tf.summary.scalar('loss', loss)

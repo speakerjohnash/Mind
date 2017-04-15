@@ -228,8 +228,8 @@ def pretrain_prophet(config):
 			]
 
 			feed_dict = {
-				tensors['source_sentence'] : source,
-				tensors['target_sentence'] : target
+				"source_sentence:0" : source,
+				"target_sentence:0" : target
 			}
 
 			# Run Session and Expand Outputs
@@ -241,7 +241,7 @@ def pretrain_prophet(config):
 
 			print("\n")
 
-			print(("Loss", loss, step, len(buckets[key]) / batch_size, i, cnt, key))
+			print(("Loss", loss, step, len(buckets[key]), i, cnt, key))
 			
 			# Print Results to Terminal
 			print("******")
