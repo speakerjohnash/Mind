@@ -102,7 +102,7 @@ def pretrain_prophet(config):
 		while (step + 1) < len(buckets[key]):
 
 			source, target = thought_stream.load_batch(step, buckets)
-			kl_weight = i + (step / len(buckets[key]))
+			kl_weight = (step / len(buckets[key]))
 			print("KL Weight: " + str(kl_weight))
 
 			tensors_to_get = [
