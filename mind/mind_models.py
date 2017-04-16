@@ -106,23 +106,21 @@ class TruthModel:
 		# Encode Context
 		encoder_output = self.encoder(source_embedding)
 
-		# TODO: Latent Space for VAE
-
 		# Latent distribution parameterized by hidden encoding
-		# z ~ N(z_mean, np.exp(z_log_sigma)**2)
-		# z_mean = Dense("z_mean", source_size)(encoder_output)
-		# z_log_sigma = Dense("z_log_sigma"), source_size)(encoder_output)
+		z_mean = Dense("z_mean", source_size)(encoder_output)
+		z_log_sigma = Dense("z_log_sigma", source_size)(encoder_output)
 
 		# Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
-		# z = self.sampleGaussian(z_mean, z_log_sigma)
+		z = self.sampleGaussian(z_mean, z_log_sigma)
 
 		# Process Thoughts Through Memory State
 		#context_encoded = self.memory_state(encoder_output, batch_size)
 
 		# Decode Thought
-		decoder_output = self.decoder(target1_embedding, encoder_output)
+		# decoder_output = self.decoder(target1_embedding, encoder_output)
+		decoder_output = self.decoder(target1_embedding, z)
 
-		loss = self.loss(decoder_output, target_sentence2)
+		loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma)
 		tf.summary.scalar('loss', loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
@@ -279,7 +277,7 @@ class TruthModel:
 			epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
 			return mu + epsilon * tf.exp(log_sigma) 
 
-	def loss(self, decoder_output, target_sentence):
+	def loss(self, decoder_output, target_sentence, z_mean, z_log_sigma):
 		"""Calculate loss between decoder output and target"""
 
 		options = self.options
@@ -309,10 +307,8 @@ class TruthModel:
 			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
 		# Add KL Loss
-		# TODO: Pass in z_mean and z_log_sigma
-		# kl_loss = VAE.kullbackLeibler(z_mean, z_log_sigma)
-
-		# loss = tf.reduce_mean(rec_loss + kl_loss, name="cost")
+		kl_loss = VAE.kullbackLeibler(z_mean, z_log_sigma)
+		loss = tf.reduce_mean(rec_loss + kl_loss, name="cost")
 
 		return loss
 
