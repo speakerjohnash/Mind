@@ -308,6 +308,12 @@ class TruthModel:
 		else:
 			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
+		# Add KL Loss
+		# TODO: Pass in z_mean and z_log_sigma
+		# kl_loss = VAE.kullbackLeibler(z_mean, z_log_sigma)
+
+		# loss = tf.reduce_mean(rec_loss + kl_loss, name="cost")
+
 		return loss
 
 # Utility Functions
