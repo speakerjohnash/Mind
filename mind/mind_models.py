@@ -87,18 +87,18 @@ class TruthModel:
 		encoder_output = self.encoder(source_embedding)
 
 		# Latent distribution parameterized by hidden encoding
-		z_mean = Dense("z_mean", source_size)(encoder_output)
-		z_log_sigma = Dense("z_log_sigma", source_size)(encoder_output)
+		z_mean = Dense("z_mean", sample_size)(tf.squeeze(encoder_output))
+		z_log_sigma = Dense("z_log_sigma", sample_size)(tf.squeeze(encoder_output))
 
 		# Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
-		z = self.sampleGaussian(z_mean, z_log_sigma)
+		z = self.sample_gaussian(z_mean, z_log_sigma)
 
 		# Process Thoughts Through Memory State
 		#context_encoded = self.memory_state(encoder_output, batch_size)
 
 		# Decode Thought
 		# decoder_output = self.decoder(target1_embedding, encoder_output)
-		decoder_output = self.decoder(target1_embedding, z)
+		decoder_output = self.decoder(target1_embedding, tf.expand_dims(z, axis=0))
 
 		loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma)
 		tf.summary.scalar('loss', loss)
@@ -262,7 +262,7 @@ class TruthModel:
 		# Residual connection
 		return input_ + conv2
 
-	def kullback_leibler(mu, log_sigma):
+	def kullback_leibler(self, mu, log_sigma):
 		"""(Gaussian) Kullback-Leibler divergence"""
 
 		with tf.name_scope("KL_divergence"):
@@ -307,10 +307,10 @@ class TruthModel:
 			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
 		# Add KL Loss
-		kl_loss = VAE.kullbackLeibler(z_mean, z_log_sigma)
-		loss = tf.reduce_mean(rec_loss + kl_loss, name="cost")
+		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
+		cost = tf.reduce_mean(loss + kl_loss, name="cost")
 
-		return loss
+		return cost
 
 # Utility Functions and Classes 
 
@@ -330,9 +330,11 @@ class Dense():
 		with tf.name_scope(self.scope):
 			while True:
 				try: 
-					return self.nonlinearity(tf.matmul(x, self.w) + self.b)
+					output = self.nonlinearity(tf.matmul(x, self.w) + self.b)
+					return output
 				except(AttributeError):
-					self.w, self.b = self.wb_vars(x.get_shape()[1].value, self.size)
+					value = x.get_shape()[1].value
+					self.w, self.b = self.wb_vars(value, self.size)
 					self.w = tf.nn.dropout(self.w, self.dropout)
 
 	@staticmethod
