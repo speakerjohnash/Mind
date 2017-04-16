@@ -175,11 +175,19 @@ class TruthModel:
 
 		# TODO: Latent Space for VAE
 
+		# Latent distribution parameterized by hidden encoding
+        # z ~ N(z_mean, np.exp(z_log_sigma)**2)
+        # z_mean = dense_layer(encoder_output, "z_mean")
+        # z_log_sigma = dense_layer(encoder_output, "z_log_sigma")
+
+        # Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
+        # z = self.sampleGaussian(z_mean, z_log_sigma)
+
 		# Process Thoughts Through Memory State
-		context_encoded = self.memory_state(encoder_output, batch_size)
+		#context_encoded = self.memory_state(encoder_output, batch_size)
 
 		# Decode Thought
-		decoder_output = self.decoder(target1_embedding, context_encoded)
+		decoder_output = self.decoder(target1_embedding, encoder_output)
 
 		loss = self.loss(decoder_output, target_sentence2)
 		tf.summary.scalar('loss', loss)

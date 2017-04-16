@@ -240,9 +240,21 @@ class PretrainData(TranslationData):
 		self.source_lines = []
 		self.target_lines = []
 
-		# self.load_dictionary()
+		# Load All Data Sources
+		self.load_data(config["options"]["dataset"])
 		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")
-		# self.load_data(config["options"]["dataset"])
+
+		# Load Prophet Data
+		prophet_thoughts = load_dict_list("data/ordered_thoughts.csv")
+		prophet_thoughts = [t["Thought"] for t in prophet_thoughts]
+
+		for i, thought in enumerate(prophet_thoughts):
+			if i + 1 < len(prophet_thoughts):
+				thought = prophet_thoughts[i][:254]
+				if len(thought) < 50:
+					continue
+				self.source_lines.append(thought)
+				self.target_lines.append(thought)
 
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
@@ -256,41 +268,11 @@ class PretrainData(TranslationData):
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
-	def load_dictionary(self):
-		"""Load a dictionary as the corpus"""
-
-		thoughts = load_dict_list("data/prophet_lexicon.csv")
-		corpus = [t["Thought"] for t in thoughts]
-
-		for item in corpus:
-
-			item = item.replace("\t","")
-			split = item.split(": ")
-
-			if len(split) != 2:
-				continue
-
-			word = split[0]
-			definition = split[1]
-
-			self.source_lines.append(word[:254])
-			self.target_lines.append(word[:254])
-
-			self.source_lines.append(definition[:254])
-			self.target_lines.append(definition[:254])
-		
-		# dictionary = load_json("data/dictionary.json")
-
-		# for key, value in dictionary.items():
-		#	self.source_lines.append(key)
-		#	self.target_lines.append(value)
-
 	def load_data(self, dataset):
 		"""Load training data"""
 
 		df = load_piped_dataframe(dataset, chunksize=1000, sep=",")
-		thoughts = load_dict_list("data/ordered_thoughts.csv")
-		thoughts = [t["Thought"] for t in thoughts]
+		thoughts = []
 
 		for chunk in df:
 
@@ -303,13 +285,13 @@ class PretrainData(TranslationData):
 
 			# TODO Split sentences longer than sample size into multiple sentences
 
-			for i, thought in enumerate(thoughts):
-				if i + 1 < len(thoughts):
-					thought = thoughts[i][:254]
-					if len(thought) < 50:
-						continue
-					self.source_lines.append(thought)
-					self.target_lines.append(thought)
+		for i, thought in enumerate(thoughts):
+			if i + 1 < len(thoughts):
+				thought = thoughts[i][:254]
+				if len(thought) < 50:
+					continue
+				self.source_lines.append(thought)
+				self.target_lines.append(thought)
 
 	def build_word_vocab(self):
 		"""Build target vocab"""
@@ -397,7 +379,7 @@ class PretrainData(TranslationData):
 			target_sentences.append(t)
 		
 		source_sentences = source_sentences[:batch_size - 1]
-		target_sentence = target_sentences[len(target_sentences) - 1]
+		target_sentence = target_sentences[len(target_sentences) - 2]
 
 		# Vary target by step
 		# if step % 2 == 0:
