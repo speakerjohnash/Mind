@@ -310,9 +310,10 @@ class TruthModel:
 
 		# Add KL Loss
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
+		average_kl_loss = tf.reduce_mean(kl_loss)
 		cost = tf.reduce_mean(loss + kl_loss, name="cost")
 
-		return cost, kl_loss
+		return cost, average_kl_loss
 
 # Utility Functions and Classes 
 
