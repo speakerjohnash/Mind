@@ -264,13 +264,21 @@ class TruthModel:
 
 		return processed_output
 
+	def kullback_leibler(mu, log_sigma):
+        """(Gaussian) Kullback-Leibler divergence"""
+
+        with tf.name_scope("KL_divergence"):
+        	KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
+            return -0.5 * tf.reduce_sum(KL, 1)
+
 	def sample_gaussian(self, mu, log_sigma):
-        """Draw sample from Gaussian with given shape, subject to random noise epsilon"""
+        """Draw sample from Gaussian with given shape, subject 
+        to random noise epsilon"""
 
         with tf.name_scope("sample_gaussian"):
             epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
             return mu + epsilon * tf.exp(log_sigma) 
-            
+
 	def loss(self, decoder_output, target_sentence):
 		"""Calculate loss between decoder output and target"""
 
