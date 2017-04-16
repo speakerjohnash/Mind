@@ -45,26 +45,6 @@ class TruthModel:
 			# What is this?
 			self.input_mask = tf.constant(input_sentence_mask)
 			self.output_mask = tf.constant(output_sentence_mask)
-
-	def memory_state(self, input_, batch_size):
-		"""Create the memory state and feed encoded thoughts
-		throught it"""
-
-		options = self.options
-
-		# Feed encoded thoughts into memory cell
-		lstm = tf.contrib.rnn.LayerNormBasicLSTMCell(options["sample_size"])
-
-		# Run thoughts through the cell
-		options = {
-			"dtype": tf.float32
-		}
-
-		output, output_state = tf.contrib.rnn.static_rnn(lstm, tf.unstack(input_), **options)
-
-		last_output = tf.gather(output, batch_size - 1)
-
-		return tf.expand_dims(last_output, 0)
 		
 	def build_truth_model(self, sample_size):
 		"""Train the encoder, the decoder, and the memory state"""
@@ -147,6 +127,80 @@ class TruthModel:
 
 		return tensors
 
+	def encoder(self, input_):
+		"""Utility function for constructing the encoder"""
+
+		options = self.options
+		curr_input = input_
+
+		# Connect encoder layers
+		for layer_no, dilation in enumerate(self.options['encoder_dilations']):
+
+			layer_output = self.encode_layer(curr_input, dilation, layer_no)
+
+			# Encode only until the input length, conditioning should be 0 beyond that
+			layer_output = tf.multiply(layer_output, self.source_masked, name = 'layer_{}_output'.format(layer_no))
+
+			curr_input = layer_output
+		
+		# What is this?
+		processed_output = conv1d(
+			tf.nn.relu(layer_output), 
+			options['residual_channels'], 
+			name='encoder_post_processing'
+		)
+
+		# What are these?
+		processed_output = tf.nn.relu(processed_output)
+		processed_output = tf.multiply(processed_output, self.source_masked_d, name='encoder_processed')
+
+		return processed_output
+
+	def memory_state(self, input_, batch_size):
+		"""Create the memory state and feed encoded thoughts
+		throught it"""
+
+		options = self.options
+
+		# Feed encoded thoughts into memory cell
+		lstm = tf.contrib.rnn.LayerNormBasicLSTMCell(options["sample_size"])
+
+		# Run thoughts through the cell
+		options = {
+			"dtype": tf.float32
+		}
+
+		output, output_state = tf.contrib.rnn.static_rnn(lstm, tf.unstack(input_), **options)
+
+		last_output = tf.gather(output, batch_size - 1)
+
+		return tf.expand_dims(last_output, 0)
+
+	def decoder(self, input_, encoder_embedding=None):
+		"""Utility function for constructing the decoder"""
+
+		options = self.options
+		curr_input = input_
+
+		# Condition with encoder embedding for truth model
+		if encoder_embedding != None:
+			curr_input = tf.concat([input_, encoder_embedding], 2)
+			print("Decoder Input", curr_input)
+			
+		for layer_no, dilation in enumerate(options['decoder_dilations']):
+			layer_output = self.decode_layer(curr_input, dilation, layer_no)
+			curr_input = layer_output
+
+		processed_output = conv1d(
+			tf.nn.relu(layer_output), 
+			options['n_target_quant'], 
+			name='decoder_post_processing'
+		)
+
+		# Where is Droppout?
+
+		return processed_output
+
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 		"""Utility function for forming an encode layer"""
 
@@ -207,60 +261,6 @@ class TruthModel:
 
 		# Residual connection
 		return input_ + conv2
-
-	def encoder(self, input_):
-		"""Utility function for constructing the encoder"""
-
-		options = self.options
-		curr_input = input_
-
-		# Connect encoder layers
-		for layer_no, dilation in enumerate(self.options['encoder_dilations']):
-
-			layer_output = self.encode_layer(curr_input, dilation, layer_no)
-
-			# Encode only until the input length, conditioning should be 0 beyond that
-			layer_output = tf.multiply(layer_output, self.source_masked, name = 'layer_{}_output'.format(layer_no))
-
-			curr_input = layer_output
-		
-		# What is this?
-		processed_output = conv1d(
-			tf.nn.relu(layer_output), 
-			options['residual_channels'], 
-			name='encoder_post_processing'
-		)
-
-		# What are these?
-		processed_output = tf.nn.relu(processed_output)
-		processed_output = tf.multiply(processed_output, self.source_masked_d, name='encoder_processed')
-
-		return processed_output
-
-	def decoder(self, input_, encoder_embedding=None):
-		"""Utility function for constructing the decoder"""
-
-		options = self.options
-		curr_input = input_
-
-		# Condition with encoder embedding for truth model
-		if encoder_embedding != None:
-			curr_input = tf.concat([input_, encoder_embedding], 2)
-			print("Decoder Input", curr_input)
-			
-		for layer_no, dilation in enumerate(options['decoder_dilations']):
-			layer_output = self.decode_layer(curr_input, dilation, layer_no)
-			curr_input = layer_output
-
-		processed_output = conv1d(
-			tf.nn.relu(layer_output), 
-			options['n_target_quant'], 
-			name='decoder_post_processing'
-		)
-
-		# Where is Droppout?
-
-		return processed_output
 
 	def kullback_leibler(mu, log_sigma):
 		"""(Gaussian) Kullback-Leibler divergence"""
