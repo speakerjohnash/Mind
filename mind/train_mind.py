@@ -107,7 +107,8 @@ def pretrain_prophet(config):
 				optim, 
 				tensors['loss'], 
 				tensors['prediction'], 
-				tensors['merged_summary']
+				tensors['merged_summary'],
+				tensors['kl_loss']
 			]
 
 			feed_dict = {
@@ -117,14 +118,14 @@ def pretrain_prophet(config):
 
 			# Run Session and Expand Outputs
 			outputs = sess.run(tensors_to_get, feed_dict=feed_dict)
-			_, loss, prediction, summary = outputs
+			_, loss, prediction, summary, kl_loss = outputs
 
 			# Write to Summary
 			train_writer.add_summary(summary, step)
 
 			print("\n")
 
-			print(("Loss", loss, step, len(buckets[key]), i, cnt, key))
+			print(("Loss", loss, kl_loss, step, len(buckets[key]), i, cnt, key))
 			
 			# Print Results to Terminal
 			print("******")

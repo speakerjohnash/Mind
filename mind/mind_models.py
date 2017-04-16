@@ -100,7 +100,7 @@ class TruthModel:
 		# decoder_output = self.decoder(target1_embedding, encoder_output)
 		decoder_output = self.decoder(target1_embedding, tf.expand_dims(z, axis=0))
 
-		loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma)
+		loss, kl_loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma)
 		tf.summary.scalar('loss', loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
@@ -113,6 +113,7 @@ class TruthModel:
 			'source_sentence' : source_sentence,
 			'target_sentence' : target_sentence,
 			'loss' : loss,
+			'kl_loss' : kl_loss,
 			'prediction' : prediction,
 			'variables' : variables,
 			'merged_summary' : merged_summary,
@@ -267,7 +268,8 @@ class TruthModel:
 
 		with tf.name_scope("KL_divergence"):
 			KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
-			return -0.5 * tf.reduce_sum(KL, 1)
+			KL = -0.5 * tf.reduce_sum(KL, 1)
+			return KL
 
 	def sample_gaussian(self, mu, log_sigma):
 		"""Draw sample from Gaussian with given shape, subject 
@@ -310,7 +312,7 @@ class TruthModel:
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
 		cost = tf.reduce_mean(loss + kl_loss, name="cost")
 
-		return cost
+		return cost, kl_loss
 
 # Utility Functions and Classes 
 
