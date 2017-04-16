@@ -59,6 +59,7 @@ class TruthModel:
 		target_size = [1, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
+		kl_weight = tf.placeholder(tf.float32, shape=[], name="kl_weight")
 	
 		slice_sizes = [batch_size - 1, sample_size, options["residual_channels"]]
 		slice_sizes = [int(x) for x in slice_sizes]
@@ -100,7 +101,7 @@ class TruthModel:
 		# decoder_output = self.decoder(target1_embedding, encoder_output)
 		decoder_output = self.decoder(target1_embedding, tf.expand_dims(z, axis=0))
 
-		loss, kl_loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma)
+		loss, kl_loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
@@ -279,7 +280,7 @@ class TruthModel:
 			epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
 			return mu + epsilon * tf.exp(log_sigma) 
 
-	def loss(self, decoder_output, target_sentence, z_mean, z_log_sigma):
+	def loss(self, decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight):
 		"""Calculate loss between decoder output and target"""
 
 		options = self.options
@@ -310,6 +311,7 @@ class TruthModel:
 
 		# Add KL Loss
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
+		kl_loss = tf.multiply(kl_weight, kl_loss)
 		average_kl_loss = tf.reduce_mean(kl_loss)
 		cost = tf.reduce_mean(loss + kl_loss, name="cost")
 

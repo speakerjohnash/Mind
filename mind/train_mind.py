@@ -102,6 +102,8 @@ def pretrain_prophet(config):
 		while (step + 1) < len(buckets[key]):
 
 			source, target = thought_stream.load_batch(step, buckets)
+			kl_weight = i + (step / len(buckets[key]))
+			print("KL Weight: " + str(kl_weight))
 
 			tensors_to_get = [
 				optim, 
@@ -113,7 +115,8 @@ def pretrain_prophet(config):
 
 			feed_dict = {
 				"source_sentence:0" : source,
-				"target_sentence:0" : target
+				"target_sentence:0" : target,
+				"kl_weight:0" : kl_weight,
 			}
 
 			# Run Session and Expand Outputs
