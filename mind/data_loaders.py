@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from mind.tools import load_piped_dataframe, dict_2_json, load_json, load_dict_list
 
-class TranslationData():
+class DataLoader():
 	def __init__(self, bucket_quant, config):
 
 		self.config = config
@@ -230,7 +230,7 @@ class TranslationData():
 
 		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentences, dtype = 'int32')
 
-class PretrainData(TranslationData):
+class PretrainData(DataLoader):
 	def __init__(self, bucket_quant, config):
 
 		self.config = config
