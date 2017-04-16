@@ -109,12 +109,12 @@ class TruthModel:
 		# TODO: Latent Space for VAE
 
 		# Latent distribution parameterized by hidden encoding
-        # z ~ N(z_mean, np.exp(z_log_sigma)**2)
-        # z_mean = dense_layer(encoder_output, "z_mean")
-        # z_log_sigma = dense_layer(encoder_output, "z_log_sigma")
+		# z ~ N(z_mean, np.exp(z_log_sigma)**2)
+		# z_mean = Dense("z_mean", source_size)(encoder_output)
+		# z_log_sigma = Dense("z_log_sigma"), source_size)(encoder_output)
 
-        # Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
-        # z = self.sampleGaussian(z_mean, z_log_sigma)
+		# Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
+		# z = self.sampleGaussian(z_mean, z_log_sigma)
 
 		# Process Thoughts Through Memory State
 		#context_encoded = self.memory_state(encoder_output, batch_size)
@@ -265,19 +265,19 @@ class TruthModel:
 		return processed_output
 
 	def kullback_leibler(mu, log_sigma):
-        """(Gaussian) Kullback-Leibler divergence"""
+		"""(Gaussian) Kullback-Leibler divergence"""
 
-        with tf.name_scope("KL_divergence"):
-        	KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
-            return -0.5 * tf.reduce_sum(KL, 1)
+		with tf.name_scope("KL_divergence"):
+			KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
+			return -0.5 * tf.reduce_sum(KL, 1)
 
 	def sample_gaussian(self, mu, log_sigma):
-        """Draw sample from Gaussian with given shape, subject 
+		"""Draw sample from Gaussian with given shape, subject 
         to random noise epsilon"""
 
-        with tf.name_scope("sample_gaussian"):
-            epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
-            return mu + epsilon * tf.exp(log_sigma) 
+		with tf.name_scope("sample_gaussian"):
+			epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
+			return mu + epsilon * tf.exp(log_sigma) 
 
 	def loss(self, decoder_output, target_sentence):
 		"""Calculate loss between decoder output and target"""
@@ -316,7 +316,41 @@ class TruthModel:
 
 		return loss
 
-# Utility Functions
+# Utility Functions and Classes 
+
+# Fully Connected Layer
+class Dense():
+
+	def __init__(self, scope="dense_layer", size=None, dropout=1., nonlinearity=tf.identity):
+
+		assert size, "Must specify layer size (num nodes)"
+
+		self.scope = scope
+		self.size = size
+		self.dropout = dropout
+		self.nonlinearity = nonlinearity
+
+	def __call__(self, x):
+		with tf.name_scope(self.scope):
+			while True:
+				try: 
+					return self.nonlinearity(tf.matmul(x, self.w) + self.b)
+				except(AttributeError):
+					self.w, self.b = self.wb_vars(x.get_shape()[1].value, self.size)
+					self.w = tf.nn.dropout(self.w, self.dropout)
+
+	@staticmethod
+	def wb_vars(fan_in: int, fan_out: int):
+		"""Helper to initialize weights and biases using
+        Xavier initialization for ReLUs"""
+
+		stddev = tf.cast((2 / fan_in)**0.5, tf.float32)
+
+		initial_w = tf.random_normal([fan_in, fan_out], stddev=stddev)
+		initial_b = tf.zeros([fan_out])
+
+		return (tf.Variable(initial_w, trainable=True, name="weights"),
+				tf.Variable(initial_b, trainable=True, name="biases"))
 
 def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
 	"""Helper function to create and store weights and biases with convolutional layer"""
@@ -363,8 +397,9 @@ def atrous_conv1d(input_, output_channels, rate=1, filter_width=1, stride=[1], s
 	return conv
 
 def dilated_conv1d(input_, output_channels, dilation, filter_width=1, causal=False, name='dilated_conv'):
+	"""Helper function for appling masked convolutions"""
 	
-	# Padding for masked convolutions
+	# Padding for Masked Convolutions
 	if causal:
 		padding = [[0, 0], [int((filter_width - 1) * dilation), 0], [0, 0]]
 		padded = tf.pad(input_, padding)
