@@ -149,6 +149,12 @@ def pretrain_prophet(config):
 
 			step += 1
 
+			if step % 500 == 0:
+				new_thought = sess.run("new_thought:0", feed_dict=feed_dict)
+				print("----------")
+				print(("Generated Thought: ", thought_stream.word_indices_to_string(new_thought[0:int(key)], target_vocab)))
+				print("******")
+
 			if step % 5000 == 0:
 				print("Saving Model")
 				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
