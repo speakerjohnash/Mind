@@ -101,7 +101,7 @@ class TruthModel:
 
 		# Produce Random Thought
 		z_ = tf.expand_dims(z_, axis=0)
-		empty_thought = target1_embedding * 0
+		empty_thought = tf.zeros_like(target1_embedding)
 		random_thought = self.decoder(z_, empty_thought, scope="thought_generator")
 		flat_thought = tf.reshape(random_thought, [-1, options['n_target_quant']])
 		new_thought = tf.argmax(flat_thought, 1, name="new_thought")
