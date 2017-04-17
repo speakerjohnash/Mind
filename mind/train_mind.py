@@ -87,20 +87,7 @@ def pretrain_prophet(config):
 		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 		# Gradient Clipping
-		tvars = tf.trainable_variables()
-		grads_and_vars = adam.compute_gradients(tensors["loss"], tvars)
-		vars_with_grads = []
-
-		for gv in grads_and_vars:
-			if gv[0] is not None:
-				vars_with_grads.append(gv)
-			else:
-				print(gv)
-
-		clipped = [(tf.clip_by_value(grad, -5, 5), tvar) for grad, tvar in vars_with_grads]
-		optim = adam.apply_gradients(clipped, name="minimize_cost")
-
-		# optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
+		optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
 
 		# Initialize Variables and Summary Writer
 		train_writer = tf.summary.FileWriter('logs/', sess.graph)
@@ -133,6 +120,7 @@ def pretrain_prophet(config):
 				"source_sentence:0" : source,
 				"target_sentence:0" : target,
 				"kl_weight:0" : kl_weight,
+				"phase:0" : 1
 			}
 
 			# Run Session and Expand Outputs
@@ -158,7 +146,8 @@ def pretrain_prophet(config):
 			step += 1
 
 			if step > 0 and step % 500 == 0:
-				new_thought = sess.run("new_thought:0", feed_dict=feed_dict)
+				feed_dict["phase:0"] = 0
+				outputs = sess.run("prediction:0", feed_dict=feed_dict)
 				print("----------")
 				print(("Generated Thought: ", thought_stream.word_indices_to_string(new_thought[0:int(key)], target_vocab)))
 				print("******")

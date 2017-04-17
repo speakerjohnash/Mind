@@ -60,6 +60,7 @@ class TruthModel:
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
 		kl_weight = tf.placeholder(tf.float32, shape=[], name="kl_weight")
+		phase = tf.placeholder(tf.bool, name='phase')
 		z_ = tf.placeholder_with_default(tf.random_normal([sample_size, sample_size]), shape=[sample_size, sample_size], name="latent_in")
 
 	
@@ -101,15 +102,12 @@ class TruthModel:
 
 		# Produce Random Thought
 		z_ = tf.expand_dims(z_, axis=0)
-		empty_thought = tf.zeros_like(target1_embedding)
-		random_thought = self.decoder(z_, empty_thought, scope="thought_generator")
-		flat_thought = tf.reshape(random_thought, [-1, options['n_target_quant']])
-		new_thought = tf.argmax(flat_thought, 1, name="new_thought")
+		z = tf.cond(phase, lambda: z, lambda: z_)
 
 		# Decode Thought
-		# decoder_output = self.decoder(target1_embedding, encoder_output)
 		dropout_rate = 0.1 * (1 - kl_weight)
 		dropout_target = tf.nn.dropout(target1_embedding, dropout_rate)
+		dropout_target = tf.cond(phase, lambda: dropout_target, lambda: tf.zeros_like(target1_embedding))
 		decoder_output = self.decoder(tf.expand_dims(z, axis=0), dropout_target)
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma, kl_weight)
@@ -202,30 +200,28 @@ class TruthModel:
 
 		return tf.expand_dims(last_output, 0)
 
-	def decoder(self, input_, encoder_embedding=None, scope="decoder"):
+	def decoder(self, input_, encoder_embedding=None):
 		"""Utility function for constructing the decoder"""
 
-		with tf.variable_scope(scope):
+		options = self.options
+		curr_input = input_
 
-			options = self.options
-			curr_input = input_
+		# Condition with encoder embedding for truth model
+		if encoder_embedding != None:
+			curr_input = tf.concat([input_, encoder_embedding], 2)
+			print("Decoder Input", curr_input)
+			
+		for layer_no, dilation in enumerate(options['decoder_dilations']):
+			layer_output = self.decode_layer(curr_input, dilation, layer_no)
+			curr_input = layer_output
 
-			# Condition with encoder embedding for truth model
-			if encoder_embedding != None:
-				curr_input = tf.concat([input_, encoder_embedding], 2)
-				print("Decoder Input", curr_input)
-				
-			for layer_no, dilation in enumerate(options['decoder_dilations']):
-				layer_output = self.decode_layer(curr_input, dilation, layer_no)
-				curr_input = layer_output
+		processed_output = conv1d(
+			tf.nn.relu(layer_output), 
+			options['n_target_quant'], 
+			name="decoder_post_processing"
+		)
 
-			processed_output = conv1d(
-				tf.nn.relu(layer_output), 
-				options['n_target_quant'], 
-				name="decoder_post_processing"
-			)
-
-			return processed_output
+		return processed_output
 
 	def encode_layer(self, input_, dilation, layer_no, last_layer=False):
 		"""Utility function for forming an encode layer"""
