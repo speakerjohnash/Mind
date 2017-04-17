@@ -88,7 +88,7 @@ def pretrain_prophet(config):
 
 		# Gradient Clipping
 		tvars = tf.trainable_variables()
-		grads_and_vars = adam.compute_gradients(tensors["loss"], tvars)[1:]
+		grads_and_vars = adam.compute_gradients(tensors["loss"], tvars)
 		clipped = [(tf.clip_by_value(grad, -5, 5), tvar) for grad, tvar in grads_and_vars]
 		optim = adam.apply_gradients(clipped, name="minimize_cost")
 

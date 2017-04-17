@@ -107,7 +107,7 @@ class TruthModel:
 
 		# Decode Thought
 		# decoder_output = self.decoder(target1_embedding, encoder_output)
-		decoder_output = self.decoder(tf.expand_dims(z, axis=0))
+		decoder_output = self.decoder(tf.expand_dims(z, axis=0), target1_embedding)
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)
