@@ -60,6 +60,8 @@ class TruthModel:
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
 		kl_weight = tf.placeholder(tf.float32, shape=[], name="kl_weight")
+		z_ = tf.placeholder_with_default(tf.random_normal(source_size), shape=source_size, name="latent_in")
+
 	
 		slice_sizes = [batch_size - 1, sample_size, options["residual_channels"]]
 		slice_sizes = [int(x) for x in slice_sizes]
@@ -98,11 +100,10 @@ class TruthModel:
 		#context_encoded = self.memory_state(encoder_output, batch_size)
 
 		# Produce Random Thought
-		z_ = tf.placeholder_with_default(tf.random_normal([1, sample_size]), shape=[None, sample_size], name="latent_in")
 
 		# Decode Thought
 		# decoder_output = self.decoder(target1_embedding, encoder_output)
-		decoder_output = self.decoder(target1_embedding, tf.expand_dims(z, axis=0))
+		decoder_output = self.decoder(tf.expand_dims(z, axis=0))
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)
@@ -194,7 +195,7 @@ class TruthModel:
 
 		return tf.expand_dims(last_output, 0)
 
-	def decoder(self, input_, encoder_embedding=None):
+	def decoder(self, input_, encoder_embedding=None, name="decoder_post_processing"):
 		"""Utility function for constructing the decoder"""
 
 		options = self.options
@@ -212,7 +213,7 @@ class TruthModel:
 		processed_output = conv1d(
 			tf.nn.relu(layer_output), 
 			options['n_target_quant'], 
-			name='decoder_post_processing'
+			name=name
 		)
 
 		# Where is Droppout?
