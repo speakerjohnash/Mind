@@ -106,8 +106,7 @@ class TruthModel:
 
 		# Decode Thought
 		dropout_rate = 0.1 * (1 - kl_weight)
-		dropout_rate = tf.cond(dropout_rate > 0, lambda: dropout_rate, lambda: 0.00000000000001)
-		dropout_target = tf.nn.dropout(target1_embedding, dropout_rate)
+		dropout_target = tf.cond(dropout_rate > 0, lambda: tf.nn.dropout(target1_embedding, dropout_rate), lambda: tf.zeros_like(target1_embedding))
 		dropout_target = tf.cond(phase, lambda: dropout_target, lambda: tf.zeros_like(target1_embedding))
 		decoder_output = self.decoder(z, dropout_target)
 
