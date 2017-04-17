@@ -85,7 +85,14 @@ def pretrain_prophet(config):
 		lr = config["options"]["learning_rate"]
 		beta1 = config["options"]["adam_momentum"]
 		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
-		optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
+
+		# Gradient Clipping
+		tvars = tf.trainable_variables()
+		grads_and_vars = adam.compute_gradients(tensors["loss"], tvars)[1:]
+		clipped = [(tf.clip_by_value(grad, -5, 5), tvar) for grad, tvar in grads_and_vars]
+		optim = adam.apply_gradients(clipped, name="minimize_cost")
+
+		# optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
 
 		# Initialize Variables and Summary Writer
 		train_writer = tf.summary.FileWriter('logs/', sess.graph)

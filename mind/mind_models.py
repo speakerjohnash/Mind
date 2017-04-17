@@ -100,9 +100,10 @@ class TruthModel:
 		#context_encoded = self.memory_state(encoder_output, batch_size)
 
 		# Produce Random Thought
-		random_thought = self.decoder(z_, name="random_thought")
-		flat_thought = tf.reshape(random_thought, [-1, options['n_target_quant']])
-		new_thought = tf.argmax(flat_thought, 1, name="new_thought")
+		# z_ = tf.expand_dims(z_, axis=0)
+		# random_thought = self.decoder(z_, name="random_thought")
+		# flat_thought = tf.reshape(random_thought, [-1, options['n_target_quant']])
+		# new_thought = tf.argmax(flat_thought, 1, name="new_thought")
 
 		# Decode Thought
 		# decoder_output = self.decoder(target1_embedding, encoder_output)
