@@ -147,7 +147,7 @@ def pretrain_prophet(config):
 
 			if step > 0 and step % 500 == 0:
 				feed_dict["phase:0"] = 0
-				outputs = sess.run("prediction:0", feed_dict=feed_dict)
+				new_thought = sess.run(tensors['prediction'], feed_dict=feed_dict)
 				print("----------")
 				print(("Generated Thought: ", thought_stream.word_indices_to_string(new_thought[0:int(key)], target_vocab)))
 				print("******")
