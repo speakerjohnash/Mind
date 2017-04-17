@@ -97,6 +97,9 @@ class TruthModel:
 		# Process Thoughts Through Memory State
 		#context_encoded = self.memory_state(encoder_output, batch_size)
 
+		# Produce Random Thought
+		z_ = tf.placeholder_with_default(tf.random_normal([1, sample_size]), shape=[None, sample_size], name="latent_in")
+
 		# Decode Thought
 		# decoder_output = self.decoder(target1_embedding, encoder_output)
 		decoder_output = self.decoder(target1_embedding, tf.expand_dims(z, axis=0))
@@ -125,6 +128,19 @@ class TruthModel:
 			'source_gradient' : tf.gradients(loss, [source_embedding]),
 			'target_gradient' : tf.gradients(loss, [target1_embedding]),
 			'probs' : tf.nn.softmax(flat_logits)
+		}
+
+		return tensors
+
+	def build_generator(self):
+		"""Generate random thoughts from the latent space
+		using the decoder"""
+
+		if reuse:
+			tf.get_variable_scope().reuse_variables()
+
+		tensors = {
+
 		}
 
 		return tensors
