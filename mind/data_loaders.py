@@ -16,18 +16,14 @@ class DataLoader():
 	def __init__(self, bucket_quant, config):
 
 		self.config = config
-		self.als = comtrans.aligned_sents('alignment-en-fr.txt')
 
 		# Load Aligned Translation Pairs
 		self.source_lines = []
 		self.target_lines = []
 
-		for al in self.als:
-			self.source_lines.append(' '.join(al.mots))
-			self.target_lines.append(' '.join(al.words))
+		self.load_data(config["options"]["dataset"])
 
 		# Build word vocab
-
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
 
@@ -39,6 +35,31 @@ class DataLoader():
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
+
+	def load_data(self, dataset, sep=","):
+		"""Load training data"""
+
+		df = load_piped_dataframe(dataset, chunksize=1000, sep=sep)
+		thoughts = []
+
+		for chunk in df:
+
+			if len(chunk.columns) == 1:
+				lines = chunk[chunk.columns[0]]
+				text = " ".join(list(lines))
+				thoughts += text.split(".")
+			else: 
+				thoughts += chunk["Thought"]
+
+			# TODO Split sentences longer than sample size into multiple sentences
+
+		for i, thought in enumerate(thoughts):
+			if i + 1 < len(thoughts):
+				thought = thoughts[i][:254]
+				if len(thought) < 50:
+					continue
+				self.source_lines.append(thought)
+				self.target_lines.append(thought)
 
 	def bucket_data(self):
 		"""Bucket Data"""
@@ -127,11 +148,16 @@ class DataLoader():
 		return vocab
 
 	def build_word_vocab(self):
-		"""Build word vocab"""
+		"""Build target vocab"""
 
 		if "resume_model" in self.config and os.path.isfile("models/word_lookup.json"):
-			print("Restoring previous word lookup")
+			print("Loading previous word lookup")
 			return load_json("models/word_lookup.json")
+
+		thoughts = load_dict_list("data/thoughts.csv")
+		corpus = [t["Thought"] for t in thoughts]
+
+		# corpus = self.source_lines + [self.target_lines[-1]]
 
 		tknzr = TweetTokenizer().tokenize
 
@@ -140,10 +166,17 @@ class DataLoader():
 			output = [o for o in output if len(o) > 2]
 			return output
 
-		corpus = self.target_lines
+		third = int(len(corpus) / 3)
+		first_section = corpus[:third]
+		second_section = corpus[third:third+third]
+		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
-		count_vector = vectorizer.fit_transform(corpus).toarray()
+		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
+
+		vectorizer.fit_transform(first_section)
+		vectorizer.fit_transform(second_section)
+		vectorizer.fit_transform(third_section)
+
 		feature_names = list(vectorizer.get_feature_names())
 		feature_names.remove("the")
 		feature_names.remove("and")
@@ -267,100 +300,6 @@ class PretrainData(DataLoader):
 
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
-
-	def load_data(self, dataset):
-		"""Load training data"""
-
-		df = load_piped_dataframe(dataset, chunksize=1000, sep=",")
-		thoughts = []
-
-		for chunk in df:
-
-			if len(chunk.columns) == 1:
-				lines = chunk[chunk.columns[0]]
-				text = " ".join(list(lines))
-				thoughts += text.split(".")
-			else: 
-				thoughts += chunk["Thought"]
-
-			# TODO Split sentences longer than sample size into multiple sentences
-
-		for i, thought in enumerate(thoughts):
-			if i + 1 < len(thoughts):
-				thought = thoughts[i][:254]
-				if len(thought) < 50:
-					continue
-				self.source_lines.append(thought)
-				self.target_lines.append(thought)
-
-	def build_word_vocab(self):
-		"""Build target vocab"""
-
-		if "resume_model" in self.config and os.path.isfile("models/pretrain_word_lookup.json"):
-			print("Loading previous word lookup")
-			return load_json("models/pretrain_word_lookup.json")
-
-		thoughts = load_dict_list("data/thoughts.csv")
-		corpus = [t["Thought"] for t in thoughts]
-
-		# corpus = self.source_lines + [self.target_lines[-1]]
-
-		tknzr = TweetTokenizer().tokenize
-
-		def tokenizer(thought):
-			output = tknzr(thought)
-			output = [o for o in output if len(o) > 2]
-			return output
-
-		third = int(len(corpus) / 3)
-		first_section = corpus[:third]
-		second_section = corpus[third:third+third]
-		third_section = corpus[third+third:]
-
-		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
-
-		vectorizer.fit_transform(first_section)
-		vectorizer.fit_transform(second_section)
-		vectorizer.fit_transform(third_section)
-
-		feature_names = list(vectorizer.get_feature_names())
-		feature_names.remove("the")
-		feature_names.remove("and")
-
-		# Merge word and character vocabs
-		vocab = list(self.target_char_vocab.keys())
-		vocab += feature_names
-		word_count = len(vocab)
-		index_lookup = dict(zip(vocab, range(word_count)))
-
-		dict_2_json(index_lookup, "models/pretrain_word_lookup.json")
-
-		return index_lookup
-
-	def build_char_vocab(self, sentences, name):
-		"""Build source vocab"""
-
-		if "resume_model" in self.config and os.path.isfile("models/" + name + "_pretrain_char_lookup.json"):
-			print("Loading previous character lookup")
-			return load_json("models/" + name + "_pretrain_char_lookup.json")
-
-		vocab = {}
-		ctr = 0
-
-		for st in sentences:
-			for ch in st:
-				if ch not in vocab:
-					vocab[ch] = ctr
-					ctr += 1
-
-		# Add Special Characters
-		vocab['eol'] = ctr
-		vocab['padding'] = ctr + 1
-		vocab['init'] = ctr + 2
-
-		dict_2_json(vocab, "models/" + name + "_pretrain_char_lookup.json")
-
-		return vocab
 
 	def load_batch(self, step, buckets):
 		"""Load a batch of documents"""
