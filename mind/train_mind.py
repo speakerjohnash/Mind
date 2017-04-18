@@ -27,7 +27,7 @@ import numpy as np
 import tensorflow as tf
 
 from mind.mind_models import TruthModel
-from mind.data_loaders import PretrainData
+from mind.data_loaders import DataLoader
 from mind.tools import load_dict_list, load_json, load_piped_dataframe
 
 # Utility
@@ -47,7 +47,7 @@ def pretrain_prophet(config):
 	epochs = config["options"]["max_epochs"]
 
 	# Load Data
-	thought_stream = PretrainData(config["options"]["bucket_quant"], config)
+	thought_stream = DataLoader(config["options"]["bucket_quant"], config)
 	buckets, source_vocab, target_vocab, frequent_keys = thought_stream.bucket_data()
 
 	# Configure Model Options
@@ -101,11 +101,12 @@ def pretrain_prophet(config):
 			saver.restore(sess, last_saved_model_path)
 
 		# Training Step
-		while (step + 1) < len(buckets[key]):
+		while (batch_no + 1) * batch_size < len(buckets[key]):
 
-			source, target = thought_stream.load_batch(step, buckets)
+			source, target = thought_stream.load_batch(buckets[key][batch_no * batch_size : (batch_no + 1) * batch_size])
 
 			# KL annealing
+			step = batch_no * batch_size
 			kl_weight = (step / len(buckets[key]))
 			kl_weight = 1 if i > 1 else kl_weight
 
@@ -144,7 +145,7 @@ def pretrain_prophet(config):
 			print("******")
 			print(("Source ", thought_stream.char_indices_to_string(source[len(source) - 1], source_vocab)))
 			print("---------")
-			print(("Target ", thought_stream.word_indices_to_string(target[0], target_vocab)))
+			print(("Target ", thought_stream.word_indices_to_string(target[len(target) - 1], target_vocab)))
 			print("----------")
 			print(("Prediction ", thought_stream.word_indices_to_string(prediction[0:int(key)], target_vocab)))
 			print("******")

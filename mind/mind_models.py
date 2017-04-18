@@ -55,8 +55,8 @@ class TruthModel:
 		batch_size = options["batch_size"]
 		sample_size = options["sample_size"]
 
-		source_size = [batch_size - 1, options["sample_size"]]
-		target_size = [1, options["sample_size"] + 1]
+		source_size = [batch_size, options["sample_size"]]
+		target_size = [batch_size, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
 		kl_weight = tf.placeholder(tf.float32, shape=[], name="kl_weight")
@@ -64,7 +64,7 @@ class TruthModel:
 		z_ = tf.placeholder_with_default(tf.random_normal([sample_size, sample_size]), shape=[sample_size, sample_size], name="latent_in")
 
 	
-		slice_sizes = [batch_size - 1, sample_size, options["residual_channels"]]
+		slice_sizes = [batch_size , sample_size, options["residual_channels"]]
 		slice_sizes = [int(x) for x in slice_sizes]
 		slice_sizes = tf.constant(slice_sizes, dtype="int32")
 
@@ -131,19 +131,6 @@ class TruthModel:
 			'source_gradient' : tf.gradients(loss, [source_embedding]),
 			'target_gradient' : tf.gradients(loss, [target1_embedding]),
 			'probs' : tf.nn.softmax(flat_logits)
-		}
-
-		return tensors
-
-	def build_generator(self):
-		"""Generate random thoughts from the latent space
-		using the decoder"""
-
-		if reuse:
-			tf.get_variable_scope().reuse_variables()
-
-		tensors = {
-
 		}
 
 		return tensors
