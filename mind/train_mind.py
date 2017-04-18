@@ -48,7 +48,7 @@ def pretrain_prophet(config):
 
 	# Load Data
 	thought_stream = DataLoader(config["options"]["bucket_quant"], config)
-	buckets, source_vocab, target_vocab, frequent_keys = thought_stream.bucket_data()
+	buckets, source_vocab, target_vocab = thought_stream.bucket_data()
 
 	# Configure Model Options
 	model_options = config["prophet"]
