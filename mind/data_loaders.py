@@ -84,8 +84,11 @@ class DataLoader():
 		return buckets, self.source_vocab, self.target_vocab, frequent_keys
 
 	def create_buckets(self, source_lines, target_lines):
-		"""Create Buckets"""
-		
+		"""Create buckets"""
+
+		options = self.options
+		sample_size = options["sample_size"]
+
 		bucket_quant = self.bucket_quant
 		source_vocab = self.source_vocab
 		target_vocab = self.target_vocab
@@ -100,22 +103,19 @@ class DataLoader():
 			sl = len(source_lines[i])
 			tl = len(target_lines[i])
 
-			new_length = max(sl, tl)
-
-			if new_length % bucket_quant > 0:
-				new_length = ((new_length/bucket_quant) + 1 ) * bucket_quant	
+			new_length = sample_size
 			
-			s_padding = np.array( [source_vocab['padding'] for ctr in range(int(sl), int(new_length)) ] )
+			s_padding = np.array([source_vocab['padding'] for ctr in range(int(sl), int(new_length))])
 
 			# Extra Padding for Training
 			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
 			source_lines[i] = np.concatenate([source_lines[i], s_padding])
 			target_lines[i] = np.concatenate([target_lines[i], t_padding])
 
-			if new_length in buckets:
+			if sample_size in buckets:
 				buckets[new_length].append((source_lines[i], target_lines[i]))
 			else:
-				buckets[new_length] = [(source_lines[i], target_lines[i])]
+				buckets[sample_size] = [(source_lines[i], target_lines[i])]
 
 			if i%1000 == 0:
 				print(("Loading", i))
@@ -329,45 +329,6 @@ class PretrainData(DataLoader):
 		#	target_sentence = target_sentences[len(target_sentences) - 2] 
 
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
-
-	def create_buckets(self, source_lines, target_lines):
-		"""Create buckets"""
-
-		options = self.options
-		sample_size = options["sample_size"]
-
-		bucket_quant = self.bucket_quant
-		source_vocab = self.source_vocab
-		target_vocab = self.target_vocab
-
-		buckets = {}
-
-		for i in range(len(source_lines)):
-			
-			source_lines[i] = np.concatenate((source_lines[i], [source_vocab['eol']]))
-			target_lines[i] = np.concatenate(([target_vocab['init']], target_lines[i], [target_vocab['eol']]))
-			
-			sl = len(source_lines[i])
-			tl = len(target_lines[i])
-
-			new_length = sample_size
-			
-			s_padding = np.array([source_vocab['padding'] for ctr in range(int(sl), int(new_length))])
-
-			# Extra Padding for Training
-			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
-			source_lines[i] = np.concatenate([source_lines[i], s_padding])
-			target_lines[i] = np.concatenate([target_lines[i], t_padding])
-
-			if sample_size in buckets:
-				buckets[new_length].append((source_lines[i], target_lines[i]))
-			else:
-				buckets[sample_size] = [(source_lines[i], target_lines[i])]
-
-			if i%1000 == 0:
-				print(("Loading", i))
-			
-		return buckets
 
 	def bucket_data(self):
 		"""Bucket Data"""
