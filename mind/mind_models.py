@@ -100,15 +100,12 @@ class TruthModel:
 		# Process Thoughts Through Memory State
 		#context_encoded = self.memory_state(encoder_output, batch_size)
 
-		# Produce Random Thought
+		# Produce Random Thought or Recreate Input
 		z = tf.cond(phase, lambda: z, lambda: z_)
 		z = tf.expand_dims(z, axis=0)
 
 		# Decode Thought
-		dropout_rate = 0.1 * (1 - kl_weight)
-		dropout_target = tf.cond(dropout_rate > 0, lambda: tf.nn.dropout(target1_embedding, dropout_rate), lambda: tf.zeros_like(target1_embedding))
-		dropout_target = tf.cond(phase, lambda: dropout_target, lambda: tf.zeros_like(target1_embedding))
-		decoder_output = self.decoder(z, dropout_target)
+		decoder_output = self.decoder(z)
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence2, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)

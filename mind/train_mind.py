@@ -104,9 +104,15 @@ def pretrain_prophet(config):
 		while (step + 1) < len(buckets[key]):
 
 			source, target = thought_stream.load_batch(step, buckets)
+
+			# KL annealing
 			kl_weight = (step / len(buckets[key]))
 			kl_weight = 1 if i > 1 else kl_weight
-			print("KL Weight: " + str(kl_weight))
+
+			if "resume_model" in config:
+				kl_weight = 1
+
+			print("\nKL Weight: " + str(kl_weight))
 
 			tensors_to_get = [
 				optim, 
@@ -132,7 +138,7 @@ def pretrain_prophet(config):
 
 			print("\n")
 
-			print(("Loss", loss, kl_loss, step, len(buckets[key]), i, cnt, key))
+			print(("Loss", loss, loss - kl_loss, kl_loss, step, len(buckets[key]), i, cnt, key))
 			
 			# Print Results to Terminal
 			print("******")
