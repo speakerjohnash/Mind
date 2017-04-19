@@ -80,6 +80,9 @@ def pretrain_prophet(config):
 		# Build Model
 		model = TruthModel(model_options)
 		tensors = model.build_truth_model(sample_size=key)
+
+		# Count Model Parameters
+		count_parameters(tensors["variables"])
 		
 		# Build Optimizer
 		lr = config["options"]["learning_rate"]
@@ -170,6 +173,23 @@ def pretrain_prophet(config):
 
 		tf.reset_default_graph()
 		sess.close()
+
+def count_parameters(t_vars):
+	"""Count parameters in trainable variables"""
+
+	total_parameters = 0
+
+	for var in t_vars:
+
+		shape = var.get_shape()
+		variable_parameters = 1
+
+		for dim in shape:
+			variable_parameters *= dim.value
+
+		total_parameters += variable_parameters
+
+	print(total_parameters)
 
 def train_prophet(config):
 	"""Train a truth model"""
