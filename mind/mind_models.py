@@ -277,6 +277,15 @@ class TruthModel:
 		# Residual connection
 		return input_ + conv2
 
+	def xavier_init(fan_in, fan_out, constant=1): 
+		""" Xavier initialization of network weights"""
+
+		low = -constant*np.sqrt(6.0/(fan_in + fan_out)) 
+		high = constant*np.sqrt(6.0/(fan_in + fan_out))
+		initializer = tf.random_uniform((fan_in, fan_out), minval=low, maxval=high, dtype=tf.float32)
+
+		return initializer
+
 	def kullback_leibler(self, mu, log_sigma):
 		"""(Gaussian) Kullback-Leibler divergence"""
 
