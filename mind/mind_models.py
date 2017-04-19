@@ -353,7 +353,7 @@ class Dense():
 			while True:
 				try: 
 					output = self.nonlinearity(tf.matmul(x, self.w) + self.b)
-					return output
+					return tf.contrib.layers.layer_norm(output)
 				except(AttributeError):
 					value = x.get_shape()[1].value
 					self.w, self.b = self.wb_vars(value, self.size)
