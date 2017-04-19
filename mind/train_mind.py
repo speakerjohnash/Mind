@@ -107,6 +107,7 @@ def pretrain_prophet(config):
 
 			# KL annealing
 			kl_weight = (step / len(buckets[key]))
+			kl_weight += 0.05
 			kl_weight = 1 if i > 1 else kl_weight
 
 			if "resume_model" in config:
