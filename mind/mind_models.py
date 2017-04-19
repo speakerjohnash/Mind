@@ -56,7 +56,7 @@ class TruthModel:
 		sample_size = options["sample_size"]
 		latent_dims = options["latent_dims"]
 
-		source_size = [batch_size - 1, options["sample_size"]]
+		source_size = [batch_size, options["sample_size"]]
 		target_size = [1, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
@@ -64,7 +64,7 @@ class TruthModel:
 		phase = tf.placeholder(tf.bool, name='phase')
 		z_ = tf.placeholder_with_default(tf.random_normal([latent_dims, latent_dims]), shape=[latent_dims, latent_dims], name="latent_in")
 
-		slice_sizes = [batch_size - 1, sample_size, options["residual_channels"]]
+		slice_sizes = [batch_size, sample_size, options["residual_channels"]]
 		slice_sizes = [int(x) for x in slice_sizes]
 		slice_sizes = tf.constant(slice_sizes, dtype="int32")
 
@@ -180,7 +180,7 @@ class TruthModel:
 
 		output, output_state = tf.contrib.rnn.static_rnn(lstm, tf.unstack(input_), **options)
 
-		last_output = tf.gather(output, batch_size - 1)
+		last_output = tf.gather(output, batch_size)
 
 		return tf.expand_dims(last_output, 0)
 

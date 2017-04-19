@@ -318,11 +318,8 @@ class PretrainData(DataLoader):
 		for s, t in sentences:
 			source_sentences.append(s)
 			target_sentences.append(t)
-		
-		source_sentences = source_sentences[:batch_size - 1]
-		target_sentence = target_sentences[len(target_sentences) - 2]
 
-		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
+		return np.array(source_sentences, dtype = 'int32'), np.array(target_sentences, dtype = 'int32')
 
 if __name__ == "__main__":
 

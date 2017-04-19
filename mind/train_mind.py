@@ -189,7 +189,7 @@ def count_parameters(t_vars):
 
 		total_parameters += variable_parameters
 
-	print(total_parameters)
+	print("Trainable Parameters: " + str(total_parameters))
 
 def train_prophet(config):
 	"""Train a truth model"""
