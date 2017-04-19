@@ -16,18 +16,15 @@ class DataLoader():
 	def __init__(self, bucket_quant, config):
 
 		self.config = config
-		self.als = comtrans.aligned_sents('alignment-en-fr.txt')
+		self.options = config["prophet"]
 
 		# Load Aligned Translation Pairs
 		self.source_lines = []
 		self.target_lines = []
 
-		for al in self.als:
-			self.source_lines.append(' '.join(al.mots))
-			self.target_lines.append(' '.join(al.words))
+		self.load_data(config["options"]["dataset"])
 
 		# Build word vocab
-
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
 
@@ -40,9 +37,36 @@ class DataLoader():
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
+	def load_data(self, dataset, sep=","):
+		"""Load training data"""
+
+		df = load_piped_dataframe(dataset, chunksize=1000, sep=sep)
+		thoughts = []
+
+		for chunk in df:
+
+			if len(chunk.columns) == 1:
+				lines = chunk[chunk.columns[0]]
+				text = " ".join(list(lines))
+				thoughts += text.split(".")
+			else: 
+				thoughts += chunk["Thought"]
+
+			# TODO Split sentences longer than sample size into multiple sentences
+
+		for i, thought in enumerate(thoughts):
+			if i + 1 < len(thoughts):
+				thought = thoughts[i][:254]
+				if len(thought) < 50:
+					continue
+				self.source_lines.append(thought)
+				self.target_lines.append(thought)
+
 	def bucket_data(self):
 		"""Bucket Data"""
 
+		options = self.options
+		sample_size = options["sample_size"]
 		source_lines = []
 		target_lines = []
 
@@ -52,19 +76,17 @@ class DataLoader():
 
 		buckets = self.create_buckets(source_lines, target_lines)
 
-		frequent_keys = [(-len(buckets[key]), key) for key in buckets]
-		frequent_keys.sort()
+		print(("Source", self.char_indices_to_string(buckets[sample_size][5][0], self.source_vocab)))
+		print(("Target", self.word_indices_to_string(buckets[sample_size][5][1], self.target_vocab)))
 
-		print(("Source", self.char_indices_to_string( buckets[ frequent_keys[3][1] ][5][0], self.source_vocab)))
-		print(("Target", self.word_indices_to_string( buckets[ frequent_keys[3][1] ][5][1], self.target_vocab)))
-		
-		print((len(frequent_keys)))
-
-		return buckets, self.source_vocab, self.target_vocab, frequent_keys
+		return buckets, self.source_vocab, self.target_vocab
 
 	def create_buckets(self, source_lines, target_lines):
-		"""Create Buckets"""
-		
+		"""Create buckets"""
+
+		options = self.options
+		sample_size = options["sample_size"]
+
 		bucket_quant = self.bucket_quant
 		source_vocab = self.source_vocab
 		target_vocab = self.target_vocab
@@ -79,22 +101,19 @@ class DataLoader():
 			sl = len(source_lines[i])
 			tl = len(target_lines[i])
 
-			new_length = max(sl, tl)
-
-			if new_length % bucket_quant > 0:
-				new_length = ((new_length/bucket_quant) + 1 ) * bucket_quant	
+			new_length = sample_size
 			
-			s_padding = np.array( [source_vocab['padding'] for ctr in range(int(sl), int(new_length)) ] )
+			s_padding = np.array([source_vocab['padding'] for ctr in range(int(sl), int(new_length))])
 
 			# Extra Padding for Training
 			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
 			source_lines[i] = np.concatenate([source_lines[i], s_padding])
 			target_lines[i] = np.concatenate([target_lines[i], t_padding])
 
-			if new_length in buckets:
+			if sample_size in buckets:
 				buckets[new_length].append((source_lines[i], target_lines[i]))
 			else:
-				buckets[new_length] = [(source_lines[i], target_lines[i])]
+				buckets[sample_size] = [(source_lines[i], target_lines[i])]
 
 			if i%1000 == 0:
 				print(("Loading", i))
@@ -127,11 +146,16 @@ class DataLoader():
 		return vocab
 
 	def build_word_vocab(self):
-		"""Build word vocab"""
+		"""Build target vocab"""
 
 		if "resume_model" in self.config and os.path.isfile("models/word_lookup.json"):
-			print("Restoring previous word lookup")
+			print("Loading previous word lookup")
 			return load_json("models/word_lookup.json")
+
+		thoughts = load_dict_list("data/thoughts.csv")
+		corpus = [t["Thought"] for t in thoughts]
+
+		# corpus = self.source_lines + [self.target_lines[-1]]
 
 		tknzr = TweetTokenizer().tokenize
 
@@ -140,10 +164,17 @@ class DataLoader():
 			output = [o for o in output if len(o) > 2]
 			return output
 
-		corpus = self.target_lines
+		third = int(len(corpus) / 3)
+		first_section = corpus[:third]
+		second_section = corpus[third:third+third]
+		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=25000, max_df=0.98, tokenizer=tokenizer)
-		count_vector = vectorizer.fit_transform(corpus).toarray()
+		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
+
+		vectorizer.fit_transform(first_section)
+		vectorizer.fit_transform(second_section)
+		vectorizer.fit_transform(third_section)
+
 		feature_names = list(vectorizer.get_feature_names())
 		feature_names.remove("the")
 		feature_names.remove("and")
@@ -268,100 +299,6 @@ class PretrainData(DataLoader):
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
-	def load_data(self, dataset):
-		"""Load training data"""
-
-		df = load_piped_dataframe(dataset, chunksize=1000, sep=",")
-		thoughts = []
-
-		for chunk in df:
-
-			if len(chunk.columns) == 1:
-				lines = chunk[chunk.columns[0]]
-				text = " ".join(list(lines))
-				thoughts += text.split(".")
-			else: 
-				thoughts += chunk["Thought"]
-
-			# TODO Split sentences longer than sample size into multiple sentences
-
-		for i, thought in enumerate(thoughts):
-			if i + 1 < len(thoughts):
-				thought = thoughts[i][:254]
-				if len(thought) < 50:
-					continue
-				self.source_lines.append(thought)
-				self.target_lines.append(thought)
-
-	def build_word_vocab(self):
-		"""Build target vocab"""
-
-		if "resume_model" in self.config and os.path.isfile("models/pretrain_word_lookup.json"):
-			print("Loading previous word lookup")
-			return load_json("models/pretrain_word_lookup.json")
-
-		thoughts = load_dict_list("data/thoughts.csv")
-		corpus = [t["Thought"] for t in thoughts]
-
-		# corpus = self.source_lines + [self.target_lines[-1]]
-
-		tknzr = TweetTokenizer().tokenize
-
-		def tokenizer(thought):
-			output = tknzr(thought)
-			output = [o for o in output if len(o) > 2]
-			return output
-
-		third = int(len(corpus) / 3)
-		first_section = corpus[:third]
-		second_section = corpus[third:third+third]
-		third_section = corpus[third+third:]
-
-		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
-
-		vectorizer.fit_transform(first_section)
-		vectorizer.fit_transform(second_section)
-		vectorizer.fit_transform(third_section)
-
-		feature_names = list(vectorizer.get_feature_names())
-		feature_names.remove("the")
-		feature_names.remove("and")
-
-		# Merge word and character vocabs
-		vocab = list(self.target_char_vocab.keys())
-		vocab += feature_names
-		word_count = len(vocab)
-		index_lookup = dict(zip(vocab, range(word_count)))
-
-		dict_2_json(index_lookup, "models/pretrain_word_lookup.json")
-
-		return index_lookup
-
-	def build_char_vocab(self, sentences, name):
-		"""Build source vocab"""
-
-		if "resume_model" in self.config and os.path.isfile("models/" + name + "_pretrain_char_lookup.json"):
-			print("Loading previous character lookup")
-			return load_json("models/" + name + "_pretrain_char_lookup.json")
-
-		vocab = {}
-		ctr = 0
-
-		for st in sentences:
-			for ch in st:
-				if ch not in vocab:
-					vocab[ch] = ctr
-					ctr += 1
-
-		# Add Special Characters
-		vocab['eol'] = ctr
-		vocab['padding'] = ctr + 1
-		vocab['init'] = ctr + 2
-
-		dict_2_json(vocab, "models/" + name + "_pretrain_char_lookup.json")
-
-		return vocab
-
 	def load_batch(self, step, buckets):
 		"""Load a batch of documents"""
 
@@ -381,78 +318,7 @@ class PretrainData(DataLoader):
 		source_sentences = source_sentences[:batch_size - 1]
 		target_sentence = target_sentences[len(target_sentences) - 2]
 
-		# Vary target by step
-		# if step % 2 == 0:
-			# Predict Next Thought
-		#	target_sentence = target_sentences[len(target_sentences) - 1]
-		#else:
-			# Recall Last Thought
-		#	target_sentence = target_sentences[len(target_sentences) - 2] 
-
 		return np.array(source_sentences, dtype = 'int32'), np.array([target_sentence], dtype = 'int32')
-
-	def create_buckets(self, source_lines, target_lines):
-		"""Create buckets"""
-
-		options = self.options
-		sample_size = options["sample_size"]
-
-		bucket_quant = self.bucket_quant
-		source_vocab = self.source_vocab
-		target_vocab = self.target_vocab
-
-		buckets = {}
-
-		for i in range(len(source_lines)):
-			
-			source_lines[i] = np.concatenate((source_lines[i], [source_vocab['eol']]))
-			target_lines[i] = np.concatenate(([target_vocab['init']], target_lines[i], [target_vocab['eol']]))
-			
-			sl = len(source_lines[i])
-			tl = len(target_lines[i])
-
-			new_length = sample_size
-			
-			s_padding = np.array([source_vocab['padding'] for ctr in range(int(sl), int(new_length))])
-
-			# Extra Padding for Training
-			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
-			source_lines[i] = np.concatenate([source_lines[i], s_padding])
-			target_lines[i] = np.concatenate([target_lines[i], t_padding])
-
-			if sample_size in buckets:
-				buckets[new_length].append((source_lines[i], target_lines[i]))
-			else:
-				buckets[sample_size] = [(source_lines[i], target_lines[i])]
-
-			if i%1000 == 0:
-				print(("Loading", i))
-			
-		return buckets
-
-	def bucket_data(self):
-		"""Bucket Data"""
-
-		options = self.options
-		sample_size = options["sample_size"]
-		source_lines = []
-		target_lines = []
-
-		for i in range(len(self.source_lines)):
-			source_lines.append(self.string_to_char_indices(self.source_lines[i], self.source_vocab))
-			target_lines.append(self.string_to_word_indices(self.target_lines[i], self.target_vocab))
-
-		buckets = self.create_buckets(source_lines, target_lines)
-
-		frequent_keys = [(-len(buckets[key]), key) for key in buckets]
-		frequent_keys.sort()
-
-		print(("Source", self.char_indices_to_string(buckets[sample_size][5][0], self.source_vocab)))
-		print(("Target", self.word_indices_to_string(buckets[sample_size][5][1], self.target_vocab)))
-		
-		print((len(frequent_keys)))
-
-		return buckets, self.source_vocab, self.target_vocab, frequent_keys
 
 if __name__ == "__main__":
 
