@@ -74,7 +74,7 @@ def pretrain_prophet(config):
 
 		sess = tf.InteractiveSession()
 
-		step = 0
+		batch_no = 0
 		batch_size = model_options["batch_size"]
 
 		# Build Model
@@ -104,13 +104,13 @@ def pretrain_prophet(config):
 			saver.restore(sess, last_saved_model_path)
 
 		# Training Step
-		while (step + 1) < len(buckets[key]):
+		while (batch_no + 1) * batch_size < len(buckets[key]):
 
-			source, target = thought_stream.load_batch(step, buckets)
+			source, target = thought_stream.load_batch(batch_no, buckets)
 
 			# KL annealing
+			step = (batch_no * batch_size) / len(buckets[key])
 			kl_weight = (step / len(buckets[key]))
-			kl_weight += 0.05
 			kl_weight = 1 if i > 1 else kl_weight
 
 			if "resume_model" in config:
@@ -153,7 +153,7 @@ def pretrain_prophet(config):
 			print(("Prediction ", thought_stream.word_indices_to_string(prediction[0:int(key)], target_vocab)))
 			print("******")
 
-			step += 1
+			batch_no += 1
 
 			if step > 0 and step % 500 == 0:
 				feed_dict["phase:0"] = 0

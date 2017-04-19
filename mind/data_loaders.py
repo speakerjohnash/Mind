@@ -6,6 +6,8 @@ from itertools import groupby
 
 import numpy as np
 
+import random
+
 from nltk.corpus import comtrans
 from nltk.tokenize import TweetTokenizer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -290,6 +292,10 @@ class PretrainData(DataLoader):
 					continue
 				self.source_lines.append(thought)
 				self.target_lines.append(thought)
+
+		# Shuffle
+		random.shuffle(self.source_lines)
+		self.target_lines = self.source_lines
 
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
