@@ -55,15 +55,16 @@ class TruthModel:
 		batch_size = options["batch_size"]
 		sample_size = options["sample_size"]
 
-		source_size = [batch_size, options["sample_size"]]
-		target_size = [batch_size, options["sample_size"] + 1]
+		source_size = [batch_size - 1, options["sample_size"]]
+		target_size = [1, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
 		kl_weight = tf.placeholder(tf.float32, shape=[], name="kl_weight")
 		phase = tf.placeholder(tf.bool, name='phase')
-		z_ = tf.placeholder_with_default(tf.random_normal([batch_size, sample_size, sample_size]), shape=[batch_size, sample_size, sample_size], name="latent_in")
+		z_ = tf.placeholder_with_default(tf.random_normal([sample_size, sample_size]), shape=[sample_size, sample_size], name="latent_in")
 
-		slice_sizes = [batch_size , sample_size, options["residual_channels"]]
+	
+		slice_sizes = [batch_size - 1, sample_size, options["residual_channels"]]
 		slice_sizes = [int(x) for x in slice_sizes]
 		slice_sizes = tf.constant(slice_sizes, dtype="int32")
 
@@ -75,7 +76,7 @@ class TruthModel:
 		source_embedding = tf.multiply(source_embedding, self.source_masked, name = "source_embedding")
 
 		# Decoder Input
-		sample_slice_size = [batch_size, int(options["sample_size"])]
+		sample_slice_size = [1, int(options["sample_size"])]
 		sample_slice_size = tf.constant(sample_slice_size, dtype="int32")
 		target_sentence1 = tf.slice(target_sentence, [0,0], sample_slice_size, name="target_sentence1")
 		target1_embedding = tf.nn.embedding_lookup(self.w_target_embedding, target_sentence1, name="target1_embedding")
@@ -86,16 +87,12 @@ class TruthModel:
 		# Mask loss beyond the target length
 		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence2, name = "target_masked")
 
-		print(source_embedding)
-
 		# Encode Context
 		encoder_output = self.encoder(source_embedding)
 
-		print(encoder_output)
-
 		# Latent distribution parameterized by hidden encoding
-		z_mean = Dense("z_mean", sample_size)(encoder_output)
-		z_log_sigma = Dense("z_log_sigma", sample_size)(encoder_output)
+		z_mean = Dense("z_mean", sample_size)(tf.squeeze(encoder_output))
+		z_log_sigma = Dense("z_log_sigma", sample_size)(tf.squeeze(encoder_output))
 
 		# Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
 		z = self.sample_gaussian(z_mean, z_log_sigma)
@@ -134,6 +131,19 @@ class TruthModel:
 			'source_gradient' : tf.gradients(loss, [source_embedding]),
 			'target_gradient' : tf.gradients(loss, [target1_embedding]),
 			'probs' : tf.nn.softmax(flat_logits)
+		}
+
+		return tensors
+
+	def build_generator(self):
+		"""Generate random thoughts from the latent space
+		using the decoder"""
+
+		if reuse:
+			tf.get_variable_scope().reuse_variables()
+
+		tensors = {
+
 		}
 
 		return tensors
