@@ -104,7 +104,9 @@ class TruthModel:
 		z = tf.cond(phase, lambda: z, lambda: z_)
 
 		# Decode Thought
-		decoder_output = self.decoder(z)
+		print(z)
+		print(encoder_output)
+		decoder_output = self.decoder(encoder_output)
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)
@@ -217,8 +219,9 @@ class TruthModel:
 		latent_dims = options["latent_dims"]
 		sample_size = options["sample_size"]
 		reshape_dims = [batch_size, sample_size, int(latent_dims / sample_size)]
+		curr_input = input_
 
-		curr_input = tf.reshape(input_, reshape_dims)
+		# curr_input = tf.reshape(input_, reshape_dims)
 			
 		for layer_no, dilation in enumerate(options['decoder_dilations']):
 			layer_output = self.decode_layer(curr_input, dilation, layer_no)
@@ -272,8 +275,8 @@ class TruthModel:
 		in_dim = input_.get_shape().as_list()[-1]
 
 		# Reduce dimension
-		normed = tf.contrib.layers.layer_norm(input_)
-		relu1 = tf.nn.relu(normed, name = 'dec_relu1_layer{}'.format(layer_no))
+		# normed = tf.contrib.layers.layer_norm(input_)
+		relu1 = tf.nn.relu(input_, name = 'dec_relu1_layer{}'.format(layer_no))
 		conv1 = conv1d(relu1, int(in_dim / 2), name = 'dec_conv1d_1_layer{}'.format(layer_no))
 
 		# Masked 1 x k dilated convolution

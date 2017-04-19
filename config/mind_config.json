@@ -30,9 +30,9 @@
 			1, 2, 4, 8, 16,
 			1, 2, 4, 8, 16
 		],
-		"residual_channels": 64,
+		"residual_channels": 128,
 		"memory_state": 256,
-		"latent_dims": 1024
+		"latent_dims": 512
 	},
 	"options": {
 		"model_type": "predictor",
