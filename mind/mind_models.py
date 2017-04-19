@@ -138,6 +138,22 @@ class TruthModel:
 
 		options = self.options
 		latent_dims = options["latent_dims"]
+		input_shape = options["residual_channels"] * options["sample_size"]
+
+		# input_ = tf.contrib.layers.layer_norm(input_)
+		# input_ = tf.squeeze(input_)
+
+		# Weights
+		mean_w = tf.Variable(self.xavier_init(input_shape, latent_dims))
+		log_sigma_w =  tf.Variable(self.xavier_init(input_shape, latent_dims))
+
+		# Biasess
+		mean_b = tf.Variable(tf.zeros([latent_dims], dtype=tf.float32))
+		log_sigma_b = tf.Variable(tf.zeros([latent_dims], dtype=tf.float32))
+
+		# Transform Encoder Output to Distribution
+		# z_mean = tf.add(tf.matmul(input_, mean_w), mean_b)
+		# z_log_sigma = tf.add(tf.matmul(input_, log_sigma_w), log_sigma_b)
 
 		z_mean = Dense("z_mean", latent_dims)(tf.squeeze(input_))
 		z_log_sigma = Dense("z_log_sigma", latent_dims)(tf.squeeze(input_))
@@ -277,7 +293,7 @@ class TruthModel:
 		# Residual connection
 		return input_ + conv2
 
-	def xavier_init(fan_in, fan_out, constant=1): 
+	def xavier_init(self, fan_in, fan_out, constant=1): 
 		""" Xavier initialization of network weights"""
 
 		low = -constant*np.sqrt(6.0/(fan_in + fan_out)) 
@@ -339,9 +355,6 @@ class TruthModel:
 
 		return cost, average_kl_loss
 
-# Utility Functions and Classes 
-
-# Fully Connected Layer
 class Dense():
 
 	def __init__(self, scope="dense_layer", size=None, dropout=1., nonlinearity=tf.identity):
@@ -377,6 +390,8 @@ class Dense():
 
 		return (tf.Variable(initial_w, trainable=True, name="weights"),
 				tf.Variable(initial_b, trainable=True, name="biases"))
+
+# Utility Functions and Classes 
 
 def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name='conv1d'):
 	"""Helper function to create and store weights and biases with convolutional layer"""
