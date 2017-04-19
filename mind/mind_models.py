@@ -84,7 +84,7 @@ class TruthModel:
 		target_sentence = tf.slice(target_sentence, [0,1], sample_slice_size, name="target_sentence")
 
 		# Mask loss beyond the target length
-		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence, name = "target_masked")
+		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence, name="target_masked")
 
 		# Encode Context
 		encoder_output = self.encoder(source_embedding)
@@ -94,6 +94,7 @@ class TruthModel:
 
 		# Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
 		z = self.sample_gaussian(z_mean, z_log_sigma)
+		z = tf.expand_dims(z, axis=0)
 
 		# Process Thoughts Through Memory State
 		#context_encoded = self.memory_state(encoder_output, batch_size)
@@ -136,10 +137,10 @@ class TruthModel:
 		"""Latent Space"""
 
 		options = self.options
-		sample_size = options["sample_size"]
+		latent_dims = options["latent_dims"]
 
-		z_mean = Dense("z_mean", sample_size)(encoder_output)
-		z_log_sigma = Dense("z_log_sigma", sample_size)(encoder_output)
+		z_mean = Dense("z_mean", latent_dims)(tf.squeeze(input_))
+		z_log_sigma = Dense("z_log_sigma", latent_dims)(tf.squeeze(input_))
 
 		return z_mean, z_log_sigma
 
