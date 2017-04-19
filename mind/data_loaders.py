@@ -252,6 +252,10 @@ class DataLoader():
 	def load_batch(self, pair_list):
 		"""Load batch"""
 
+		options = self.options
+		sample_size = options["sample_size"]
+		batch_size = options["batch_size"]
+
 		source_sentences = []
 		target_sentences = []
 

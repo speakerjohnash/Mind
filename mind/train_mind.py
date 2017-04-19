@@ -86,7 +86,7 @@ def pretrain_prophet(config):
 		beta1 = config["options"]["adam_momentum"]
 		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
-		# Gradient Clipping
+		# Optimize
 		optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
 
 		# Initialize Variables and Summary Writer
