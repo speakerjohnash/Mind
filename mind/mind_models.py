@@ -63,7 +63,9 @@ class TruthModel:
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
 		kl_weight = tf.placeholder(tf.float32, shape=[], name="kl_weight")
 		phase = tf.placeholder(tf.bool, name='phase')
-		z_ = tf.placeholder_with_default(tf.random_normal([1, latent_dims, latent_dims]), shape=[1, latent_dims, latent_dims], name="latent_in")
+
+		z_shape = [batch_size, latent_dims]
+		z_ = tf.placeholder_with_default(tf.random_normal(z_shape), shape=z_shape, name="latent_in")
 
 		slice_sizes = [batch_size, sample_size, residual_channels]
 		slice_sizes = [int(x) for x in slice_sizes]
@@ -77,7 +79,7 @@ class TruthModel:
 		source_embedding = tf.multiply(source_embedding, self.source_masked, name = "source_embedding")
 
 		# Decoder Input
-		sample_slice_size = [1, int(options["sample_size"])]
+		sample_slice_size = [batch_size, int(options["sample_size"])]
 		sample_slice_size = tf.constant(sample_slice_size, dtype="int32")
 
 		# Decoder Output
@@ -94,15 +96,12 @@ class TruthModel:
 
 		# Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
 		z = self.sample_gaussian(z_mean, z_log_sigma)
-		z = tf.expand_dims(z, axis=0)
 
 		# Process Thoughts Through Memory State
 		#context_encoded = self.memory_state(encoder_output, batch_size)
 
 		# Produce Random Thought or Recreate Input
 		z = tf.cond(phase, lambda: z, lambda: z_)
-		
-		print(z)
 
 		# Decode Thought
 		decoder_output = self.decoder(z)
@@ -140,8 +139,9 @@ class TruthModel:
 		latent_dims = options["latent_dims"]
 		input_shape = options["residual_channels"] * options["sample_size"]
 
+		input_ = tf.contrib.layers.flatten(input_)
+
 		# input_ = tf.contrib.layers.layer_norm(input_)
-		# input_ = tf.squeeze(input_)
 
 		# Weights
 		mean_w = tf.Variable(self.xavier_init(input_shape, latent_dims))
@@ -155,8 +155,8 @@ class TruthModel:
 		# z_mean = tf.add(tf.matmul(input_, mean_w), mean_b)
 		# z_log_sigma = tf.add(tf.matmul(input_, log_sigma_w), log_sigma_b)
 
-		z_mean = Dense("z_mean", latent_dims)(tf.squeeze(input_))
-		z_log_sigma = Dense("z_log_sigma", latent_dims)(tf.squeeze(input_))
+		z_mean = Dense("z_mean", latent_dims)(input_)
+		z_log_sigma = Dense("z_log_sigma", latent_dims)(input_)
 
 		return z_mean, z_log_sigma
 
@@ -209,16 +209,16 @@ class TruthModel:
 
 		return tf.expand_dims(last_output, 0)
 
-	def decoder(self, input_, encoder_embedding=None):
+	def decoder(self, input_):
 		"""Utility function for constructing the decoder"""
 
 		options = self.options
-		curr_input = input_
+		batch_size = options["batch_size"]
+		latent_dims = options["latent_dims"]
+		sample_size = options["sample_size"]
+		reshape_dims = [batch_size, sample_size, int(latent_dims / sample_size)]
 
-		# Condition with encoder embedding for truth model
-		if encoder_embedding != None:
-			curr_input = tf.concat([input_, encoder_embedding], 2)
-			print("Decoder Input", curr_input)
+		curr_input = tf.reshape(input_, reshape_dims)
 			
 		for layer_no, dilation in enumerate(options['decoder_dilations']):
 			layer_output = self.decode_layer(curr_input, dilation, layer_no)
@@ -274,13 +274,13 @@ class TruthModel:
 		# Reduce dimension
 		normed = tf.contrib.layers.layer_norm(input_)
 		relu1 = tf.nn.relu(normed, name = 'dec_relu1_layer{}'.format(layer_no))
-		conv1 = conv1d(relu1, in_dim / 2, name = 'dec_conv1d_1_layer{}'.format(layer_no))
+		conv1 = conv1d(relu1, int(in_dim / 2), name = 'dec_conv1d_1_layer{}'.format(layer_no))
 
 		# Masked 1 x k dilated convolution
 		relu2 = tf.nn.relu(conv1, name = 'enc_relu2_layer{}'.format(layer_no))
 		dilated_conv = dilated_conv1d(
 			relu2,
-			output_channels = in_dim / 2,
+			output_channels = int(in_dim / 2),
 			dilation        = dilation,
 			filter_width    = options['decoder_filter_width'],
 			causal          = True,
@@ -318,13 +318,13 @@ class TruthModel:
 			epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
 			return mu + epsilon * tf.exp(log_sigma) 
 
-	def loss(self, decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight):
+	def loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
 		"""Calculate loss between decoder output and target"""
 
 		options = self.options
 
 		target_one_hot = tf.one_hot(
-			target_sentence, 
+			target_sentences, 
 			depth=options['n_target_quant'], 
 			dtype=tf.float32
 		)
@@ -401,6 +401,7 @@ def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name=
 		input_shape = input_.get_shape()
 		input_channels = input_shape[-1]
 		shape = [filter_width, input_channels, output_channels]
+
 		weight_init = tf.truncated_normal_initializer(stddev=stddev)
 		bias_init = tf.constant_initializer(0.0)
 
