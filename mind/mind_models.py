@@ -55,16 +55,17 @@ class TruthModel:
 		batch_size = options["batch_size"]
 		sample_size = options["sample_size"]
 		latent_dims = options["latent_dims"]
+		residual_channels = options["residual_channels"]
 
 		source_size = [batch_size, options["sample_size"]]
-		target_size = [1, options["sample_size"] + 1]
+		target_size = [batch_size, options["sample_size"] + 1]
 		source_sentence = tf.placeholder("int32", source_size, name="source_sentence")
 		target_sentence = tf.placeholder("int32", target_size, name="target_sentence")
 		kl_weight = tf.placeholder(tf.float32, shape=[], name="kl_weight")
 		phase = tf.placeholder(tf.bool, name='phase')
-		z_ = tf.placeholder_with_default(tf.random_normal([latent_dims, latent_dims]), shape=[latent_dims, latent_dims], name="latent_in")
+		z_ = tf.placeholder_with_default(tf.random_normal([1, latent_dims, latent_dims]), shape=[1, latent_dims, latent_dims], name="latent_in")
 
-		slice_sizes = [batch_size, sample_size, options["residual_channels"]]
+		slice_sizes = [batch_size, sample_size, residual_channels]
 		slice_sizes = [int(x) for x in slice_sizes]
 		slice_sizes = tf.constant(slice_sizes, dtype="int32")
 
@@ -88,11 +89,8 @@ class TruthModel:
 		# Encode Context
 		encoder_output = self.encoder(source_embedding)
 
-		print(encoder_output)
-
 		# Latent distribution parameterized by hidden encoding
-		z_mean = Dense("z_mean", sample_size)(tf.squeeze(encoder_output))
-		z_log_sigma = Dense("z_log_sigma", sample_size)(tf.squeeze(encoder_output))
+		z_mean, z_log_sigma = self.latent_space(encoder_output)
 
 		# Kingma & Welling: only 1 draw necessary as long as minibatch large enough (>100)
 		z = self.sample_gaussian(z_mean, z_log_sigma)
@@ -102,8 +100,7 @@ class TruthModel:
 
 		# Produce Random Thought or Recreate Input
 		z = tf.cond(phase, lambda: z, lambda: z_)
-		z = tf.expand_dims(z, axis=0)
-
+		
 		print(z)
 
 		# Decode Thought
@@ -134,6 +131,17 @@ class TruthModel:
 		}
 
 		return tensors
+
+	def latent_space(self, input_):
+		"""Latent Space"""
+
+		options = self.options
+		sample_size = options["sample_size"]
+
+		z_mean = Dense("z_mean", sample_size)(encoder_output)
+		z_log_sigma = Dense("z_log_sigma", sample_size)(encoder_output)
+
+		return z_mean, z_log_sigma
 
 	def encoder(self, input_):
 		"""Utility function for constructing the encoder"""
