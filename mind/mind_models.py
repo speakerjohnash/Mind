@@ -355,10 +355,10 @@ class Dense():
 		with tf.name_scope(self.scope):
 			while True:
 				try:
+					#x = tf.contrib.layers.layer_norm(x)
 					output = self.nonlinearity(tf.matmul(x, self.w) + self.b)
 					return output
 				except(AttributeError):
-					# x = tf.contrib.layers.layer_norm(x)
 					value = x.get_shape()[1].value
 					self.w, self.b = self.wb_vars(value, self.size)
 					self.w = tf.nn.dropout(self.w, self.dropout)
