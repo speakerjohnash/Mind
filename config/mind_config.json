@@ -16,8 +16,8 @@
 		"n_source_quant": 256
 	},
 	"prophet": {
-		"batch_size": 10,
-		"sample_size": 256,
+		"batch_size": 25,
+		"sample_size": 128,
 		"decoder_filter_width": 3,
 		"encoder_filter_width" : 3,
 		"encoder_dilations": [
@@ -30,9 +30,9 @@
 			1, 2, 4, 8, 16,
 			1, 2, 4, 8, 16
 		],
-		"residual_channels": 64,
+		"residual_channels": 32,
 		"memory_state": 256,
-		"latent_dims": 256
+		"latent_dims": 1024
 	},
 	"options": {
 		"model_type": "predictor",

@@ -25,7 +25,7 @@ class TruthModel:
 		source_initializer = tf.truncated_normal_initializer(stddev=0.02)
 		target_initializer = tf.truncated_normal_initializer(stddev=0.02)
 		source_embedding_shape = [options['n_source_quant'], 2 * options['residual_channels']]
-		target_embedding_shape = [options['n_target_quant'], options['residual_channels']]
+		target_embedding_shape = [options['n_target_quant'], 4]
 		
 		self.w_target_embedding = tf.get_variable('w_target_embedding', target_embedding_shape, initializer=target_initializer)
 		self.w_source_embedding = tf.get_variable('w_source_embedding', source_embedding_shape, initializer=source_initializer)
@@ -106,8 +106,8 @@ class TruthModel:
 		z = tf.cond(phase, lambda: z, lambda: z_)
 
 		# Decode Thought
-		decoder_output = self.decoder(encoder_output)
-
+		z = tf.reshape(z, [batch_size, sample_size, int(latent_dims / sample_size)])
+		decoder_output = self.decoder(z)
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)
@@ -144,8 +144,8 @@ class TruthModel:
 
 		input_ = tf.contrib.layers.flatten(input_)
 
-		z_mean = Dense("z_mean", 1)(input_)
-		z_log_sigma = Dense("z_log_sigma", 1)(input_)
+		z_mean = Dense("z_mean", latent_dims)(input_)
+		z_log_sigma = Dense("z_log_sigma", latent_dims)(input_)
 
 		return z_mean, z_log_sigma
 
