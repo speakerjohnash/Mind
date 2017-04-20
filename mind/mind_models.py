@@ -109,7 +109,7 @@ class TruthModel:
 		# Decode Thought
 		decoder_output = self.decoder(z)
 
-		loss, kl_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
+		total_loss, kl_loss, loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
@@ -121,7 +121,8 @@ class TruthModel:
 		tensors = {
 			'source_sentence' : source_sentence,
 			'target_sentence' : target_sentence,
-			'loss' : loss,
+			'total_loss' : total_loss,
+			'r_loss' : loss,
 			'kl_loss' : kl_loss,
 			'prediction' : prediction,
 			'variables' : variables,
@@ -289,7 +290,7 @@ class TruthModel:
 		with tf.name_scope("KL_divergence"):
 			KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
 			KL = -0.5 * tf.reduce_sum(KL, 1)
-			KL = tf.clip_by_value(KL, -10, 10)
+			KL = tf.clip_by_value(KL, -5, 5)
 			return KL
 
 	def sample_gaussian(self, mu, log_sigma):
@@ -333,9 +334,9 @@ class TruthModel:
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
 		kl_loss = tf.multiply(kl_weight, kl_loss)
 		average_kl_loss = tf.reduce_mean(kl_loss)
-		cost = tf.reduce_mean([loss, average_kl_loss], name="cost")
+		total_loss = tf.reduce_mean([loss, average_kl_loss], name="cost")
 
-		return cost, average_kl_loss
+		return total_loss, kl_loss, loss
 
 class Dense():
 

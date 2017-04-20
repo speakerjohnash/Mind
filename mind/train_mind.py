@@ -98,7 +98,7 @@ def pretrain_prophet(config):
 			(tf.clip_by_norm(grad, 5.0), var)
 			if grad is not None else (grad, var)
 			for grad, var in grad_vars]
-			
+
 		optim = adam.apply_gradients(grad_vars)
 
 		# optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
@@ -121,7 +121,8 @@ def pretrain_prophet(config):
 
 			# KL annealing
 			step = batch_no * batch_size
-			kl_weight = global_step / len(buckets[key]) * 25
+			kl_weight = global_step / len(buckets[key]) 
+			kl_weight = 1 if kl_weight > 1 else kl_weight
 			
 			if "resume_model" in config:
 				kl_weight = 1
@@ -130,10 +131,11 @@ def pretrain_prophet(config):
 
 			tensors_to_get = [
 				optim, 
-				tensors['loss'], 
+				tensors['total_loss'], 
 				tensors['prediction'], 
 				tensors['merged_summary'],
-				tensors['kl_loss']
+				tensors['kl_loss'],
+				tensors['r_loss']
 			]
 
 			feed_dict = {
@@ -145,14 +147,14 @@ def pretrain_prophet(config):
 
 			# Run Session and Expand Outputs
 			outputs = sess.run(tensors_to_get, feed_dict=feed_dict)
-			_, loss, prediction, summary, kl_loss = outputs
+			_, total_loss, prediction, summary, kl_loss, r_loss = outputs
 
 			# Write to Summary
 			train_writer.add_summary(summary, step)
 
 			print("\n")
 
-			print(("Loss", loss, loss - kl_loss, kl_loss, step, len(buckets[key]), i, cnt, key))
+			print(("Loss", loss, r_loss, kl_loss, step, len(buckets[key]), i, cnt, key))
 			
 			# Print Results to Terminal
 			print("******")
