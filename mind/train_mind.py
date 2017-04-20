@@ -147,9 +147,9 @@ def pretrain_prophet(config):
 			
 			# Print Results to Terminal
 			print("******")
-			print(("Source ", thought_stream.char_indices_to_string(source[len(source) - 1], source_vocab)))
+			print(("Source ", thought_stream.char_indices_to_string(source[0], source_vocab)))
 			print("---------")
-			print(("Target ", thought_stream.word_indices_to_string(target[len(target) - 1], target_vocab)))
+			print(("Target ", thought_stream.word_indices_to_string(target[0], target_vocab)))
 			print("----------")
 			print(("Prediction ", thought_stream.word_indices_to_string(prediction[0:int(key)], target_vocab)))
 			print("******")
