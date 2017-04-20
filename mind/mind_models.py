@@ -328,7 +328,7 @@ class TruthModel:
 		if 'target_mask_chars' in options:
 			target_masked = tf.reshape(self.target_masked, [-1])
 			r_loss = tf.multiply(loss, target_masked, name='masked_loss')
-			r_loss = tf.div(tf.reduce_sum(loss), tf.reduce_sum(target_masked), name="Reduced_mean_loss")
+			r_loss = tf.div(tf.reduce_sum(r_loss), tf.reduce_sum(target_masked), name="Reduced_mean_loss")
 		else:
 			r_loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
@@ -336,7 +336,7 @@ class TruthModel:
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
 		kl_loss = tf.multiply(kl_weight, kl_loss)
 		average_kl_loss = tf.reduce_mean(kl_loss)
-		total_loss = tf.reduce_mean([r_loss, average_kl_loss], name="cost")
+		total_loss = tf.reduce_sum([r_loss, average_kl_loss], name="cost")
 
 		return total_loss, average_kl_loss, r_loss
 
