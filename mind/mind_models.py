@@ -292,7 +292,7 @@ class TruthModel:
 		with tf.name_scope("KL_divergence"):
 			KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
 			KL = -0.5 * tf.reduce_sum(KL, 1)
-			KL = tf.clip_by_value(KL, -5, 5)
+			# KL = tf.clip_by_value(KL, -5, 5)
 			return KL
 
 	def sample_gaussian(self, mu, log_sigma):
