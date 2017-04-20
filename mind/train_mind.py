@@ -62,6 +62,8 @@ def pretrain_prophet(config):
 	if "resume_model" in config:
 		last_saved_model_path = config["resume_model"]
 
+	global_step = 0
+
 	# Train Model
 	for i in range(1, epochs):
 
@@ -110,11 +112,8 @@ def pretrain_prophet(config):
 
 			# KL annealing
 			step = batch_no * batch_size
-			kl_weight = (step / len(buckets[key]))
-			# kl_weight = 1 if i > 1 else kl_weight
-			kl_weight = 0 if i < 2 else kl_weight
-			kl_weight = 1 if i > 2 else kl_weight
-
+			kl_weight = global_step / 100000000
+			
 			if "resume_model" in config:
 				kl_weight = 1
 
@@ -156,6 +155,7 @@ def pretrain_prophet(config):
 			print("******")
 
 			batch_no += 1
+			global_step += 1
 
 			if step > 0 and step % 500 == 0:
 				feed_dict["phase:0"] = 0
