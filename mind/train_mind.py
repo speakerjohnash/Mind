@@ -166,7 +166,7 @@ def pretrain_prophet(config):
 			print("******")
 
 			batch_no += 1
-			global_step += 1
+			global_step += batch_size
 
 			if step > 0 and step % 500 == 0:
 				feed_dict["phase:0"] = 0
