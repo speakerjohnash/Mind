@@ -120,8 +120,8 @@ def pretrain_prophet(config):
 			source, target = thought_stream.load_batch(batch_no, buckets)
 
 			# KL annealing
-			step = batch_no * batch_size
-			kl_weight = global_step / len(buckets[key])
+			step = batch_no * batch_size 
+			kl_weight = global_step / (len(buckets[key]) * 9)
 			kl_weight = 1 if kl_weight > 1 else kl_weight
 			
 			if "resume_model" in config:
