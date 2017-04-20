@@ -25,7 +25,7 @@ class TruthModel:
 		source_initializer = tf.truncated_normal_initializer(stddev=0.02)
 		target_initializer = tf.truncated_normal_initializer(stddev=0.02)
 		source_embedding_shape = [options['n_source_quant'], 2 * options['residual_channels']]
-		target_embedding_shape = [options['n_target_quant'], 4]
+		target_embedding_shape = [options['n_target_quant'], options['residual_channels']]
 		
 		self.w_target_embedding = tf.get_variable('w_target_embedding', target_embedding_shape, initializer=target_initializer)
 		self.w_source_embedding = tf.get_variable('w_source_embedding', source_embedding_shape, initializer=source_initializer)
@@ -104,9 +104,12 @@ class TruthModel:
 
 		# Produce Random Thought or Recreate Input
 		z = tf.cond(phase, lambda: z, lambda: z_)
+		z = tf.reshape(z, [batch_size, sample_size, int(latent_dims / sample_size)])
+
+		print(z)
+		print(encoder_output)
 
 		# Decode Thought
-		z = tf.reshape(z, [batch_size, sample_size, int(latent_dims / sample_size)])
 		decoder_output = self.decoder(z)
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
