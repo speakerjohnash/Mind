@@ -106,9 +106,6 @@ class TruthModel:
 		z = tf.cond(phase, lambda: z, lambda: z_)
 		z = tf.reshape(z, [batch_size, sample_size, int(latent_dims / sample_size)])
 
-		print(z)
-		print(encoder_output)
-
 		# Decode Thought
 		decoder_output = self.decoder(z)
 
@@ -367,7 +364,7 @@ class Dense():
 					output = self.nonlinearity(tf.matmul(x, self.w) + self.b)
 					return output
 				except(AttributeError):
-					x = tf.contrib.layers.layer_norm(x)
+					# x = tf.contrib.layers.layer_norm(x)
 					value = x.get_shape()[1].value
 					self.w, self.b = self.wb_vars(value, self.size)
 					self.w = tf.nn.dropout(self.w, self.dropout)
