@@ -91,7 +91,8 @@ class TruthModel:
 		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence, name="target_masked")
 
 		# Encode Context
-		encoder_output = self.encoder(source_embedding)
+		source_dropout = tf.nn.dropout(source_embedding, 0.5)
+		encoder_output = self.encoder(source_dropout)
 
 		# Latent distribution parameterized by hidden encoding
 		z_mean, z_log_sigma = self.latent_space(encoder_output)
@@ -324,6 +325,10 @@ class TruthModel:
 			name='decoder_cross_entropy_loss'
 		)
 
+		# Add KL Loss
+		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
+		kl_loss = tf.multiply(kl_weight, kl_loss)
+
 		# Mask loss beyond EOL in target
 		if 'target_mask_chars' in options:
 			target_masked = tf.reshape(self.target_masked, [-1])
@@ -332,11 +337,9 @@ class TruthModel:
 		else:
 			r_loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
-		# Add KL Loss
-		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
-		kl_loss = tf.multiply(kl_weight, kl_loss)
 		average_kl_loss = tf.reduce_mean(kl_loss)
-		total_loss = tf.reduce_sum([r_loss, average_kl_loss], name="cost")
+		r_loss_col = tf.fill(tf.shape(kl_loss), r_loss)
+		total_loss = tf.reduce_mean(r_loss_col + kl_loss, name="cost")
 
 		return total_loss, average_kl_loss, r_loss
 
