@@ -112,7 +112,7 @@ def pretrain_prophet(config):
 
 			# KL annealing
 			step = batch_no * batch_size
-			kl_weight = global_step / 100000000
+			kl_weight = global_step / len(buckets[key]) * 5
 			
 			if "resume_model" in config:
 				kl_weight = 1
@@ -149,7 +149,7 @@ def pretrain_prophet(config):
 			print("******")
 			print(("Source ", thought_stream.char_indices_to_string(source[len(source) - 1], source_vocab)))
 			print("---------")
-			print(("Target ", thought_stream.word_indices_to_string(target[0], target_vocab)))
+			print(("Target ", thought_stream.word_indices_to_string(target[len(target) - 1], target_vocab)))
 			print("----------")
 			print(("Prediction ", thought_stream.word_indices_to_string(prediction[0:int(key)], target_vocab)))
 			print("******")
