@@ -92,7 +92,16 @@ def pretrain_prophet(config):
 		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 		# Optimize
-		optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
+		grad_vars = adam.compute_gradients(tensors["loss"])
+
+		grad_vars = [
+			(tf.clip_by_norm(grad, 5.0), var)
+			if grad is not None else (grad, var)
+			for grad, var in grad_vars]
+			
+		optim = adam.apply_gradients(grad_vars)
+
+		# optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
 
 		# Initialize Variables and Summary Writer
 		train_writer = tf.summary.FileWriter('logs/', sess.graph)
