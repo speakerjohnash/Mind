@@ -112,7 +112,7 @@ def pretrain_prophet(config):
 
 			# KL annealing
 			step = batch_no * batch_size
-			kl_weight = global_step / len(buckets[key]) * 10
+			kl_weight = global_step / len(buckets[key]) * 25
 			
 			if "resume_model" in config:
 				kl_weight = 1

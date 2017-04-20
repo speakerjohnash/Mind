@@ -333,7 +333,7 @@ class TruthModel:
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
 		kl_loss = tf.multiply(kl_weight, kl_loss)
 		average_kl_loss = tf.reduce_mean(kl_loss)
-		cost = tf.reduce_mean(loss + kl_loss, name="cost")
+		cost = tf.reduce_mean([loss, average_kl_loss], name="cost")
 
 		return cost, average_kl_loss
 
