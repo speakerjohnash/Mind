@@ -92,7 +92,7 @@ def pretrain_prophet(config):
 		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 		# Optimize
-		grad_vars = adam.compute_gradients(tensors["loss"])
+		grad_vars = adam.compute_gradients(tensors["total_loss"])
 
 		grad_vars = [
 			(tf.clip_by_norm(grad, 5.0), var)
@@ -154,7 +154,7 @@ def pretrain_prophet(config):
 
 			print("\n")
 
-			print(("Loss", loss, r_loss, kl_loss, step, len(buckets[key]), i, cnt, key))
+			print(("Loss", total_loss, r_loss, kl_loss, step, len(buckets[key]), i, cnt, key))
 			
 			# Print Results to Terminal
 			print("******")
