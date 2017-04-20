@@ -1,3 +1,5 @@
+import sys
+
 import tensorflow as tf
 import numpy as np
 
@@ -104,9 +106,8 @@ class TruthModel:
 		z = tf.cond(phase, lambda: z, lambda: z_)
 
 		# Decode Thought
-		print(z)
-		print(encoder_output)
 		decoder_output = self.decoder(encoder_output)
+
 
 		loss, kl_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', loss)
@@ -138,27 +139,13 @@ class TruthModel:
 		"""Latent Space"""
 
 		options = self.options
-		latent_dims = options["latent_dims"]
 		input_shape = options["residual_channels"] * options["sample_size"]
+		latent_dims = options["latent_dims"]
 
 		input_ = tf.contrib.layers.flatten(input_)
 
-		# input_ = tf.contrib.layers.layer_norm(input_)
-
-		# Weights
-		mean_w = tf.Variable(self.xavier_init(input_shape, latent_dims))
-		log_sigma_w =  tf.Variable(self.xavier_init(input_shape, latent_dims))
-
-		# Biasess
-		mean_b = tf.Variable(tf.zeros([latent_dims], dtype=tf.float32))
-		log_sigma_b = tf.Variable(tf.zeros([latent_dims], dtype=tf.float32))
-
-		# Transform Encoder Output to Distribution
-		# z_mean = tf.add(tf.matmul(input_, mean_w), mean_b)
-		# z_log_sigma = tf.add(tf.matmul(input_, log_sigma_w), log_sigma_b)
-
-		z_mean = Dense("z_mean", latent_dims)(input_)
-		z_log_sigma = Dense("z_log_sigma", latent_dims)(input_)
+		z_mean = Dense("z_mean", 1)(input_)
+		z_log_sigma = Dense("z_log_sigma", 1)(input_)
 
 		return z_mean, z_log_sigma
 
@@ -275,15 +262,15 @@ class TruthModel:
 		in_dim = input_.get_shape().as_list()[-1]
 
 		# Reduce dimension
-		# normed = tf.contrib.layers.layer_norm(input_)
+		normed = tf.contrib.layers.layer_norm(input_)
 		relu1 = tf.nn.relu(input_, name = 'dec_relu1_layer{}'.format(layer_no))
-		conv1 = conv1d(relu1, int(in_dim / 2), name = 'dec_conv1d_1_layer{}'.format(layer_no))
+		conv1 = conv1d(relu1, in_dim, name = 'dec_conv1d_1_layer{}'.format(layer_no))
 
 		# Masked 1 x k dilated convolution
 		relu2 = tf.nn.relu(conv1, name = 'enc_relu2_layer{}'.format(layer_no))
 		dilated_conv = dilated_conv1d(
 			relu2,
-			output_channels = int(in_dim / 2),
+			output_channels = in_dim,
 			dilation        = dilation,
 			filter_width    = options['decoder_filter_width'],
 			causal          = True,
