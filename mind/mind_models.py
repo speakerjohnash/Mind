@@ -22,8 +22,8 @@ class TruthModel:
 
 		self.options = options
 
-		source_initializer = tf.truncated_normal_initializer(stddev=0.02)
-		target_initializer = tf.truncated_normal_initializer(stddev=0.02)
+		source_initializer = tf.contrib.layers.xavier_initializer(uniform=False)
+		target_initializer = tf.contrib.layers.xavier_initializer(uniform=False)
 		source_embedding_shape = [options['n_source_quant'], 2 * options['residual_channels']]
 		target_embedding_shape = [options['n_target_quant'], options['residual_channels']]
 		
@@ -283,22 +283,13 @@ class TruthModel:
 		# Residual connection
 		return input_ + conv2
 
-	def xavier_init(self, fan_in, fan_out, constant=1): 
-		""" Xavier initialization of network weights"""
-
-		low = -constant*np.sqrt(6.0/(fan_in + fan_out)) 
-		high = constant*np.sqrt(6.0/(fan_in + fan_out))
-		initializer = tf.random_uniform((fan_in, fan_out), minval=low, maxval=high, dtype=tf.float32)
-
-		return initializer
-
 	def kullback_leibler(self, mu, log_sigma):
 		"""(Gaussian) Kullback-Leibler divergence"""
 
 		with tf.name_scope("KL_divergence"):
 			KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
 			KL = -0.5 * tf.reduce_sum(KL, 1)
-			KL = tf.clip_by_value(KL, -5, 5)
+			KL = tf.clip_by_value(KL, -10, 10)
 			return KL
 
 	def sample_gaussian(self, mu, log_sigma):
@@ -393,7 +384,7 @@ def conv1d(input_, output_channels, filter_width=1, stride=1, stddev=0.02, name=
 		input_channels = input_shape[-1]
 		shape = [filter_width, input_channels, output_channels]
 
-		weight_init = tf.truncated_normal_initializer(stddev=stddev)
+		weight_init = tf.contrib.layers.xavier_initializer(uniform=False)
 		bias_init = tf.constant_initializer(0.0)
 
 		filter_ = tf.get_variable('w', shape, initializer=weight_init)
@@ -411,7 +402,7 @@ def atrous_conv1d(input_, output_channels, rate=1, filter_width=1, stride=[1], s
 		input_shape = input_.get_shape()
 		input_channels = input_shape[-1]
 		shape = [filter_width, input_channels, output_channels]
-		weight_init = tf.truncated_normal_initializer(stddev=stddev)
+		weight_init = tf.contrib.layers.xavier_initializer(uniform=False)
 		bias_init = tf.constant_initializer(0.0)
 
 		filter_ = tf.get_variable('w', shape, initializer=weight_init)

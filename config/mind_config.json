@@ -32,7 +32,7 @@
 		],
 		"residual_channels": 32,
 		"memory_state": 256,
-		"latent_dims": 4096
+		"latent_dims": 6144
 	},
 	"options": {
 		"model_type": "predictor",
