@@ -109,8 +109,10 @@ class TruthModel:
 		# Decode Thought
 		decoder_output = self.decoder(z)
 
-		total_loss, kl_loss, loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
-		tf.summary.scalar('loss', loss)
+		total_loss, kl_loss, r_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
+		tf.summary.scalar('loss', total_loss)
+		tf.summary.scalar('kl_loss', kl_loss)
+		tf.summary.scalar('r_loss', r_loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
 		prediction = tf.argmax(flat_logits, 1)
@@ -122,7 +124,7 @@ class TruthModel:
 			'source_sentence' : source_sentence,
 			'target_sentence' : target_sentence,
 			'total_loss' : total_loss,
-			'r_loss' : loss,
+			'r_loss' : r_loss,
 			'kl_loss' : kl_loss,
 			'prediction' : prediction,
 			'variables' : variables,
@@ -325,18 +327,18 @@ class TruthModel:
 		# Mask loss beyond EOL in target
 		if 'target_mask_chars' in options:
 			target_masked = tf.reshape(self.target_masked, [-1])
-			loss = tf.multiply(loss, target_masked, name='masked_loss')
-			loss = tf.div(tf.reduce_sum(loss), tf.reduce_sum(target_masked), name="Reduced_mean_loss")
+			r_loss = tf.multiply(loss, target_masked, name='masked_loss')
+			r_loss = tf.div(tf.reduce_sum(loss), tf.reduce_sum(target_masked), name="Reduced_mean_loss")
 		else:
-			loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
+			r_loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
 
 		# Add KL Loss
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
 		kl_loss = tf.multiply(kl_weight, kl_loss)
 		average_kl_loss = tf.reduce_mean(kl_loss)
-		total_loss = tf.reduce_mean([loss, average_kl_loss], name="cost")
+		total_loss = tf.reduce_mean([r_loss, average_kl_loss], name="cost")
 
-		return total_loss, kl_loss, loss
+		return total_loss, average_kl_loss, r_loss
 
 class Dense():
 
