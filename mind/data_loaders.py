@@ -171,7 +171,7 @@ class DataLoader():
 		second_section = corpus[third:third+third]
 		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=5000, tokenizer=tokenizer)
+		vectorizer = CountVectorizer(max_features=1000, tokenizer=tokenizer)
 
 		vectorizer.fit_transform(first_section)
 		vectorizer.fit_transform(second_section)

@@ -94,14 +94,14 @@ def pretrain_prophet(config):
 		# Optimize
 		grad_vars = adam.compute_gradients(tensors["total_loss"])
 
+		# Clip and Visualize Gradients
 		grad_vars = [
 			(tf.clip_by_norm(grad, 5.0), var)
 			if grad is not None else (grad, var)
 			for grad, var in grad_vars]
 
+		# Apply Gradients
 		optim = adam.apply_gradients(grad_vars)
-
-		# optim = adam.minimize(tensors["loss"], var_list=tensors["variables"])
 
 		# Initialize Variables and Summary Writer
 		train_writer = tf.summary.FileWriter('logs/', sess.graph)
@@ -121,11 +121,11 @@ def pretrain_prophet(config):
 
 			# KL annealing
 			step = batch_no * batch_size 
-			kl_weight = global_step / (len(buckets[key]) * 63)
+			kl_weight = global_step / (len(buckets[key]) * 10)
 			kl_weight = 1 if kl_weight > 1 else kl_weight
 
-			#if "resume_model" in config:
-			#	kl_weight = 1
+			if "resume_model" in config:
+				kl_weight = 1
 
 			print("\nKL Weight: " + str(kl_weight))
 
@@ -179,6 +179,11 @@ def pretrain_prophet(config):
 				print("Saving Model")
 				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
 				last_saved_model_path = "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt)
+
+				# Summarize all Gradients
+				for grad, var in grad_vars:
+					if grad is not None and var is not None:
+						tf.summary.histogram('logs/' + var.name + '/gradient', grad)
 
 		# Save Checkpoint
 		save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))

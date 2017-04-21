@@ -91,7 +91,7 @@ class TruthModel:
 		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence, name="target_masked")
 
 		# Encode Context
-		source_dropout = tf.nn.dropout(source_embedding, 0.8)
+		source_dropout = tf.nn.dropout(source_embedding, 1)
 		encoder_output = self.encoder(source_dropout)
 
 		# Latent distribution parameterized by hidden encoding
@@ -106,6 +106,8 @@ class TruthModel:
 		# Produce Random Thought or Recreate Input
 		z = tf.cond(phase, lambda: z, lambda: z_)
 		z = tf.reshape(z, [batch_size, sample_size, int(latent_dims / sample_size)])
+
+		tf.summary.histogram("latent_representation", z)
 
 		# Decode Thought
 		decoder_output = self.decoder(z)
@@ -212,8 +214,6 @@ class TruthModel:
 		reshape_dims = [batch_size, sample_size, int(latent_dims / sample_size)]
 		curr_input = input_
 
-		# curr_input = tf.reshape(input_, reshape_dims)
-			
 		for layer_no, dilation in enumerate(options['decoder_dilations']):
 			layer_output = self.decode_layer(curr_input, dilation, layer_no)
 			curr_input = layer_output
@@ -223,6 +223,8 @@ class TruthModel:
 			options['n_target_quant'], 
 			name="decoder_post_processing"
 		)
+
+		tf.summary.histogram("final_conv", processed_output)
 
 		return processed_output
 
@@ -293,6 +295,7 @@ class TruthModel:
 		with tf.name_scope("KL_divergence"):
 			KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
 			KL = -0.5 * tf.reduce_sum(KL, 1)
+			tf.summary.histogram("KL", KL)
 			# KL = tf.clip_by_value(KL, -5, 5)
 			return KL
 
