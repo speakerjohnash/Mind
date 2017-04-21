@@ -40,6 +40,6 @@
 		"learning_rate": 0.001,
 		"adam_momentum": 0.5,
 		"bucket_quant": 32,
-		"dataset": "data/wiki_04.txt"
+		"dataset": "data/wiki_02.txt"
 	}
 }
