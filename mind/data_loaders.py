@@ -59,7 +59,7 @@ class DataLoader():
 		for i, thought in enumerate(thoughts):
 			if i + 1 < len(thoughts):
 				thought = thoughts[i][:254]
-				if len(thought) < 50:
+				if len(thought) < 35:
 					continue
 				self.source_lines.append(thought)
 				self.target_lines.append(thought)
@@ -171,7 +171,7 @@ class DataLoader():
 		second_section = corpus[third:third+third]
 		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=1000, tokenizer=tokenizer)
+		vectorizer = CountVectorizer(max_features=5000, tokenizer=tokenizer)
 
 		vectorizer.fit_transform(first_section)
 		vectorizer.fit_transform(second_section)
