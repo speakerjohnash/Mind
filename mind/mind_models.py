@@ -234,8 +234,8 @@ class TruthModel:
 		options = self.options
 
 		# Reduce Dimension
-		#normed = tf.contrib.layers.layer_norm(input_)
-		relu1 = tf.nn.relu(input_, name='enc_relu1_layer{}'.format(layer_no))
+		normed = tf.contrib.layers.layer_norm(input_)
+		relu1 = tf.nn.relu(normed, name='enc_relu1_layer{}'.format(layer_no))
 		conv1 = conv1d(relu1, options['residual_channels'], name = 'enc_conv1d_1_layer{}'.format(layer_no))
 
 		# What is this?
@@ -296,7 +296,6 @@ class TruthModel:
 			KL = 1 + 2 * log_sigma - mu**2 - tf.exp(2 * log_sigma)
 			KL = -0.5 * tf.reduce_sum(KL, 1)
 			tf.summary.histogram("KL", KL)
-			# KL = tf.clip_by_value(KL, -5, 5)
 			return KL
 
 	def sample_gaussian(self, mu, log_sigma):
@@ -334,8 +333,49 @@ class TruthModel:
 			masked_target = tf.squeeze(self.target_masked, 2)
 			r_loss = tf.multiply(loss, masked_target, name='masked_loss')
 			r_loss = tf.reduce_sum(r_loss, 1)
-			m_loss = tf.reduce_sum(masked_target, 1)
-			r_loss = tf.div(r_loss, m_loss, name="Reduced_mean_loss")
+		else:
+			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
+
+		average_kl_loss = tf.reduce_mean(kl_loss)
+		average_r_loss = tf.reduce_mean(r_loss)
+		total_loss = tf.reduce_mean(r_loss + kl_loss, name="cost")
+
+		return total_loss, average_kl_loss, average_r_loss
+
+	def masked_loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
+		"""Calculate loss between decoder output and target"""
+
+		options = self.options
+
+		target_one_hot = tf.one_hot(
+			target_sentences, 
+			depth=options['n_target_quant'], 
+			dtype=tf.float32
+		)
+
+		# Calculate Loss
+		loss = tf.nn.softmax_cross_entropy_with_logits(
+			logits=decoder_output,
+			labels=target_one_hot, 
+			name='decoder_cross_entropy_loss'
+		)
+
+		# Add KL Loss
+		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
+
+		# Mask KL Loss
+		masked_target = tf.squeeze(self.target_masked, 2)
+		target_lengths = tf.reduce_sum(masked_target, 1)
+		full_target = tf.reduce_sum(tf.ones(tf.shape(masked_target)), 1)
+		kl_multiplier = tf.div(target_lengths, full_target)
+		kl_loss = tf.multiply(kl_multiplier, kl_loss)
+		kl_loss = tf.multiply(kl_weight, kl_loss)
+
+		# Mask loss beyond EOL in target
+		if 'target_mask_chars' in options:
+			r_loss = tf.multiply(loss, masked_target, name='masked_loss')
+			r_loss = tf.reduce_sum(r_loss, 1)
+			r_loss = tf.div(r_loss, target_lengths, name="Reduced_mean_loss")
 		else:
 			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
 
