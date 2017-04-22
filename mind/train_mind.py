@@ -114,20 +114,14 @@ def pretrain_prophet(config):
 			print("Restoring Model")
 			saver.restore(sess, last_saved_model_path)
 
+		kl_weight = 0
+		kl_step = 1 / 250000
+
 		# Training Step
 		while (batch_no + 1) * batch_size < len(buckets[key]):
 
-			source, target = thought_stream.load_batch(batch_no, buckets)
-
-			# KL annealing
 			step = batch_no * batch_size 
-			kl_weight = global_step / 1250000
-			kl_weight = 1 if kl_weight > 1 else kl_weight
-
-			if "resume_model" in config:
-				kl_weight = 1
-
-			print("\nKL Weight: " + str(kl_weight))
+			source, target = thought_stream.load_batch(batch_no, buckets)
 
 			tensors_to_get = [
 				optim, 
@@ -135,7 +129,8 @@ def pretrain_prophet(config):
 				tensors['prediction'], 
 				tensors['merged_summary'],
 				tensors['kl_loss'],
-				tensors['r_loss']
+				tensors['r_loss'],
+				tensors['real_kl_loss']
 			]
 
 			feed_dict = {
@@ -147,14 +142,14 @@ def pretrain_prophet(config):
 
 			# Run Session and Expand Outputs
 			outputs = sess.run(tensors_to_get, feed_dict=feed_dict)
-			_, total_loss, prediction, summary, kl_loss, r_loss = outputs
+			_, total_loss, prediction, summary, kl_loss, r_loss, real_kl_loss = outputs
 
 			# Write to Summary
 			train_writer.add_summary(summary, step)
 
 			print("\n")
 
-			print(("Loss", total_loss, r_loss, kl_loss, step, len(buckets[key]), i, cnt, key))
+			print(("Loss", total_loss, r_loss, kl_loss, real_kl_loss, step, len(buckets[key]), i, cnt, key))
 			
 			# Print Results to Terminal
 			print("******")
@@ -167,6 +162,20 @@ def pretrain_prophet(config):
 
 			batch_no += 1
 			global_step += batch_size
+
+			# KL annealing
+			if real_kl_loss > r_loss:
+				kl_weight += kl_step
+			else:
+				kl_weight -= kl_step
+
+			kl_weight = 0 if kl_weight < 0 else kl_weight
+			kl_weight = 1 if kl_weight > 1 else kl_weight
+
+			if "resume_model" in config:
+				kl_weight = 1
+
+			print("\nKL Weight: " + str(kl_weight))
 
 			if step > 0 and step % 500 == 0:
 				feed_dict["phase:0"] = 0

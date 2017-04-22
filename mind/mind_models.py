@@ -91,7 +91,7 @@ class TruthModel:
 		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence, name="target_masked")
 
 		# Encode Context
-		source_dropout = tf.nn.dropout(source_embedding, 1)
+		source_dropout = tf.nn.dropout(source_embedding, 0.5)
 		encoder_output = self.encoder(source_dropout)
 
 		# Latent distribution parameterized by hidden encoding
@@ -112,10 +112,11 @@ class TruthModel:
 		# Decode Thought
 		decoder_output = self.decoder(z)
 
-		total_loss, kl_loss, r_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
+		total_loss, kl_loss, r_loss, real_kl_loss = self.loss(decoder_output, target_sentence, z_mean, z_log_sigma, kl_weight)
 		tf.summary.scalar('loss', total_loss)
 		tf.summary.scalar('kl_loss', kl_loss)
 		tf.summary.scalar('r_loss', r_loss)
+		tf.summary.scalar('real_kl_loss', r_loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
 		prediction = tf.argmax(flat_logits, 1)
@@ -129,6 +130,7 @@ class TruthModel:
 			'total_loss' : total_loss,
 			'r_loss' : r_loss,
 			'kl_loss' : kl_loss,
+			'real_kl_loss': real_kl_loss,
 			'prediction' : prediction,
 			'variables' : variables,
 			'merged_summary' : merged_summary,
@@ -326,7 +328,6 @@ class TruthModel:
 
 		# Add KL Loss
 		kl_loss = self.kullback_leibler(z_mean, z_log_sigma)
-		kl_loss = tf.multiply(kl_weight, kl_loss)
 
 		# Mask loss beyond EOL in target
 		if 'target_mask_chars' in options:
@@ -337,10 +338,12 @@ class TruthModel:
 			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
 
 		average_kl_loss = tf.reduce_mean(kl_loss)
+		kl_loss = tf.multiply(kl_weight, kl_loss)
+		weighted_kl_loss = tf.reduce_mean(kl_loss)
 		average_r_loss = tf.reduce_mean(r_loss)
 		total_loss = tf.reduce_mean(r_loss + kl_loss, name="cost")
 
-		return total_loss, average_kl_loss, average_r_loss
+		return total_loss, weighted_kl_loss, average_r_loss, average_kl_loss
 
 	def masked_loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
 		"""Calculate loss between decoder output and target"""
