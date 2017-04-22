@@ -234,7 +234,7 @@ class TruthModel:
 		options = self.options
 
 		# Reduce Dimension
-		normed = tf.contrib.layers.layer_norm(input_)
+		#normed = tf.contrib.layers.layer_norm(input_)
 		relu1 = tf.nn.relu(input_, name='enc_relu1_layer{}'.format(layer_no))
 		conv1 = conv1d(relu1, options['residual_channels'], name = 'enc_conv1d_1_layer{}'.format(layer_no))
 
@@ -335,6 +335,8 @@ class TruthModel:
 			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
 		else:
 			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
+
+		# TODO/ Divide out loss from masked characters
 
 		average_kl_loss = tf.reduce_mean(kl_loss)
 		average_r_loss = tf.reduce_mean(r_loss)
