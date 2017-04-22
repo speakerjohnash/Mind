@@ -183,7 +183,7 @@ def pretrain_prophet(config):
 				# Summarize all Gradients
 				for grad, var in grad_vars:
 					if grad is not None and var is not None:
-						tf.summary.histogram('logs/' + var.name + '/gradient', grad)
+						tf.summary.histogram('logs/' + var.name.replace(':', '_') + '/gradient', grad)
 
 		# Save Checkpoint
 		save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))

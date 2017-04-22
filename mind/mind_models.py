@@ -235,7 +235,7 @@ class TruthModel:
 
 		# Reduce Dimension
 		normed = tf.contrib.layers.layer_norm(input_)
-		relu1 = tf.nn.relu(normed, name='enc_relu1_layer{}'.format(layer_no))
+		relu1 = tf.nn.relu(input_, name='enc_relu1_layer{}'.format(layer_no))
 		conv1 = conv1d(relu1, options['residual_channels'], name = 'enc_conv1d_1_layer{}'.format(layer_no))
 
 		# What is this?
@@ -318,13 +318,10 @@ class TruthModel:
 			dtype=tf.float32
 		)
 
-		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
-		flat_targets = tf.reshape(target_one_hot, [-1, options['n_target_quant']])
-
 		# Calculate Loss
 		loss = tf.nn.softmax_cross_entropy_with_logits(
-			logits=flat_logits, 
-			labels=flat_targets, 
+			logits=decoder_output,
+			labels=target_one_hot, 
 			name='decoder_cross_entropy_loss'
 		)
 
@@ -334,17 +331,16 @@ class TruthModel:
 
 		# Mask loss beyond EOL in target
 		if 'target_mask_chars' in options:
-			target_masked = tf.reshape(self.target_masked, [-1])
-			r_loss = tf.multiply(loss, target_masked, name='masked_loss')
-			r_loss = tf.div(tf.reduce_sum(r_loss), tf.reduce_sum(target_masked), name="Reduced_mean_loss")
+			r_loss = tf.multiply(loss, tf.squeeze(self.target_masked, 2), name='masked_loss')
+			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
 		else:
-			r_loss = tf.reduce_mean(loss, name="Reduced_mean_loss")
+			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
 
 		average_kl_loss = tf.reduce_mean(kl_loss)
-		r_loss_col = tf.fill(tf.shape(kl_loss), r_loss)
-		total_loss = tf.reduce_mean(r_loss_col + kl_loss, name="cost")
+		average_r_loss = tf.reduce_mean(r_loss)
+		total_loss = tf.reduce_mean(r_loss + kl_loss, name="cost")
 
-		return total_loss, average_kl_loss, r_loss
+		return total_loss, average_kl_loss, average_r_loss
 
 class Dense():
 
