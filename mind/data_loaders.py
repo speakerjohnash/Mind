@@ -220,7 +220,7 @@ class DataLoader():
 
 		for i, group in groupby(sentence):
 
-			if id_word[i] == 'padding':
+			if id_word[i] == 'eol':
 				break
 
 			if i in self.target_char_vocab.values():
@@ -278,7 +278,7 @@ class PretrainData(DataLoader):
 		self.target_lines = []
 
 		# Load All Data Sources
-		#self.load_data(config["options"]["dataset"])
+		self.load_data(config["options"]["dataset"])
 		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")
 
 		# Load Prophet Data
