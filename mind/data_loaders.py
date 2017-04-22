@@ -278,7 +278,8 @@ class PretrainData(DataLoader):
 		self.target_lines = []
 
 		# Load All Data Sources
-		self.load_data(config["options"]["dataset"])
+		self.load_data("data/wiki_02.txt")
+		self.load_data("data/wiki_04.txt")
 		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")
 
 		# Load Prophet Data
