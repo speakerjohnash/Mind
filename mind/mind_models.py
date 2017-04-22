@@ -331,12 +331,13 @@ class TruthModel:
 
 		# Mask loss beyond EOL in target
 		if 'target_mask_chars' in options:
-			r_loss = tf.multiply(loss, tf.squeeze(self.target_masked, 2), name='masked_loss')
-			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
+			masked_target = tf.squeeze(self.target_masked, 2)
+			r_loss = tf.multiply(loss, masked_target, name='masked_loss')
+			r_loss = tf.reduce_sum(r_loss, 1)
+			m_loss = tf.reduce_sum(masked_target, 1)
+			r_loss = tf.div(r_loss, m_loss, name="Reduced_mean_loss")
 		else:
 			r_loss = tf.reduce_sum(r_loss, 1, name="Reduced_mean_loss")
-
-		# TODO/ Divide out loss from masked characters
 
 		average_kl_loss = tf.reduce_mean(kl_loss)
 		average_r_loss = tf.reduce_mean(r_loss)
