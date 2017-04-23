@@ -63,6 +63,12 @@ def pretrain_prophet(config):
 		last_saved_model_path = config["resume_model"]
 
 	global_step = 0
+	kl_step = 1 / 25000
+
+	if "resume_model" in config:
+		kl_weight = 0.06829
+	else:
+		kl_weight = 0
 
 	# Train Model
 	for i in range(1, epochs):
@@ -113,9 +119,6 @@ def pretrain_prophet(config):
 		if last_saved_model_path:
 			print("Restoring Model")
 			saver.restore(sess, last_saved_model_path)
-
-		kl_weight = 0
-		kl_step = 1 / 250000
 
 		# Training Step
 		while (batch_no + 1) * batch_size < len(buckets[key]):
@@ -171,9 +174,6 @@ def pretrain_prophet(config):
 
 			kl_weight = 0 if kl_weight < 0 else kl_weight
 			kl_weight = 1 if kl_weight > 1 else kl_weight
-
-			if "resume_model" in config:
-				kl_weight = 1
 
 			print("\nKL Weight: " + str(kl_weight))
 
