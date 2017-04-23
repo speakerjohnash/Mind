@@ -70,22 +70,22 @@ def pretrain_prophet(config):
 	else:
 		kl_weight = 0
 
-	sess = tf.InteractiveSession()
-
 	key = model_options["sample_size"]
 	batch_size = model_options["batch_size"]
 
-	# Build Model
-	model = TruthModel(model_options)
-	tensors = model.build_truth_model(sample_size=key)
-
-	# Build Optimizer
-	lr = config["options"]["learning_rate"]
-	beta1 = config["options"]["adam_momentum"]
-	adam = tf.train.AdamOptimizer(lr, beta1=beta1)
-
 	# Train Model
 	for i in range(1, epochs):
+
+		sess = tf.InteractiveSession()
+
+		# Build Model
+		model = TruthModel(model_options)
+		tensors = model.build_truth_model(sample_size=key)
+
+		# Build Optimizer
+		lr = config["options"]["learning_rate"]
+		beta1 = config["options"]["adam_momentum"]
+		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 		cnt = 0
 		cnt += 1

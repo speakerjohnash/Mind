@@ -42,7 +42,7 @@ class DataLoader():
 	def load_data(self, dataset, sep=","):
 		"""Load training data"""
 
-		df = load_piped_dataframe(dataset, chunksize=1000, sep=sep)
+		df = load_piped_dataframe(dataset, chunksize=2500, sep=sep)
 		thoughts = []
 
 		for chunk in df:
@@ -58,7 +58,7 @@ class DataLoader():
 
 		for i, thought in enumerate(thoughts):
 			if i + 1 < len(thoughts):
-				thought = thoughts[i][:254]
+				thought = thoughts[i][:126]
 				if len(thought) < 35:
 					continue
 				self.source_lines.append(thought)
@@ -200,8 +200,7 @@ class DataLoader():
 
 		for i, token in enumerate(tokens):
 			if token in vocab:
-				for ii in range(len(token)): 
-					indices.append(vocab[token])
+				indices.append(vocab[token])
 			else:
 				for char in token:
 					indices.append(vocab.get(char, vocab[" "]))
@@ -223,10 +222,7 @@ class DataLoader():
 			if id_word[i] == 'eol':
 				break
 
-			if i in self.target_char_vocab.values():
-				for g in list(group):
-					sent += id_word[i]
-			else:
+			for g in list(group):
 				sent += id_word[i]
 
 		return "".join(sent)
@@ -278,8 +274,11 @@ class PretrainData(DataLoader):
 		self.target_lines = []
 
 		# Load All Data Sources
-		self.load_data("data/wiki_02.txt")
-		self.load_data("data/wiki_04.txt")
+		# self.load_data("data/wiki_01.txt")
+		# self.load_data("data/wiki_02.txt")
+		# self.load_data("data/wiki_03.txt")
+		# self.load_data("data/wiki_04.txt")
+		# self.load_data("data/wiki_05.txt")
 		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")
 
 		# Load Prophet Data
@@ -288,8 +287,8 @@ class PretrainData(DataLoader):
 
 		for i, thought in enumerate(prophet_thoughts):
 			if i + 1 < len(prophet_thoughts):
-				thought = prophet_thoughts[i][:254]
-				if len(thought) < 50:
+				thought = prophet_thoughts[i][:126]
+				if len(thought) < 30:
 					continue
 				self.source_lines.append(thought)
 				self.target_lines.append(thought)
