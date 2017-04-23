@@ -63,39 +63,39 @@ def pretrain_prophet(config):
 		last_saved_model_path = config["resume_model"]
 
 	global_step = 0
-	kl_step = 1 / 25000
+	kl_step = 1 / 2500
 
 	if "resume_model" in config:
-		kl_weight = 0.06829
+		kl_weight = 1
 	else:
 		kl_weight = 0
+
+	sess = tf.InteractiveSession()
+
+	key = model_options["sample_size"]
+	batch_size = model_options["batch_size"]
+
+	# Build Model
+	model = TruthModel(model_options)
+	tensors = model.build_truth_model(sample_size=key)
+
+	# Build Optimizer
+	lr = config["options"]["learning_rate"]
+	beta1 = config["options"]["adam_momentum"]
+	adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 	# Train Model
 	for i in range(1, epochs):
 
 		cnt = 0
-
-		key = model_options["sample_size"]
 		cnt += 1
 		
 		print(("Key", cnt, key))
 
-		sess = tf.InteractiveSession()
-
 		batch_no = 0
-		batch_size = model_options["batch_size"]
-
-		# Build Model
-		model = TruthModel(model_options)
-		tensors = model.build_truth_model(sample_size=key)
 
 		# Count Model Parameters
 		count_parameters(tensors["variables"])
-		
-		# Build Optimizer
-		lr = config["options"]["learning_rate"]
-		beta1 = config["options"]["adam_momentum"]
-		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 		# Optimize
 		grad_vars = adam.compute_gradients(tensors["total_loss"])
