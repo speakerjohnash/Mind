@@ -25,9 +25,7 @@ class TruthModel:
 		source_initializer = tf.contrib.layers.xavier_initializer(uniform=False)
 		target_initializer = tf.contrib.layers.xavier_initializer(uniform=False)
 		source_embedding_shape = [options['n_source_quant'], 2 * options['residual_channels']]
-		target_embedding_shape = [options['n_target_quant'], options['residual_channels']]
 		
-		self.w_target_embedding = tf.get_variable('w_target_embedding', target_embedding_shape, initializer=target_initializer)
 		self.w_source_embedding = tf.get_variable('w_source_embedding', source_embedding_shape, initializer=source_initializer)
 
 		if 'source_mask_chars' in options:
@@ -308,7 +306,7 @@ class TruthModel:
 			epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
 			return mu + epsilon * tf.exp(log_sigma) 
 
-	def loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
+	def og_loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
 		"""Calculate loss between decoder output and target"""
 
 		options = self.options
@@ -345,8 +343,8 @@ class TruthModel:
 
 		return total_loss, weighted_kl_loss, average_r_loss, average_kl_loss
 
-	def masked_loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
-		"""Calculate loss between decoder output and target"""
+	def loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
+		"""Calculate masked loss between decoder output and target"""
 
 		options = self.options
 
