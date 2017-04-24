@@ -154,7 +154,7 @@ class DataLoader():
 			print("Loading previous word lookup")
 			return load_json("models/word_lookup.json")
 
-		thoughts = load_dict_list("data/thoughts.csv")
+		thoughts = load_dict_list("data/ordered_thoughts.csv")
 		corpus = [t["Thought"] for t in thoughts]
 
 		# corpus = self.source_lines + [self.target_lines[-1]]
@@ -171,7 +171,7 @@ class DataLoader():
 		second_section = corpus[third:third+third]
 		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=1000, tokenizer=tokenizer)
+		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
 
 		vectorizer.fit_transform(first_section)
 		vectorizer.fit_transform(second_section)
@@ -278,7 +278,7 @@ class PretrainData(DataLoader):
 		# self.load_data("data/wiki_02.txt")
 		# self.load_data("data/wiki_03.txt")
 		# self.load_data("data/wiki_04.txt")
-		# self.load_data("data/wiki_05.txt")
+		self.load_data("data/wiki_05.txt")
 		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")
 
 		# Load Prophet Data
