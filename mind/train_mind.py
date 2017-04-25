@@ -63,7 +63,7 @@ def pretrain_prophet(config):
 		last_saved_model_path = config["resume_model"]
 
 	global_step = 0
-	kl_step = 1 / 2500
+	kl_step = 1 / 1500
 
 	if "resume_model" in config:
 		kl_weight = 1
@@ -72,6 +72,8 @@ def pretrain_prophet(config):
 
 	key = model_options["sample_size"]
 	batch_size = model_options["batch_size"]
+	lr = config["options"]["learning_rate"]
+	beta1 = config["options"]["adam_momentum"]
 
 	# Train Model
 	for i in range(1, epochs):
@@ -83,8 +85,6 @@ def pretrain_prophet(config):
 		tensors = model.build_truth_model(sample_size=key)
 
 		# Build Optimizer
-		lr = config["options"]["learning_rate"]
-		beta1 = config["options"]["adam_momentum"]
 		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 		cnt = 0
@@ -177,14 +177,14 @@ def pretrain_prophet(config):
 
 			print("\nKL Weight: " + str(kl_weight))
 
-			if step > 0 and step % 500 == 0:
+			if step > 0 and step % 600 == 0:
 				feed_dict["phase:0"] = 0
 				new_thought = sess.run(tensors['prediction'], feed_dict=feed_dict)
 				print("----------")
 				print(("Generated Thought: ", thought_stream.word_indices_to_string(new_thought[0:int(key)], target_vocab)))
 				print("******")
 
-			if step % 5000 == 0:
+			if step % 6000 == 0:
 				print("Saving Model")
 				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
 				last_saved_model_path = "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt)

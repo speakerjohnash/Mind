@@ -132,6 +132,9 @@ class DataLoader():
 		vocab = {}
 		ctr = 0
 
+		alphabet = "abcdefghijklmnopqrstuvwxyz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{} "
+		sentences = [alphabet, alphabet.upper()]
+
 		for st in sentences:
 			for ch in st:
 				if ch not in vocab:
@@ -171,7 +174,7 @@ class DataLoader():
 		second_section = corpus[third:third+third]
 		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=25000, tokenizer=tokenizer)
+		vectorizer = CountVectorizer(max_features=3000, tokenizer=tokenizer)
 
 		vectorizer.fit_transform(first_section)
 		vectorizer.fit_transform(second_section)
@@ -274,9 +277,9 @@ class PretrainData(DataLoader):
 		self.target_lines = []
 
 		# Load All Data Sources
-		# self.load_data("data/wiki_01.txt")
+		self.load_data("data/wiki_01.txt")
 		# self.load_data("data/wiki_02.txt")
-		# self.load_data("data/wiki_03.txt")
+		self.load_data("data/wiki_03.txt")
 		# self.load_data("data/wiki_04.txt")
 		self.load_data("data/wiki_05.txt")
 		self.load_data("data/Nate_Silver_The_Signal_and_the_Noise.txt")

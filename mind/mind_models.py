@@ -306,7 +306,7 @@ class TruthModel:
 			epsilon = tf.random_normal(tf.shape(log_sigma), name="epsilon")
 			return mu + epsilon * tf.exp(log_sigma) 
 
-	def og_loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
+	def loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
 		"""Calculate loss between decoder output and target"""
 
 		options = self.options
@@ -343,7 +343,7 @@ class TruthModel:
 
 		return total_loss, weighted_kl_loss, average_r_loss, average_kl_loss
 
-	def loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
+	def masked_loss(self, decoder_output, target_sentences, z_mean, z_log_sigma, kl_weight):
 		"""Calculate masked loss between decoder output and target"""
 
 		options = self.options

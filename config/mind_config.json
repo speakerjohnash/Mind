@@ -16,7 +16,7 @@
 		"n_source_quant": 256
 	},
 	"prophet": {
-		"batch_size": 256,
+		"batch_size": 300,
 		"sample_size": 128,
 		"decoder_filter_width": 3,
 		"encoder_filter_width" : 3,
