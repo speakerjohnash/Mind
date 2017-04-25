@@ -108,6 +108,9 @@ class DataLoader():
 			s_padding = np.array([source_vocab['padding'] for ctr in range(int(sl), int(new_length))])
 
 			# Extra Padding for Training
+
+			# TODO: Shorten targets to make training easier
+
 			t_padding = np.array([target_vocab['padding'] for ctr in range(int(tl), int(new_length + 1))])
 			source_lines[i] = np.concatenate([source_lines[i], s_padding])
 			target_lines[i] = np.concatenate([target_lines[i], t_padding])

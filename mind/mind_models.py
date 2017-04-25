@@ -214,6 +214,8 @@ class TruthModel:
 		reshape_dims = [batch_size, sample_size, int(latent_dims / sample_size)]
 		curr_input = input_
 
+		# TODO: Reshape to smaller width for writing out mixed chars and words
+
 		for layer_no, dilation in enumerate(options['decoder_dilations']):
 			layer_output = self.decode_layer(curr_input, dilation, layer_no)
 			curr_input = layer_output
