@@ -89,7 +89,7 @@ class TruthModel:
 		self.target_masked = tf.nn.embedding_lookup(self.output_mask, target_sentence, name="target_masked")
 
 		# Encode Context
-		source_dropout = tf.nn.dropout(source_embedding, 0.5)
+		source_dropout = tf.nn.dropout(source_embedding, 0.8)
 		encoder_output = self.encoder(source_dropout)
 
 		# Latent distribution parameterized by hidden encoding
