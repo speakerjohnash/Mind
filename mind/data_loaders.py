@@ -181,8 +181,6 @@ class DataLoader():
 		vectorizer.fit_transform(third_section)
 
 		feature_names = list(vectorizer.get_feature_names())
-		feature_names.remove("the")
-		feature_names.remove("and")
 
 		# Merge word and character vocabs
 		vocab = list(self.target_char_vocab.keys())
