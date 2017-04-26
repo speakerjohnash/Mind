@@ -66,7 +66,7 @@ def pretrain_prophet(config):
 	kl_step = 1 / 1500
 
 	if "resume_model" in config:
-		kl_weight = 0.5
+		kl_weight = 0.1
 	else:
 		kl_weight = 0
 
@@ -93,7 +93,7 @@ def pretrain_prophet(config):
 
 	# Clip and Visualize Gradients
 	grad_vars = [
-		(tf.clip_by_norm(grad, 5.0), var)
+		(tf.clip_by_norm(grad, 6.0), var)
 		if grad is not None else (grad, var)
 		for grad, var in grad_vars]
 
@@ -194,6 +194,10 @@ def pretrain_prophet(config):
 				for grad, var in grad_vars:
 					if grad is not None and var is not None:
 						tf.summary.histogram('logs/' + var.name.replace(':', '_') + '/gradient', grad)
+
+
+		# Shuffle Data
+		thought_stream.shuffle_data()
 
 		# Save Checkpoint
 		save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))

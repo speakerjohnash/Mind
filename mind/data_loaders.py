@@ -320,6 +320,12 @@ class PretrainData(DataLoader):
 		print(("SOURCE VOCAB SIZE", len(self.source_vocab)))
 		print(("TARGET VOCAB SIZE", len(self.target_vocab)))
 
+	def shuffle_data(self):
+		"""Shuffle data"""
+		
+		random.shuffle(self.source_lines)
+		self.target_lines = self.source_lines
+
 	def load_batch(self, step, buckets):
 		"""Load a batch of documents"""
 
