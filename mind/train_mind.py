@@ -66,7 +66,7 @@ def pretrain_prophet(config):
 	kl_step = 1 / 1500
 
 	if "resume_model" in config:
-		kl_weight = 1
+		kl_weight = 0.5
 	else:
 		kl_weight = 0
 
@@ -75,17 +75,17 @@ def pretrain_prophet(config):
 	lr = config["options"]["learning_rate"]
 	beta1 = config["options"]["adam_momentum"]
 
+	# Build Model
+	model = TruthModel(model_options)
+	tensors = model.build_truth_model(sample_size=key)
+
+	# Build Optimizer
+	adam = tf.train.AdamOptimizer(lr, beta1=beta1)
+
 	# Train Model
 	for i in range(1, epochs):
 
 		sess = tf.InteractiveSession()
-
-		# Build Model
-		model = TruthModel(model_options)
-		tensors = model.build_truth_model(sample_size=key)
-
-		# Build Optimizer
-		adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
 		cnt = 0
 		cnt += 1
@@ -198,8 +198,8 @@ def pretrain_prophet(config):
 		save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))
 		last_saved_model_path = "models/model_pretrain_epoch_{}.ckpt".format(i)
 
-		tf.reset_default_graph()
-		sess.close()
+	tf.reset_default_graph()
+	sess.close()
 
 def count_parameters(t_vars):
 	"""Count parameters in trainable variables"""
