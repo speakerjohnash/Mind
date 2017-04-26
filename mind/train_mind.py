@@ -66,7 +66,7 @@ def pretrain_prophet(config):
 	kl_step = 1 / 1500
 
 	if "resume_model" in config:
-		kl_weight = 0.1
+		kl_weight = 0.5
 	else:
 		kl_weight = 0
 
@@ -75,20 +75,36 @@ def pretrain_prophet(config):
 	lr = config["options"]["learning_rate"]
 	beta1 = config["options"]["adam_momentum"]
 
+	# Session
+	sess = tf.InteractiveSession()
+
 	# Build Model
 	model = TruthModel(model_options)
 	tensors = model.build_truth_model(sample_size=key)
 
-	# Session and Savers
-	sess = tf.InteractiveSession()
-	saver = tf.train.Saver()
-	train_writer = tf.summary.FileWriter('logs/', sess.graph)
-
 	# Build Optimizer
 	adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
+	# Count Model Parameters
+	count_parameters(tensors["variables"])
+
+	# Optimize
+	grad_vars = adam.compute_gradients(tensors["total_loss"])
+
+	# Clip and Visualize Gradients
+	grad_vars = [
+		(tf.clip_by_norm(grad, 5.0), var)
+		if grad is not None else (grad, var)
+		for grad, var in grad_vars]
+
+	# Apply Gradients
+	optim = adam.apply_gradients(grad_vars)
+
 	# Initialize Variables and Summary Writer
+	train_writer = tf.summary.FileWriter('logs/', sess.graph)
 	tf.global_variables_initializer().run()
+
+	saver = tf.train.Saver()
 
 	# Restore previous checkpoint if existing
 	if last_saved_model_path:
@@ -104,21 +120,6 @@ def pretrain_prophet(config):
 		print(("Key", cnt, key))
 
 		batch_no = 0
-
-		# Count Model Parameters
-		count_parameters(tensors["variables"])
-
-		# Optimize
-		grad_vars = adam.compute_gradients(tensors["total_loss"])
-
-		# Clip and Visualize Gradients
-		grad_vars = [
-			(tf.clip_by_norm(grad, 6.0), var)
-			if grad is not None else (grad, var)
-			for grad, var in grad_vars]
-
-		# Apply Gradients
-		optim = adam.apply_gradients(grad_vars)
 
 		# Training Step
 		while (batch_no + 1) * batch_size < len(buckets[key]):
