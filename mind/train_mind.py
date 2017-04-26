@@ -66,7 +66,7 @@ def pretrain_prophet(config):
 	kl_step = 1 / 1500
 
 	if "resume_model" in config:
-		kl_weight = 0.5
+		kl_weight = 0.1
 	else:
 		kl_weight = 0
 
@@ -79,13 +79,24 @@ def pretrain_prophet(config):
 	model = TruthModel(model_options)
 	tensors = model.build_truth_model(sample_size=key)
 
+	# Session and Savers
+	sess = tf.InteractiveSession()
+	saver = tf.train.Saver()
+	train_writer = tf.summary.FileWriter('logs/', sess.graph)
+
 	# Build Optimizer
 	adam = tf.train.AdamOptimizer(lr, beta1=beta1)
 
+	# Initialize Variables and Summary Writer
+	tf.global_variables_initializer().run()
+
+	# Restore previous checkpoint if existing
+	if last_saved_model_path:
+		print("Restoring Model")
+		saver.restore(sess, last_saved_model_path)
+
 	# Train Model
 	for i in range(1, epochs):
-
-		sess = tf.InteractiveSession()
 
 		cnt = 0
 		cnt += 1
@@ -102,23 +113,12 @@ def pretrain_prophet(config):
 
 		# Clip and Visualize Gradients
 		grad_vars = [
-			(tf.clip_by_norm(grad, 5.0), var)
+			(tf.clip_by_norm(grad, 6.0), var)
 			if grad is not None else (grad, var)
 			for grad, var in grad_vars]
 
 		# Apply Gradients
 		optim = adam.apply_gradients(grad_vars)
-
-		# Initialize Variables and Summary Writer
-		train_writer = tf.summary.FileWriter('logs/', sess.graph)
-		tf.global_variables_initializer().run()
-
-		saver = tf.train.Saver()
-
-		# Restore previous checkpoint if existing
-		if last_saved_model_path:
-			print("Restoring Model")
-			saver.restore(sess, last_saved_model_path)
 
 		# Training Step
 		while (batch_no + 1) * batch_size < len(buckets[key]):
