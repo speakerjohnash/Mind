@@ -177,17 +177,24 @@ class DataLoader():
 		second_section = corpus[third:third+third]
 		third_section = corpus[third+third:]
 
-		vectorizer = CountVectorizer(max_features=3000, tokenizer=tokenizer)
+		vectorizer = CountVectorizer(max_features=3500, tokenizer=tokenizer)
 
 		vectorizer.fit_transform(first_section)
 		vectorizer.fit_transform(second_section)
 		vectorizer.fit_transform(third_section)
 
 		feature_names = list(vectorizer.get_feature_names())
+		filtered_features = []
+
+		for f in feature_names:
+			if any(c.isdigit() for c in f) or "#" in f:
+				continue
+			else:
+				filtered_features.append(f)
 
 		# Merge word and character vocabs
 		vocab = list(self.target_char_vocab.keys())
-		vocab += feature_names
+		vocab += filtered_features
 		word_count = len(vocab)
 		index_lookup = dict(zip(vocab, range(word_count)))
 
