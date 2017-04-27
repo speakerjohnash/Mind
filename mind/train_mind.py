@@ -22,6 +22,7 @@ import logging
 import math
 import sys
 import argparse
+import random
 
 import numpy as np
 import tensorflow as tf
@@ -63,10 +64,10 @@ def pretrain_prophet(config):
 		last_saved_model_path = config["resume_model"]
 
 	global_step = 0
-	kl_step = 1 / 1500
+	kl_step = 1 / 2000
 
 	if "resume_model" in config:
-		kl_weight = 0.1
+		kl_weight = 0.15
 	else:
 		kl_weight = 0
 
@@ -197,7 +198,7 @@ def pretrain_prophet(config):
 
 
 		# Shuffle Data
-		thought_stream.shuffle_data()
+		random.shuffle(buckets[key])
 
 		# Save Checkpoint
 		save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))
