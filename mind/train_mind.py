@@ -196,10 +196,6 @@ def pretrain_prophet(config):
 					if grad is not None and var is not None:
 						tf.summary.histogram('logs/' + var.name.replace(':', '_') + '/gradient', grad)
 
-
-		# Shuffle Data
-		random.shuffle(buckets[key])
-
 		# Save Checkpoint
 		save_path = saver.save(sess, "models/model_pretrain_epoch_{}.ckpt".format(i))
 		last_saved_model_path = "models/model_pretrain_epoch_{}.ckpt".format(i)

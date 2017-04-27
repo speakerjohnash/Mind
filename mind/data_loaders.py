@@ -304,10 +304,6 @@ class PretrainData(DataLoader):
 				self.source_lines.append(thought)
 				self.target_lines.append(thought)
 
-		# Shuffle
-		random.shuffle(self.source_lines)
-		self.target_lines = self.source_lines
-
 		print(("Source Sentences", len(self.source_lines)))
 		print(("Target Sentences", len(self.target_lines)))
 
@@ -330,7 +326,7 @@ class PretrainData(DataLoader):
 		source_sentences = []
 		target_sentences = []
 
-		sentences = buckets[sample_size][step : step + batch_size]
+		sentences = random.sample(buckets[sample_size], batch_size)
 
 		for s, t in sentences:
 			source_sentences.append(s)
