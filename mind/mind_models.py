@@ -115,6 +115,7 @@ class TruthModel:
 		tf.summary.scalar('kl_loss', kl_loss)
 		tf.summary.scalar('r_loss', r_loss)
 		tf.summary.scalar('real_kl_loss', real_kl_loss)
+		tf.summary.scalar('real_total_loss', real_kl_loss + r_loss)
 
 		flat_logits = tf.reshape(decoder_output, [-1, options['n_target_quant']])
 		prediction = tf.argmax(flat_logits, 1)
