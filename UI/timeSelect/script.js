@@ -106,7 +106,7 @@
     var mouse = d3.mouse(this);
     xFisheye.focus(mouse[0]);
     timeFisheye.focus(mouse[0]);
-    tfText.text("Temporal Focus: " + timeFormat(new Date(linearTimeScale(mouse[0]))))
+    tfText.text("Cursor: " + timeFormat(new Date(linearTimeScale(mouse[0]))))
     redraw();
   });
 
