@@ -16,13 +16,21 @@ Created on Jan 16, 2020
 import sys
 import json
 
+import tweepy
 import gensim
 from gensim.models import word2vec
 
 def twitter_connect():
 	"""Connect to Twitter API"""
 
-	api = None
+	# Load credentials from json file
+	with open("config/twitter_credentials.json", "r") as file:
+		creds = json.load(file)
+
+	auth = tweepy.OAuthHandler(creds["CONSUMER_KEY"], creds["CONSUMER_SECRET"])
+	auth.set_access_token(creds["ACCESS_TOKEN"], creds["ACCESS_SECRET"])
+
+	api = tweepy.API(auth)
 
 	return api
 
@@ -34,5 +42,5 @@ def twitter_tree(api):
 	return similarity_lookup
 
 if __name__ == "__main__":
-	api = twitter_connect
+	api = twitter_connect()
 	similarity_lookup = twitter_tree(api)
