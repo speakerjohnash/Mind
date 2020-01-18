@@ -30,12 +30,22 @@ def twitter_connect():
 	auth = tweepy.OAuthHandler(creds["CONSUMER_KEY"], creds["CONSUMER_SECRET"])
 	auth.set_access_token(creds["ACCESS_TOKEN"], creds["ACCESS_SECRET"])
 
-	api = tweepy.API(auth)
+	try:
+		api = tweepy.API(auth)
+		print("Authentication OK")
+	except:
+		print("Error during authentication")
 
 	return api
 
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
+
+	# Get User IDs of accounts mentioning phrase or hashtag
+
+	# Get statuses from user IDs
+
+	# Train word2vec on statuses
 
 	similarity_lookup = {}
 
