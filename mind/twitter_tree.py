@@ -31,7 +31,7 @@ def twitter_connect():
 	auth.set_access_token(creds["ACCESS_TOKEN"], creds["ACCESS_SECRET"])
 
 	try:
-		api = tweepy.API(auth)
+		api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 		print("Authentication OK")
 	except:
 		print("Error during authentication")
