@@ -15,7 +15,9 @@ Created on Jan 16, 2020
 
 import sys
 import json
+import csv
 
+import pandas as pd
 import tweepy
 import gensim
 from gensim.models import word2vec
@@ -41,11 +43,23 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
+	user_ids = []
+	outfile = []
+
 	# Get User IDs of accounts mentioning phrase or hashtag
+	for tweet in api.search(q="#gameB", lang="en", count=5):
+		print(f"{tweet.user.name} : {tweet.user.id} : {tweet.text}")
+
+	# Select users with most references to provided concept
 
 	# Get statuses from user IDs
+	for user_id in user_ids:
+		for tweet in tweepy.Cursor(api.user_timeline, user_id=user_id, count=5).items():
+			outfile.append([username, tweet.id_str, tweet.source, tweet.created_at, tweet.text.encode("utf-8")])
 
-	# Train word2vec on statuses
+	# Save tweets to csv?
+
+	# Train word2vec on statuses?
 
 	similarity_lookup = {}
 
