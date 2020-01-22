@@ -45,24 +45,26 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
-	user_names = []
-	outfile = []
+	column_names = ['username', 'tweet', 'tweet_id', 'created']
+	user_ids = []
+	output = []
 
-	output_file = get_write_func("data/twitter_sensemaking.csv", ['username', 'tweet', 'tweet_id', 'created'])
+	write_output = get_write_func("data/twitter_sensemaking.csv", column_names)
 
 	# Get User IDs of accounts mentioning phrase or hashtag
 	for tweet in api.search(q="#gameB", lang="en", count=5):
-		user_names.append(tweet.user.name)
-		# print(f"{tweet.user.name} : {tweet.text} : {tweet.id_str} : {tweet.created_at}")
+		user_ids.append(tweet.user.screen_name)
 
 	# Select users with most references to provided concept
+	user_ids = list(set(user_ids)) # Get Unique Users
 
 	# Get statuses from user IDs
-	for user_name in user_names:
-		for tweet in tweepy.Cursor(api.user_timeline, id=user_name).items(5):
-			outfile.append([tweet.user.name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
+	for user_id in user_ids:
+		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(5):
+			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 
-	# Save tweets to csv?
+	# Save tweets to csv
+	write_output(output)
 
 	# Train word2vec on statuses?
 

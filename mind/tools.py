@@ -115,7 +115,7 @@ def load_piped_dataframe(filename, chunksize=False, usecols=False, sep="|"):
 	
 def get_write_func(filename, header):
 	
-	file_exists = False
+	file_exists = os.path.isfile(filename)
 	
 	def write_func(data):
 		if len(data) > 0:
