@@ -22,6 +22,8 @@ import tweepy
 import gensim
 from gensim.models import word2vec
 
+from mind.tools import get_write_func
+
 def twitter_connect():
 	"""Connect to Twitter API"""
 
@@ -43,19 +45,22 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
-	user_ids = []
+	user_names = []
 	outfile = []
+
+	output_file = get_write_func("data/twitter_sensemaking.csv", ['username', 'tweet', 'tweet_id', 'created'])
 
 	# Get User IDs of accounts mentioning phrase or hashtag
 	for tweet in api.search(q="#gameB", lang="en", count=5):
-		print(f"{tweet.user.name} : {tweet.user.id} : {tweet.text}")
+		user_names.append(tweet.user.name)
+		# print(f"{tweet.user.name} : {tweet.text} : {tweet.id_str} : {tweet.created_at}")
 
 	# Select users with most references to provided concept
 
 	# Get statuses from user IDs
-	for user_id in user_ids:
-		for tweet in tweepy.Cursor(api.user_timeline, user_id=user_id, count=5).items():
-			outfile.append([username, tweet.id_str, tweet.source, tweet.created_at, tweet.text.encode("utf-8")])
+	for user_name in user_names:
+		for tweet in tweepy.Cursor(api.user_timeline, id=user_name).items(5):
+			outfile.append([tweet.user.name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 
 	# Save tweets to csv?
 
