@@ -61,7 +61,7 @@ def twitter_tree(api):
 	write_output(output)
 
 	# Select most vocal users
-	mention_count = dict(zip(count(user_ids).keys(), count(user_ids).values())) # Count Users
+	mention_count = count(user_ids).most_common() # Count Users
 	user_ids = list(set(user_ids)) # Get Unique Users
 
 	# Get recent statuses from user IDs
