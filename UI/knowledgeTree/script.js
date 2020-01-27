@@ -227,7 +227,7 @@
 
 	}
 
-	var jsonPath = "../../data/output/fruiting_word2vec_tree.json";
+	var jsonPath = "../../data/word2vec_tree.json";
 
 	d3.json(jsonPath, run);
 
