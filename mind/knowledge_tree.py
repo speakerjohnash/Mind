@@ -34,7 +34,7 @@ from mind.tools import dict_2_json, vectorize, word_count, load_json
 def load_ken():
 	"""Load top words in Prophet data"""
 
-	df = pd.read_csv("data/input/thoughts.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
+	df = pd.read_csv("data/thoughts.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
 	seers_grouped = df.groupby('Seer', as_index=False)
 	seers = dict(list(seers_grouped))
 	thoughts = list(seers[sys.argv[1]]["Thought"])
