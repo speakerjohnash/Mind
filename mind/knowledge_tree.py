@@ -71,7 +71,7 @@ def averageWordVecs(words, model):
 
 def average_words(model):
 
-	nearest_words = model.most_similar_cosmul(positive=["thought", "truth", "mind", "time"])
+	nearest_words = model.wv.most_similar_cosmul(positive=["thought", "truth", "mind", "time"])
 	print(nearest_words)
 
 	sys.exit()
@@ -81,15 +81,15 @@ def knowledge_tree(ken):
 	
 	# Load Model
 	print("Loading model...")
-	model = gensim.models.Word2Vec.load('models/prophet_word2vec')  # C binary format
+	model = gensim.models.Word2Vec.load('models/prophet_word2vec.bin')  # C binary format
 	print("Loading model: Done")
 
-	average_words(model)
+	# average_words(model)
 
-	keys_in_word2vec = model.vocab.keys()
+	keys_in_word2vec = model.wv.vocab.keys()
 	tokens = [x[0] for x in ken[0:5000] if x[0] in keys_in_word2vec]
-	number_words = len(model.vocab)
-	vocab = list(model.vocab.keys())
+	number_words = len(model.wv.vocab)
+	vocab = list(model.wv.vocab.keys())
 
 	similarity_lookup = {}
 
@@ -99,7 +99,7 @@ def knowledge_tree(ken):
 		if word not in tokens or word.isdigit():
 			continue
 
-		nearest_words = model.most_similar(positive=[word], negative=[], topn=5000)
+		nearest_words = model.wv.most_similar_cosmul(positive=[word], negative=[], topn=5000)
 		nearest_tokens = []
 		non_lexicon = []
 
