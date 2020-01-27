@@ -19,12 +19,15 @@ import math
 import json
 import argparse
 import operator
+import logging
 import multiprocessing
 
 import pandas as pd
 
 from gensim.corpora import WikiCorpus
-from gensim.models.word2vec import Word2Vec, LineSentence
+from gensim.models.word2vec import Word2Vec, LineSentence, PathLineSentences
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 def parse_arguments(args):
 	""" Create the parser """
@@ -56,21 +59,25 @@ def main():
 	"""Run module from command line"""
 
 	# Load Wiki Data
+	# wiki = LineSentence("data/wiki.en.text")
 	wiki = LineSentence("data/wiki_02.txt")
 
 	# Load Thoughts
 	prophet = pd.read_csv("data/thoughts.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
 	thoughts = [re.sub('[^A-Za-z0-9]+', ' ', t).lower().split() for t in list(prophet["Thought"])]
 
-	# Train
+	# Create Model
 	model = Word2Vec(size=600, window=5, min_count=20, workers=multiprocessing.cpu_count())
 
+	# Build Vocab
 	print("Beginning to build vocab")
 	model.build_vocab(wiki)
+	model.build_vocab(thoughts, update=True)
 
 	if "confluesce" in model.wv:
 		print("Confluesce found")
 
+	# Train
 	model.train(wiki, total_examples=model.corpus_count, epochs=model.epochs)
 	model.train(thoughts, total_examples=model.corpus_count, epochs=model.epochs)
 
