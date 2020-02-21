@@ -46,6 +46,7 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
+	search_terms = ['#gameB', 'sensemaking', 'metamodernism']
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
 	user_ids = []
 	output = []
@@ -53,9 +54,11 @@ def twitter_tree(api):
 	write_output = get_write_func("data/twitter_sensemaking.csv", column_names)
 
 	# Get User IDs of accounts mentioning phrase or hashtag
-	for tweet in api.search(q="#gameB", lang="en", count=500):
-		user_ids.append(tweet.user.screen_name)
-		output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
+	for term in search_terms:
+		print("Searching for: " + term)
+		for tweet in api.search(q=term, lang="en", count=5000):
+			user_ids.append(tweet.user.screen_name)
+			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 
 	# Save focus tweets
 	write_output(output)
@@ -66,7 +69,8 @@ def twitter_tree(api):
 
 	# Get recent statuses from user IDs
 	for user_id in user_ids:
-		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(5):
+		print("Getting tweets from: " + user_id)
+		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(50):
 			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 
 	# Save context tweets
