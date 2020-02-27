@@ -87,11 +87,11 @@ def load_json(filename_or_dict):
 		return json_dict
 	return filename_or_dict
 
-def load_dataframe(filename, chunksize=None, usecols=False, sep="|"):
+def load_dataframe(filename, chunksize=None, usecols=False, sep="|", quoting=None):
 	"""Load dataframe from file name"""
 
 	options = {
-		"quoting": csv.QUOTE_NONE,
+		"quoting": quoting if quoting else csv.QUOTE_NONE,
 		"na_filter": False,
 		"encoding": "utf-8",
 		"sep": sep,

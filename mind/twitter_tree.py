@@ -93,11 +93,11 @@ def consolidate_tweets(filename):
 	file_exists = os.path.isfile(filename)
 
 	if file_exists:
-		df = load_dataframe(filename, sep=",")
+		df = load_dataframe(filename, sep=",", quoting=csv.QUOTE_ALL)
 
 	print("Rows before consolidation: " + str(df.shape[0]))
 
-	df.drop_duplicates(keep="first", inplace=True)
+	df.drop_duplicates(subset="tweet_id", keep="first", inplace=True)
 
 	print("Rows after consolidation: " + str(df.shape[0]))
 
