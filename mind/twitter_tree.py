@@ -13,6 +13,7 @@ Created on Jan 16, 2020
 
 #####################################################
 
+import os
 import sys
 import json
 import csv
@@ -46,12 +47,13 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
-	search_terms = ['#gameB', 'sensemaking', 'metamodernism']
+	search_terms = ['#gameB', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"']
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
+	out_file = "data/twitter_sensemaking_B.csv"
 	user_ids = []
 	output = []
 
-	write_output = get_write_func("data/twitter_sensemaking.csv", column_names)
+	write_output = get_write_func(out_file, column_names)
 
 	# Get User IDs of accounts mentioning phrase or hashtag
 	for term in search_terms:
@@ -76,11 +78,19 @@ def twitter_tree(api):
 	# Save context tweets
 	write_output(output)
 
+	# Remove duplicates
+	consolidate_tweets(out_file)
+
 	# Train word2vec on statuses?
 
 	similarity_lookup = {}
 
 	return similarity_lookup
+
+def consolidate_tweets(filename):
+	"""Remove duplicate tweets"""
+
+	file_exists = os.path.isfile(filename)
 
 if __name__ == "__main__":
 	api = twitter_connect()
