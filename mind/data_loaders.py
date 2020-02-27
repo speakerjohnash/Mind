@@ -12,7 +12,7 @@ from nltk.corpus import comtrans
 from nltk.tokenize import TweetTokenizer
 from sklearn.feature_extraction.text import CountVectorizer
 
-from mind.tools import load_piped_dataframe, dict_2_json, load_json, load_dict_list
+from mind.tools import load_dataframe, dict_2_json, load_json, load_dict_list
 
 class DataLoader():
 	def __init__(self, bucket_quant, config):
@@ -42,7 +42,7 @@ class DataLoader():
 	def load_data(self, dataset, sep=","):
 		"""Load training data"""
 
-		df = load_piped_dataframe(dataset, chunksize=2500, sep=sep)
+		df = load_dataframe(dataset, chunksize=2500, sep=sep)
 		thoughts = []
 
 		for chunk in df:

@@ -87,14 +87,14 @@ def load_json(filename_or_dict):
 		return json_dict
 	return filename_or_dict
 
-def load_piped_dataframe(filename, chunksize=False, usecols=False, sep="|"):
-	"""Load piped dataframe from file name"""
+def load_dataframe(filename, chunksize=False, usecols=False, sep="|"):
+	"""Load dataframe from file name"""
 
 	options = {
 		"quoting": csv.QUOTE_NONE,
 		"na_filter": False,
 		"encoding": "utf-8",
-		"sep": "|",
+		"sep": sep,
 		"error_bad_lines": False
 	}
 
@@ -104,7 +104,7 @@ def load_piped_dataframe(filename, chunksize=False, usecols=False, sep="|"):
 	else:
 		with open(filename, 'r') as reader:
 			header = reader.readline()
-		columns = header.split("|")
+		columns = header.split(sep)
 
 	options["dtype"] = {c: "object" for c in columns}
 

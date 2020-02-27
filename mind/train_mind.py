@@ -29,7 +29,7 @@ import tensorflow as tf
 
 from mind.mind_models import TruthModel
 from mind.data_loaders import PretrainData
-from mind.tools import load_dict_list, load_json, load_piped_dataframe
+from mind.tools import load_dict_list, load_json
 
 # Utility
 logging.basicConfig(level=logging.INFO)
@@ -64,10 +64,10 @@ def pretrain_prophet(config):
 		last_saved_model_path = config["resume_model"]
 
 	global_step = 0
-	kl_step = 1 / 2000
+	kl_step = 1 / 1000
 
 	if "resume_model" in config:
-		kl_weight = 0.15
+		kl_weight = 0.5
 	else:
 		kl_weight = 0
 
@@ -94,7 +94,7 @@ def pretrain_prophet(config):
 
 	# Clip and Visualize Gradients
 	grad_vars = [
-		(tf.clip_by_norm(grad, 6.0), var)
+		(tf.clip_by_norm(grad, 10.0), var)
 		if grad is not None else (grad, var)
 		for grad, var in grad_vars]
 
@@ -169,24 +169,24 @@ def pretrain_prophet(config):
 			global_step += batch_size
 
 			# KL annealing
-			if real_kl_loss > r_loss:
-				kl_weight += kl_step
-			else:
+			if real_kl_loss < 65:
 				kl_weight -= kl_step
+			else:
+				kl_weight += kl_step
 
 			kl_weight = 0 if kl_weight < 0 else kl_weight
 			kl_weight = 1 if kl_weight > 1 else kl_weight
 
 			print("\nKL Weight: " + str(kl_weight))
 
-			if step > 0 and step % 600 == 0:
+			if step > 0 and step % 512 == 0:
 				feed_dict["phase:0"] = 0
 				new_thought = sess.run(tensors['prediction'], feed_dict=feed_dict)
 				print("----------")
 				print(("Generated Thought: ", thought_stream.word_indices_to_string(new_thought[0:int(key)], target_vocab)))
 				print("******")
 
-			if step % 6000 == 0:
+			if step % 8192 == 0:
 				print("Saving Model")
 				save_path = saver.save(sess, "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt))
 				last_saved_model_path = "models/model_pretrain_epoch_{}_{}.ckpt".format(i, cnt)

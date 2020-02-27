@@ -35,7 +35,7 @@ import tensorflow as tf
 from tensorflow.python.client import timeline
 
 from mind.tools import get_tensor, get_op, get_variable
-from mind.tools import load_json, load_piped_dataframe, reverse_map
+from mind.tools import load_json, load_dataframe, reverse_map
 
 logging.basicConfig(level=logging.INFO)
 
@@ -81,7 +81,7 @@ def validate_config(config):
 def load_data(config):
 	"""Load labeled data"""
 
-	df = load_piped_dataframe(config["dataset"])
+	df = load_dataframe(config["dataset"])
 	msk = np.random.rand(len(df)) < 0.90
 	train = df[msk]
 	test = df[~msk]
