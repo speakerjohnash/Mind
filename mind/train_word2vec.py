@@ -59,12 +59,18 @@ def main():
 	"""Run module from command line"""
 
 	# Load Wiki Data
-	# wiki = LineSentence("data/wiki.en.text")
-	wiki = LineSentence("data/wiki_02.txt")
+	wiki = LineSentence("/data/home/ec2-user/data/wiki.en.text")
+	# wiki = LineSentence("data/wiki_02.txt")
 
 	# Load Thoughts
 	prophet = pd.read_csv("data/thoughts.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
 	thoughts = [re.sub('[^A-Za-z0-9]+', ' ', t).lower().split() for t in list(prophet["Thought"])]
+
+	# Create Unique Tokens for Key Words
+	for thought in thoughts:
+		for i, token in enumerate(thought):
+			if token == "prophet":
+				thought[i] = "matt_prophet"
 
 	# Create Model
 	model = Word2Vec(size=600, window=5, min_count=20, workers=multiprocessing.cpu_count())
@@ -78,14 +84,23 @@ def main():
 		print("Confluesce found")
 
 	# Train
+	print("train on wiki")
 	model.train(wiki, total_examples=model.corpus_count, epochs=model.epochs)
+	print("train on prophet")
 	model.train(thoughts, total_examples=model.corpus_count, epochs=model.epochs)
 
+	print("repeat train on prophet")
+	for i in range(0, 25):
+		model.train(thoughts, total_examples=model.corpus_count, epochs=model.epochs)
+
 	# Evaluate
+	print("most similar to matt_prophet")
+	print(model.wv.most_similar("matt_prophet"))
+	print("most similar to prophet")
 	print(model.wv.most_similar("prophet"))
 
 	# Save
-	model.save("models/prophet_word2vec.bin")
+	model.save("models/special_prophet_word2vec.bin")
 
 if __name__ == "__main__":
 
