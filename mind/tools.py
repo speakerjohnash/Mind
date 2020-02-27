@@ -87,7 +87,7 @@ def load_json(filename_or_dict):
 		return json_dict
 	return filename_or_dict
 
-def load_dataframe(filename, chunksize=False, usecols=False, sep="|"):
+def load_dataframe(filename, chunksize=None, usecols=False, sep="|"):
 	"""Load dataframe from file name"""
 
 	options = {

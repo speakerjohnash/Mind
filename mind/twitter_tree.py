@@ -24,7 +24,7 @@ import tweepy
 import gensim
 from gensim.models import word2vec
 
-from mind.tools import get_write_func
+from mind.tools import get_write_func, load_dataframe
 
 def twitter_connect():
 	"""Connect to Twitter API"""
@@ -49,7 +49,7 @@ def twitter_tree(api):
 
 	search_terms = ['#gameB', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"']
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
-	out_file = "data/twitter_sensemaking_B.csv"
+	out_file = "data/twitter_sensemaking_C.csv"
 	user_ids = []
 	output = []
 
@@ -91,6 +91,17 @@ def consolidate_tweets(filename):
 	"""Remove duplicate tweets"""
 
 	file_exists = os.path.isfile(filename)
+
+	if file_exists:
+		df = load_dataframe(filename, sep=",")
+
+	print("Rows before consolidation: " + str(df.shape[0]))
+
+	df.drop_duplicates(keep="first", inplace=True)
+
+	print("Rows after consolidation: " + str(df.shape[0]))
+
+	df.to_csv(os.path.splitext(filename)[0] + "_consolidated.csv", index=False)
 
 if __name__ == "__main__":
 	api = twitter_connect()
