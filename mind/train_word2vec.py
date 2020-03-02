@@ -91,7 +91,7 @@ def main():
 	for word in required_words:
 		if word in model.wv:
 			print(word + " found")
-		else
+		else:
 			print(word + " not found")
 
 	# Train
@@ -109,10 +109,10 @@ def main():
 	# Evaluate
 	for word in required_words:
 		print("most similar to " + word)
-		print(model.wv.most_similar(word
+		print(model.wv.most_similar(word))
 
 	# Save
-	model.save("models/special_prophet_word2vec.bin")
+	model.save("models/sensemaking_prophet_word2vec.bin")
 
 if __name__ == "__main__":
 
