@@ -68,7 +68,7 @@ def main():
 
 	# Load Tweets
 	twitter = pd.read_csv("data/twitter_sensemaking_E.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
-	tweets = [re.sub('[^A-Za-z0-9]+', ' ', t).lower().split() for t in list(twitter["Thought"])]
+	tweets = [re.sub('[^A-Za-z0-9]+', ' ', t).lower().split() for t in list(twitter["tweet"])]
 
 	# Create Unique Tokens for Key Words
 	for thought in thoughts:
