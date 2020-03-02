@@ -66,6 +66,10 @@ def main():
 	prophet = pd.read_csv("data/thoughts.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
 	thoughts = [re.sub('[^A-Za-z0-9]+', ' ', t).lower().split() for t in list(prophet["Thought"])]
 
+	# Load Tweets
+	twitter = pd.read_csv("data/twitter_sensemaking_E.csv", na_filter=False, encoding="utf-8", error_bad_lines=False)
+	tweets = [re.sub('[^A-Za-z0-9]+', ' ', t).lower().split() for t in list(twitter["Thought"])]
+
 	# Create Unique Tokens for Key Words
 	for thought in thoughts:
 		for i, token in enumerate(thought):
@@ -79,25 +83,33 @@ def main():
 	print("Beginning to build vocab")
 	model.build_vocab(wiki)
 	model.build_vocab(thoughts, update=True)
+	model.build_vocab(tweets, update=True)
 
-	if "confluesce" in model.wv:
-		print("Confluesce found")
+	# Check Vocab
+	required_words = ["confluesce", "#gameB", "sensemaking", "metamodernism", "matt_prophet", "prophet"]
+
+	for word in required_words:
+		if word in model.wv:
+			print(word + " found")
+		else
+			print(word + " not found")
 
 	# Train
 	print("train on wiki")
 	model.train(wiki, total_examples=model.corpus_count, epochs=model.epochs)
-	print("train on prophet")
-	model.train(thoughts, total_examples=model.corpus_count, epochs=model.epochs)
 
 	print("repeat train on prophet")
-	for i in range(0, 25):
+	for i in range(0, 15):
+		model.train(thoughts, total_examples=model.corpus_count, epochs=model.epochs)
+
+	print("repeat train on sensemaking")
+	for i in range(0, 30):
 		model.train(thoughts, total_examples=model.corpus_count, epochs=model.epochs)
 
 	# Evaluate
-	print("most similar to matt_prophet")
-	print(model.wv.most_similar("matt_prophet"))
-	print("most similar to prophet")
-	print(model.wv.most_similar("prophet"))
+	for word in required_words:
+		print("most similar to " + word)
+		print(model.wv.most_similar(word
 
 	# Save
 	model.save("models/special_prophet_word2vec.bin")
