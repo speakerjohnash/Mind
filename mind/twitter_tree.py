@@ -49,7 +49,7 @@ def twitter_tree(api):
 
 	search_terms = ['#gameB', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"']
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
-	out_file = "data/twitter_sensemaking_C.csv"
+	out_file = "data/twitter_sensemaking_E.csv"
 	user_ids = []
 	output = []
 
@@ -57,10 +57,16 @@ def twitter_tree(api):
 
 	# Get User IDs of accounts mentioning phrase or hashtag
 	for term in search_terms:
+
 		print("Searching for: " + term)
+		c = 0
+
 		for tweet in api.search(q=term, lang="en", count=5000):
+			c += 1
 			user_ids.append(tweet.user.screen_name)
 			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
+
+		print("Found " + str(c) + " tweets about " + term)
 
 	# Save focus tweets
 	write_output(output)
