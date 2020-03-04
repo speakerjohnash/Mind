@@ -75,6 +75,8 @@ def main():
 		for i, token in enumerate(thought):
 			if token == "prophet":
 				thought[i] = "matt_prophet"
+			if token == "#gameb":
+				thought[i] = "gameb"
 
 	# Create Model
 	model = Word2Vec(size=600, window=5, min_count=20, workers=multiprocessing.cpu_count())
@@ -86,7 +88,7 @@ def main():
 	model.build_vocab(tweets, update=True)
 
 	# Check Vocab
-	required_words = ["confluesce", "#gameB", "sensemaking", "metamodernism", "matt_prophet", "prophet"]
+	required_words = ["confluesce", "gameb", "sensemaking", "metamodernism", "matt_prophet", "prophet"]
 
 	for word in required_words:
 		if word in model.wv:
@@ -104,15 +106,15 @@ def main():
 
 	print("repeat train on sensemaking")
 	for i in range(0, 30):
-		model.train(thoughts, total_examples=model.corpus_count, epochs=model.epochs)
+		model.train(tweets, total_examples=model.corpus_count, epochs=model.epochs)
+
+	# Save
+	model.save("models/sensemaking_prophet_word2vec.bin")
 
 	# Evaluate
 	for word in required_words:
 		print("most similar to " + word)
 		print(model.wv.most_similar(word))
-
-	# Save
-	model.save("models/sensemaking_prophet_word2vec.bin")
 
 if __name__ == "__main__":
 
