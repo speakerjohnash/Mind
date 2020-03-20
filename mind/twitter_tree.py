@@ -47,9 +47,9 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
-	search_terms = ['#gameB', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"']
+	search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', "regenerative"]
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
-	out_file = "data/twitter_sensemaking_E.csv"
+	out_file = "data/twitter_sensemaking_H.csv"
 	user_ids = []
 	output = []
 
@@ -96,17 +96,40 @@ def twitter_tree(api):
 def consolidate_tweets(filename):
 	"""Remove duplicate tweets"""
 
+	search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', "regenerative"]
 	file_exists = os.path.isfile(filename)
 
 	if file_exists:
 		df = load_dataframe(filename, sep=",", quoting=csv.QUOTE_ALL)
 
+	# Remove duplicates
 	print("Rows before consolidation: " + str(df.shape[0]))
 
 	df.drop_duplicates(subset="tweet_id", keep="first", inplace=True)
 
 	print("Rows after consolidation: " + str(df.shape[0]))
 
+	# Subsample tweets from users
+
+	# Get counts of tweets per user minus tweets containing key words
+
+	counts = df.username.value_counts()
+	counts_dict = counts.to_dict()
+	total_count = 0
+
+	for user in counts_dict.keys():
+
+		tweeter = df.loc[df['username'] == user]
+
+		for tweet in tweeter['tweet'].to_list():
+			for term in search_terms:
+				if term in tweet:
+					total_count += 1
+					break
+
+	print("Tweets containing search terms: " + str(total_count))
+
+	# Write to file
 	df.to_csv(os.path.splitext(filename)[0] + "_consolidated.csv", index=False)
 
 if __name__ == "__main__":
