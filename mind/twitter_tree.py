@@ -47,9 +47,9 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
-	search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', "regenerative"]
+	search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', 'regenerative', 'non-rivalrous']
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
-	out_file = "data/twitter_sensemaking_H.csv"
+	out_file = "data/twitter_sensemaking_I.csv"
 	user_ids = []
 	output = []
 
@@ -77,12 +77,22 @@ def twitter_tree(api):
 
 	# Get recent statuses from user IDs
 	for user_id in user_ids:
-		print("Getting tweets from: " + user_id)
+		print("Getting contextual tweets from: " + user_id)
 		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(50):
 			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 
+	# Get statuses containing key terms from known users
+	for user_id in user_ids:
+		print("Getting focus tweets from: " + user_id)
+		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(1000):
+			for term in search_terms:
+				if term in tweet.text:
+					print(tweet.text + "\n")
+					output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
+					break
+
 	# Save context tweets
-	write_output(output)
+	write_output(output) 
 
 	# Remove duplicates
 	consolidate_tweets(out_file)
@@ -96,7 +106,7 @@ def twitter_tree(api):
 def consolidate_tweets(filename):
 	"""Remove duplicate tweets"""
 
-	search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', "regenerative"]
+	search_terms = ['#gameb', 'sensemaking', 'metamodernism', 'memetic mediator', 'meaning crisis', 'regenerative', 'non-rivalrous']
 	file_exists = os.path.isfile(filename)
 
 	if file_exists:
