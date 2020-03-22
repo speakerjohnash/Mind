@@ -26,6 +26,8 @@ from gensim.models import word2vec
 
 from mind.tools import get_write_func, load_dataframe
 
+search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', 'regenerative', 'non-rivalrous']
+
 def twitter_connect():
 	"""Connect to Twitter API"""
 
@@ -47,9 +49,8 @@ def twitter_connect():
 def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
-	search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', 'regenerative', 'non-rivalrous']
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
-	out_file = "data/twitter_sensemaking_I.csv"
+	out_file = "data/twitter_sensemaking_J.csv"
 	user_ids = []
 	output = []
 
@@ -81,7 +82,23 @@ def twitter_tree(api):
 		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(50):
 			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 
-	# Get statuses containing key terms from known users
+	# Get tweets containing key terms from known users
+	output = get_focus_tweets(user_ids, output)
+
+	# Save context tweets
+	write_output(output) 
+
+	# Remove duplicates
+	consolidate_tweets(out_file)
+
+	# Train word2vec on statuses?
+	similarity_lookup = {}
+
+	return similarity_lookup
+
+def get_focus_tweets(user_ids, output=[]):
+	"""Get tweets containing key terms from known users"""
+
 	for user_id in user_ids:
 		print("Getting focus tweets from: " + user_id)
 		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(1000):
@@ -91,17 +108,7 @@ def twitter_tree(api):
 					output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 					break
 
-	# Save context tweets
-	write_output(output) 
-
-	# Remove duplicates
-	consolidate_tweets(out_file)
-
-	# Train word2vec on statuses?
-
-	similarity_lookup = {}
-
-	return similarity_lookup
+	return output
 
 def consolidate_tweets(filename):
 	"""Remove duplicate tweets"""
