@@ -26,7 +26,7 @@ from gensim.models import word2vec
 
 from mind.tools import get_write_func, load_dataframe
 
-search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', 'regenerative', 'non-rivalrous']
+search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', 'regenerative', 'non-rivalrous', '#transitionb']
 
 def twitter_connect():
 	"""Connect to Twitter API"""
@@ -50,24 +50,14 @@ def twitter_tree(api):
 	"""Build JSON for Tree of Knowledge"""
 
 	column_names = ['username', 'tweet', 'tweet_id', 'created']
-	out_file = "data/twitter_sensemaking_J.csv"
+	out_file = "data/twitter_sensemaking_L.csv"
 	user_ids = []
 	output = []
 
 	write_output = get_write_func(out_file, column_names)
 
 	# Get User IDs of accounts mentioning phrase or hashtag
-	for term in search_terms:
-
-		print("Searching for: " + term)
-		c = 0
-
-		for tweet in api.search(q=term, lang="en", count=5000):
-			c += 1
-			user_ids.append(tweet.user.screen_name)
-			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
-
-		print("Found " + str(c) + " tweets about " + term)
+	output, user_id = search_for_terms(output, user_ids)
 
 	# Save focus tweets
 	write_output(output)
@@ -79,7 +69,7 @@ def twitter_tree(api):
 	# Get recent statuses from user IDs
 	for user_id in user_ids:
 		print("Getting contextual tweets from: " + user_id)
-		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(50):
+		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(25):
 			output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
 
 	# Get tweets containing key terms from known users
@@ -96,12 +86,49 @@ def twitter_tree(api):
 
 	return similarity_lookup
 
+def search_for_terms(output, user_ids):
+	"""Broad search for terms"""
+
+	for term in search_terms:
+
+		print("Searching for: " + term)
+		tweetCount, max_id = 0, -1
+
+		while tweetCount < 1000:
+
+			try:
+
+				if (max_id <= 0):
+					new_tweets = api.search(q=term, lang="en", count=100)
+				else:
+					new_tweets = api.search(q=term, lang="en", count=100, max_id=str(max_id - 1))
+
+				if new_tweets:
+					for tweet in new_tweets:
+						user_ids.append(tweet.user.screen_name)
+						output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
+
+				tweetCount += len(new_tweets)
+
+				if len(new_tweets) > 0:
+					max_id = new_tweets[-1].id
+				else:
+					break
+
+			except tweepy.TweepError as e:
+				print("Error : " + str(e))
+				break
+
+		print("Found " + str(tweetCount) + " tweets about " + term)
+
+	return output, search_terms
+
 def get_focus_tweets(user_ids, output=[]):
 	"""Get tweets containing key terms from known users"""
 
 	for user_id in user_ids:
 		print("Getting focus tweets from: " + user_id)
-		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(1000):
+		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(500):
 			for term in search_terms:
 				if term in tweet.text:
 					print(tweet.text + "\n")
@@ -113,7 +140,7 @@ def get_focus_tweets(user_ids, output=[]):
 def consolidate_tweets(filename):
 	"""Remove duplicate tweets"""
 
-	search_terms = ['#gameb', 'sensemaking', 'metamodernism', 'memetic mediator', 'meaning crisis', 'regenerative', 'non-rivalrous']
+	search_terms = ['#gameb', 'sensemaking', 'metamodernism', 'memetic mediator', 'meaning crisis', 'regenerative', 'non-rivalrous', '#transitionb']
 	file_exists = os.path.isfile(filename)
 
 	if file_exists:
