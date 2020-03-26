@@ -26,7 +26,7 @@ from gensim.models import word2vec
 
 from mind.tools import get_write_func, load_dataframe
 
-search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', 'regenerative', 'non-rivalrous', '#transitionb']
+search_terms = ['#gameb', 'sensemaking', 'metamodernism', '"memetic mediator"', '"meaning crisis"', 'non-rivalrous', '#transitionb']
 
 def twitter_connect():
 	"""Connect to Twitter API"""
@@ -143,7 +143,8 @@ def get_focus_tweets(user_ids, output=[]):
 def consolidate_tweets(filename):
 	"""Remove duplicate tweets"""
 
-	search_terms = ['#gameb', 'sensemaking', 'metamodernism', 'memetic mediator', 'meaning crisis', 'regenerative', 'non-rivalrous', '#transitionb']
+	search_terms = ['#gameb', 'sensemaking', 'metamodernism', 'memetic mediator', 'meaning crisis', 'non-rivalrous', '#transitionb']
+	counter = dict(zip(search_terms, [0] * len(search_terms)))
 	file_exists = os.path.isfile(filename)
 
 	if file_exists:
@@ -171,10 +172,13 @@ def consolidate_tweets(filename):
 		for tweet in tweeter['tweet'].to_list():
 			for term in search_terms:
 				if term in tweet:
+					counter[term] += 1
 					total_count += 1
 					break
 
 	print("Tweets containing search terms: " + str(total_count))
+	print("Term count: ")
+	print(counter)
 
 	# Write to file
 	df.to_csv(os.path.splitext(filename)[0] + "_consolidated.csv", index=False)
