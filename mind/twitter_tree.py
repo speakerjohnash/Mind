@@ -128,12 +128,15 @@ def get_focus_tweets(user_ids, output=[]):
 
 	for user_id in user_ids:
 		print("Getting focus tweets from: " + user_id)
-		for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(500):
-			for term in search_terms:
-				if term in tweet.text:
-					print(tweet.text + "\n")
-					output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
-					break
+		try:
+			for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(500):
+				for term in search_terms:
+					if term in tweet.text:
+						print(tweet.text + "\n")
+						output.append([tweet.user.screen_name, tweet.text.encode("utf-8"), tweet.id_str, tweet.created_at])
+						break
+		except tweepy.TweepError as e:
+			print("Error : " + str(e))
 
 	return output
 
