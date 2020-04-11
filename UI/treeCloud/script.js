@@ -41,9 +41,9 @@
 			.attr("text-anchor", "middle")
 			.style("cursor", function(d) {
 				if (!d.fruit) {
-					return "pointer"
+					return "context-menu"
 				} else {
-					return "crosshair"
+					return "pointer"
 				}
 			})
 			.on("click", function(d){
@@ -81,8 +81,10 @@
 
 			for (var i=0; i<numTwigs; i++) {
 
+				if (i == globalJSON[word].length) break;
+
 				var curWord = globalJSON[word][i]["w"],
-					branch = {};
+				branch = {};
 
 				if (usedWords.indexOf(curWord) > -1) continue;
 
@@ -155,7 +157,7 @@
 
 	}
 
-	var jsonPath = "../../data/output/fruiting_word2vec_tree.json";
+	var jsonPath = "../../data/sensemaking_word2vec_tree_03-31-20.json";
 
 	d3.json(jsonPath, run);
 
