@@ -1,0 +1,12 @@
+[project]
+name = "prophet-mind-dashboard"
+version = "0.1.0"
+description = "Stream of Consciousness and Tree of Knowledge for a live Rhizome ledger"
+requires-python = ">=3.11"
+dependencies = ["flask>=3.1,<4", "numpy>=1.26,<3", "scipy>=1.12,<2", "scikit-learn>=1.5,<2", "gensim>=4.4,<5", "rhizome"]
+
+[dependency-groups]
+dev = ["pytest>=8", "playwright>=1.50"]
+
+[tool.uv.sources]
+rhizome = { path = "../../rhizome", editable = true }

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prophet Mind · A living atlas</title><link rel="stylesheet" href="/rhizome-static/fourthought.css"><link rel="stylesheet" href="/static/style.css"><script src="/rhizome-static/fourthought.js" defer></script><script src="/static/vendor/d3-cloud.js" defer></script><script src="/static/app.js" defer></script></head>
+<body>
+<aside class="sidebar">
+ <a class="brand" href="/"><span class="brand-mark">✳</span><span>Prophet<br><strong>Mind</strong></span></a>
+ <p class="eyebrow sidebar-caption">A LIVING ATLAS</p>
+ <nav aria-label="Visualizations"><button class="nav active" data-view="stream"><span>≋</span> Stream of Consciousness<small>Mind over time</small></button><button class="nav" data-view="tree"><span>⌘</span> Tree of Knowledge<small>Mind in relation</small></button></nav>
+ <div class="sidebar-bottom"><span class="status-dot"></span> Connected to Rhizome<p>Your recorded thoughts,<br>seen from another perspective.</p><button id="refresh" class="text-button">↻ Refresh record</button></div>
+</aside>
+<main>
+ <header><div><p class="eyebrow">PROPHET MIND / <span id="breadcrumb">TIME</span></p><h1 id="title">Stream of Consciousness</h1><p id="subtitle">Follow the ideas that run through your life.</p></div><span class="local-badge">● &nbsp; Local · Read only</span></header>
+ <section class="filters" aria-label="Record filters"><label>Speaker<select id="speaker"><option>Loading…</option></select></label><label>Domain<select id="domain"><option value="">All domains</option></select></label><label>From<input id="start" type="date"></label><label>To<input id="end" type="date"></label><label class="search-label">Find in thoughts<input id="query" type="search" placeholder="A word, a phrase, a thread…"></label><button id="reset" class="icon-button" title="Reset filters" aria-label="Reset filters">↺</button></section>
+ <div id="error" class="error" role="alert" hidden></div>
+ <section class="metrics" aria-label="Selection overview"><div><span id="count">—</span><small>authored thoughts</small></div><div><span id="span">—</span><small>years of recorded mind</small></div><div><span id="concepts">—</span><small>concepts in this view</small></div><div class="metric-note"><span id="range-label">Reading the record…</span><small id="scope-label">Local and global · votes excluded · UTC dates</small></div></section>
+ <div class="workspace">
+  <div class="visual-column">
+   <section id="stream-view" class="panel">
+    <div class="panel-head"><div><p class="eyebrow">FOCUS / CONTEXT</p><h2>What has occupied your mind?</h2></div><div class="chart-actions"><button id="all-time" class="small-button">All time</button><button id="recent" class="small-button">Last year</button></div></div>
+    <p class="description">Each ribbon follows a concept through the record. Its width is word usage, not truth or importance.</p>
+    <div id="stream-chart" class="stream-chart"><svg id="stream-svg" role="img" aria-label="Concept frequency stream over time"></svg><div id="tooltip" class="tooltip" hidden></div><div class="loading" id="stream-loading">Reading the record…</div></div>
+    <div class="context-title"><span id="focus-range">Full history</span><span>Drag across the timeline to focus</span></div><svg id="context-svg" role="img" aria-label="Full-history timeline; drag to select a date range"></svg>
+    <div class="concept-heading"><span class="eyebrow">FOLLOW CONCEPTS</span><span>Choose up to 18 · click a ribbon to read its thoughts</span></div><div id="term-chips" class="chips"></div>
+   </section>
+   <section id="tree-view" class="panel" hidden>
+    <div class="panel-head"><div><p class="eyebrow">IDEA / ASSOCIATION</p><h2>Tree of Knowledge</h2></div></div>
+    <p class="description">Click any word to recenter the tree. Blue fruits are closely related words outside your frequent vocabulary.</p>
+    <form id="grow-form" class="tree-controls"><label>Seed concept<input id="seed" value="mind" placeholder="e.g. context" autocomplete="off" list="vocabulary"></label><datalist id="vocabulary"></datalist><label>Depth<select id="depth"><option value="3">3 levels</option><option value="4">4 levels</option><option value="5" selected>5 levels</option></select></label><button class="primary">Grow tree <span>↗</span></button></form>
+    <div class="tree-help"><span>Click to recenter · source thoughts appear alongside</span><span><i class="fruit-key"></i> Related fruit</span></div>
+    <div id="tree-chart" class="tree-chart"><svg id="tree-svg" role="img" aria-label="Expandable tree of related concepts"></svg><div class="loading" id="tree-loading" hidden>Finding relationships…</div></div><p id="tree-caption" class="caption"></p>
+   </section>
+   <footer>From the original Prophet visualizations, reconnected to a living record.<span id="timing"></span></footer>
+  </div>
+  <aside class="record-column panel" aria-label="FourThought view"><div class="evidence-head"><p class="eyebrow">FOURTHOUGHT</p><h2 id="evidence-title">The record</h2><p id="evidence-count">Select a concept to search the record.</p></div>
+  {% with fourthought_read_only=true, fourthought_local_only=true, fourthought_host_view='mind', fourthought_view_class='mind-fourthought' %}
+    {% include 'fourthought_view.html' %}
+  {% endwith %}
+  </aside>
+ </div>
+</main>
+{% include 'fourthought_bootstrap.html' %}
+</body></html>

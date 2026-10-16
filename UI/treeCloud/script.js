@@ -157,7 +157,7 @@
 
 	}
 
-	var jsonPath = "../../data/sensemaking_word2vec_tree_03-31-20.json";
+	var jsonPath = "word2vec_tree.json";
 
 	d3.json(jsonPath, run);
 
